@@ -1,0 +1,16 @@
+[submodule "external/enet"]
+	path = external/enet
+	url = https://github.com/xhayper/enet.git
+	branch = 1.3.17-cmake-fix
+[submodule "external/fmt"]
+	path = external/fmt
+	url = https://github.com/fmtlib/fmt.git
+[submodule "external/Mega-Hack-Extensions"]
+	path = external/Mega-Hack-Extensions
+	url = https://github.com/absoIute/Mega-Hack-Extensions.git
+[submodule "external/gd.h"]
+	path = external/gd.h
+	url = https://github.com/HJfod/gd.h.git
+[submodule "external/cocos-headers"]
+	path = external/cocos-headers
+	url = https://github.com/HJfod/cocos-headers.git
