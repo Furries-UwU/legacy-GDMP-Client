@@ -9,8 +9,7 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "inheritEnvironments": [ "clang_cl_x86" ],
-      "variables": []
+      "inheritEnvironments": [ "clang_cl_x86" ]
     }
   ]
 }

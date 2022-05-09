@@ -5,6 +5,8 @@ set(CMAKE_C_STANDARD 11)
 
 project(GDMP_client)
 
+add_compile_definitions(SHOW_DEBUG_CONSOLE)
+
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp src/*.c src/*.h)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
@@ -21,4 +23,4 @@ add_subdirectory(external/fmt)
 add_subdirectory(external/minhook)
 add_subdirectory(external/cocos-headers)
 
-target_link_libraries(${PROJECT_NAME} enet fmt minhook cocos2d)
+target_link_libraries(${PROJECT_NAME} winmm wsock32 ws2_32 enet fmt minhook cocos2d)
