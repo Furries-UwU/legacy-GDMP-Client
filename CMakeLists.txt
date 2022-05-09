@@ -1,24 +1,24 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(GDMP_client)
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 11)
 
-include_directories(external/gd.h/include)
-include_directories(external/gd.h)
-
-include_directories(external/Mega-Hack-Extensions/include)
-include_directories(external/Mega-Hack-Extensions/extensions1)
-
-add_subdirectory(external/cocos-headers)
-add_subdirectory(external/enet)
-add_subdirectory(external/fmt)
-
-include_directories(external/enet/include)
+project(GDMP_client)
 
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp src/*.c src/*.h)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} enet fmt cocos2d "${PROJECT_SOURCE_DIR}/external/Mega-Hack-Extensions/bin/hackpro.lib")
+target_include_directories(${PROJECT_NAME} PRIVATE
+	external/enet/include
+	external/minhook/include
+	external/gd.h/include
+	external/gd.h
+)
+
+add_subdirectory(external/enet)
+add_subdirectory(external/fmt)
+add_subdirectory(external/minhook)
+add_subdirectory(external/cocos-headers)
+
+target_link_libraries(${PROJECT_NAME} enet fmt minhook cocos2d)

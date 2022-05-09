@@ -14,3 +14,6 @@
 [submodule "external/cocos-headers"]
 	path = external/cocos-headers
 	url = https://github.com/HJfod/cocos-headers.git
+[submodule "external/minhook"]
+	path = external/minhook
+	url = https://github.com/TsudaKageyu/minhook.git
