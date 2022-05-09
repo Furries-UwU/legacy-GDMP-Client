@@ -1,6 +1,4 @@
-#include <enet/enet.h>
-#include <fmt/core.h>
-#include <gd.h>
+#include "dllmain.hpp"
 
 BOOL WINAPI DllMain(
     HINSTANCE hinstDLL,
