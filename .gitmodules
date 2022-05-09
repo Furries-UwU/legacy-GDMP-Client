@@ -5,9 +5,6 @@
 [submodule "external/fmt"]
 	path = external/fmt
 	url = https://github.com/fmtlib/fmt.git
-[submodule "external/Mega-Hack-Extensions"]
-	path = external/Mega-Hack-Extensions
-	url = https://github.com/absoIute/Mega-Hack-Extensions.git
 [submodule "external/gd.h"]
 	path = external/gd.h
 	url = https://github.com/HJfod/gd.h.git
