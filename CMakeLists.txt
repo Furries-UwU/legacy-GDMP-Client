@@ -21,5 +21,4 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp src/*.c src
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} enet fmt cocos2d)
-target_link_libraries(${PROJECT_NAME} external/Mega-Hack-Extensions/bin/hackpro)
+target_link_libraries(${PROJECT_NAME} enet fmt cocos2d "${PROJECT_SOURCE_DIR}/external/Mega-Hack-Extensions/bin/hackpro.lib")
