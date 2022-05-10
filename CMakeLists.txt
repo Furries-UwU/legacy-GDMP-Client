@@ -18,8 +18,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 add_subdirectory(external/GDMP-Shared)
-add_subdirectory(external/fmt)
 add_subdirectory(external/minhook)
 add_subdirectory(external/cocos-headers)
 
-target_link_libraries(${PROJECT_NAME} GDMP-Shared fmt minhook cocos2d)
+target_link_libraries(${PROJECT_NAME} GDMP-Shared minhook cocos2d)
