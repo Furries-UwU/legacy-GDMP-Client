@@ -1,5 +1,7 @@
 #include "dllmain.hpp"
 
+using json = nlohmann::json;
+
 DWORD WINAPI MainThread(LPVOID lpParam)
 {
 #ifdef DEBUG
@@ -80,6 +82,11 @@ DWORD WINAPI MainThread(LPVOID lpParam)
                     playerData.color = gameManager->getPlayerColor();
                     playerData.color2 = gameManager->getPlayerColor2();
 
+                    const char* playerDataJson = json(playerData).dump().c_str();
+
+                    const auto packet = Packet(0x01, reinterpret_cast<uint8_t*>(&playerDataJson));
+
+                    sendPacket(peer, packet, sizeof(packet));
                     break;
                 }
                 }
