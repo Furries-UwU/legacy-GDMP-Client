@@ -1,17 +1,19 @@
 #include "dllmain.hpp"
 
 #pragma pack(push, 1)
-struct Packet {
+struct Packet
+{
     uint8_t type;
-    uint8_t* data;
+    uint8_t *data;
 };
 #pragma pack(pop)
 
 #pragma pack(push, 1)
-struct PlayerData {
-    char* username;
+struct PlayerData
+{
+    char *username;
     int ship;
-	int ball;
+    int ball;
     int bird;
     int dart;
     int robot;
@@ -22,10 +24,11 @@ struct PlayerData {
 };
 #pragma pack(pop)
 
-void sendPacket(ENetPeer* peer, Packet data) {
-    ENetPacket* packet = enet_packet_create(nullptr,
-        sizeof(data),
-        ENET_PACKET_FLAG_RELIABLE);
+void sendPacket(ENetPeer *peer, Packet data)
+{
+    ENetPacket *packet = enet_packet_create(nullptr,
+                                            sizeof(data),
+                                            ENET_PACKET_FLAG_RELIABLE);
 
     std::memcpy(packet->data, &data, sizeof(data));
 
@@ -40,7 +43,7 @@ DWORD MainThread(LPVOID lpParam)
     SetConsoleTitle(LPCSTR("Geometry Dash"));
 
     // Redirect cout, cin and cerr
-    FILE* dummy;
+    FILE *dummy;
     freopen_s(&dummy, "CONOUT$", "w", stdout);
     freopen_s(&dummy, "CONOUT$", "w", stderr);
     freopen_s(&dummy, "CONIN$", "r", stdin);
@@ -53,12 +56,12 @@ DWORD MainThread(LPVOID lpParam)
     }
     atexit(enet_deinitialize);
 
-    ENetHost* client;
+    ENetHost *client;
     client = enet_host_create(NULL,
-        1,
-        1,
-        0,
-        0);
+                              1,
+                              1,
+                              0,
+                              0);
 
     if (client == NULL)
     {
@@ -67,7 +70,7 @@ DWORD MainThread(LPVOID lpParam)
     }
 
     ENetAddress address;
-    ENetPeer* peer;
+    ENetPeer *peer;
 
     enet_address_set_host(&address, "127.0.0.1");
     address.port = 23973;
@@ -80,21 +83,27 @@ DWORD MainThread(LPVOID lpParam)
         exit(EXIT_FAILURE);
     }
 
-    while (true) {
+    while (true)
+    {
         ENetEvent event;
 
-        while (enet_host_service(client, &event, 0) > 0) {
-            switch (event.type) {
-            case ENET_EVENT_TYPE_RECEIVE: {
-                Packet packet = *reinterpret_cast<Packet*>(event.packet->data);
-				
-                switch (packet.type) {
-                    case 0x01: {
-                        auto gameManager = gd::GameManager::sharedState();
-						auto playerName = gameManager->m_sPlayerName;
+        while (enet_host_service(client, &event, 0) > 0)
+        {
+            switch (event.type)
+            {
+            case ENET_EVENT_TYPE_RECEIVE:
+            {
+                Packet packet = *reinterpret_cast<Packet *>(event.packet->data);
 
-                        break;
-                    }
+                switch (packet.type)
+                {
+                case 0x01:
+                {
+                    auto gameManager = gd::GameManager::sharedState();
+                    auto playerName = gameManager->m_sPlayerName;
+
+                    break;
+                }
                 }
 
                 break;
@@ -105,13 +114,15 @@ DWORD MainThread(LPVOID lpParam)
 
     enet_peer_reset(peer);
     enet_host_destroy(client);
-	
+
     return S_OK;
 }
 
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
-    if (fdwReason != DLL_PROCESS_ATTACH) return FALSE;
-	
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
+{
+    if (fdwReason != DLL_PROCESS_ATTACH)
+        return FALSE;
+
     CreateThread(NULL, 0x1000, reinterpret_cast<LPTHREAD_START_ROUTINE>(&MainThread), NULL, 0, NULL);
 
     return TRUE;

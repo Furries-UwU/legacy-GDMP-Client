@@ -6,8 +6,8 @@
 #include <enet/enet.h>
 #include <fmt/core.h>
 
-#include <gd.h>
 #include <MinHook.h>
+#include <gd.h>
 
 #include <cocos2d.h>
 using namespace cocos2d;
