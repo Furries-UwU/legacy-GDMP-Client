@@ -67,6 +67,19 @@ DWORD WINAPI MainThread(LPVOID lpParam)
                     auto gameManager = gd::GameManager::sharedState();
                     auto playerName = gameManager->m_sPlayerName;
 
+                    auto playerData = PlayerData();
+
+					playerData.username = playerName.c_str();
+                    playerData.ship = gameManager->getPlayerShip();
+                    playerData.ball = gameManager->getPlayerBall();
+                    playerData.bird = gameManager->getPlayerBird();
+                    playerData.dart = gameManager->getPlayerDart();
+                    playerData.robot = gameManager->getPlayerRobot();
+                    playerData.spider = gameManager->getPlayerSpider();
+                    playerData.glow = gameManager->getPlayerGlow();
+                    playerData.color = gameManager->getPlayerColor();
+                    playerData.color2 = gameManager->getPlayerColor2();
+
                     break;
                 }
                 }
