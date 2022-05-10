@@ -5,7 +5,9 @@ set(CMAKE_C_STANDARD 11)
 
 project(GDMP-Client)
 
-add_compile_definitions(SHOW_DEBUG_CONSOLE)
+if (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+	add_compile_definitions(DEBUG)
+endif()
 
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp src/*.c src/*.h)
 

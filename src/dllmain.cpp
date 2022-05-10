@@ -2,15 +2,16 @@
 
 DWORD WINAPI MainThread(LPVOID lpParam)
 {
-#ifdef SHOW_DEBUG_CONSOLE
-    AllocConsole();
-    SetConsoleTitle(LPCSTR("Geometry Dash"));
+#ifdef DEBUG
+    if (AllocConsole()) {
+        SetConsoleTitle(LPCSTR("Geometry Dash"));
 
-    // Redirect cout, cin and cerr
-    FILE *dummy;
-    freopen_s(&dummy, "CONOUT$", "w", stdout);
-    freopen_s(&dummy, "CONOUT$", "w", stderr);
-    freopen_s(&dummy, "CONIN$", "r", stdin);
+        // Redirect cout, cin and cerr
+        FILE* dummy;
+        freopen_s(&dummy, "CONOUT$", "w", stdout);
+        freopen_s(&dummy, "CONOUT$", "w", stderr);
+        freopen_s(&dummy, "CONIN$", "r", stdin);
+    }   
 #endif
 
     if (enet_initialize() != 0)
