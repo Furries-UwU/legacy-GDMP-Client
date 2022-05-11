@@ -2,7 +2,16 @@
 
 using json = nlohmann::json;
 
-void WINAPI OnRecievedPacket(ENetPeer* peer, uint8_t* data, uint32_t dataLen) {
+void WINAPI OnRecievedPacket(ENetPeer* peer, ENetEvent event) {
+
+    Packet packet;
+	
+    packet.type = 0x01; 
+    packet.data = (uint8_t*) "This is a test";
+
+    sendPacket(peer, packet, sizeof(packet));
+	
+	/*
     Packet packet = *reinterpret_cast<Packet*>(data);
 
     switch (packet.type)
@@ -26,13 +35,18 @@ void WINAPI OnRecievedPacket(ENetPeer* peer, uint8_t* data, uint32_t dataLen) {
             playerData.color2 = gameManager->getPlayerColor2();
 			
             const char* playerDataJson = json(playerData).dump().c_str();
+
+			Packet packet = Packet(0x01);
 			
-            const auto packet = Packet(0x01, reinterpret_cast<uint8_t*>(&playerDataJson));
-			
-            sendPacket(peer, packet, sizeof(packet));
+			// create a list of uint8_t
+			uint8_t data[16] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
+			packet.data = data;
+
+            sendPacket(peer, packet, 17);
             break;
         }
     }
+    */
 }
 
 void WINAPI eventThread(LPVOID lpParam) {
@@ -79,7 +93,7 @@ void WINAPI eventThread(LPVOID lpParam) {
             switch (event.type)
             {
                 case ENET_EVENT_TYPE_RECEIVE: {
-					OnRecievedPacket(peer, event.packet->data, event.packet->dataLength);
+					OnRecievedPacket(peer, event);
 
                     enet_packet_destroy(event.packet);
                     break;
