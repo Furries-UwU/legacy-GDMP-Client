@@ -4,12 +4,12 @@ using json = nlohmann::json;
 
 void WINAPI OnRecievedPacket(ENetPeer* peer, ENetEvent event) {
 
-    Packet packet;
-	
-    packet.type = 0x01; 
-    packet.data = (uint8_t*) "This is a test";
+    char testText[] = "This is a test!";
+    uint8_t* testData = reinterpret_cast<uint8_t*>(testText);
 
-    sendPacket(peer, packet, sizeof(packet));
+    Packet packet = Packet(0x01, sizeof(testText), testData);
+
+    sendPacket(peer, packet);
 	
 	/*
     Packet packet = *reinterpret_cast<Packet*>(data);
