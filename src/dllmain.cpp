@@ -4,22 +4,16 @@ using json = nlohmann::json;
 
 void WINAPI OnRecievedPacket(ENetPeer* peer, ENetEvent event) {
 
-    char testText[] = "This is a test!";
-    uint8_t* testData = reinterpret_cast<uint8_t*>(testText);
-
-    Packet packet = Packet(0x01, sizeof(testText), testData);
-    packet.send(peer);
-	
-	/*
-    Packet packet = *reinterpret_cast<Packet*>(data);
-
-    switch (packet.type)
+    Packet recievedPacket = Packet(event.packet);
+    switch (recievedPacket.type)
     {
         case 0x01:
         {
+            fmt::print("{}", event.packet->dataLength);
+
             auto gameManager = gd::GameManager::sharedState();
             auto playerName = gameManager->m_sPlayerName;
-			
+
             auto playerData = PlayerData();
 			
             playerData.username = playerName.c_str();
@@ -33,19 +27,13 @@ void WINAPI OnRecievedPacket(ENetPeer* peer, ENetEvent event) {
             playerData.color = gameManager->getPlayerColor();
             playerData.color2 = gameManager->getPlayerColor2();
 			
-            const char* playerDataJson = json(playerData).dump().c_str();
-
-			Packet packet = Packet(0x01);
+            const std::string playerDataJson = json(playerData).dump();
 			
-			// create a list of uint8_t
-			uint8_t data[16] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
-			packet.data = data;
-
-            sendPacket(peer, packet, 17);
+            Packet packet = Packet(0x01, (uint32_t) playerDataJson.length()+1, reinterpret_cast<uint8_t*>((char *) playerDataJson.c_str()));
+            packet.send(peer);
             break;
         }
     }
-    */
 }
 
 void WINAPI eventThread(LPVOID lpParam) {
