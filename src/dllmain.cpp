@@ -8,8 +8,7 @@ void WINAPI OnRecievedPacket(ENetPeer* peer, ENetEvent event) {
     uint8_t* testData = reinterpret_cast<uint8_t*>(testText);
 
     Packet packet = Packet(0x01, sizeof(testText), testData);
-
-    sendPacket(peer, packet);
+    packet.send(peer);
 	
 	/*
     Packet packet = *reinterpret_cast<Packet*>(data);
