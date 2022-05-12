@@ -11,8 +11,6 @@ void WINAPI OnRecievedPacket(ENetPeer* peer, ENetEvent event) {
     {
         case 0x01:
         {
-            fmt::print("{}", event.packet->dataLength);
-
             auto gameManager = GameManager::sharedState();
             auto playerName = gameManager->m_sPlayerName;
 
