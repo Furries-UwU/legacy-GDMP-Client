@@ -2,6 +2,8 @@
 
 using json = nlohmann::json;
 
+ENetPeer* peer;
+
 void WINAPI OnRecievedPacket(ENetPeer* peer, ENetEvent event) {
 
     Packet recievedPacket = Packet(event.packet);
@@ -11,7 +13,7 @@ void WINAPI OnRecievedPacket(ENetPeer* peer, ENetEvent event) {
         {
             fmt::print("{}", event.packet->dataLength);
 
-            auto gameManager = gd::GameManager::sharedState();
+            auto gameManager = GameManager::sharedState();
             auto playerName = gameManager->m_sPlayerName;
 
             auto playerData = PlayerData();
@@ -29,8 +31,7 @@ void WINAPI OnRecievedPacket(ENetPeer* peer, ENetEvent event) {
 			
             const std::string playerDataJson = json(playerData).dump();
 			
-            Packet packet = Packet(0x01, (uint32_t) playerDataJson.length()+1, reinterpret_cast<uint8_t*>((char *) playerDataJson.c_str()));
-            packet.send(peer);
+            Packet(PLAYER_DATA, (uint32_t) playerDataJson.length()+1, reinterpret_cast<uint8_t*>((char *) playerDataJson.c_str())).send(peer);
             break;
         }
     }
@@ -58,18 +59,19 @@ void WINAPI eventThread(LPVOID lpParam) {
     }
 
     ENetAddress address;
-    ENetPeer* peer;
 
     enet_address_set_host(&address, "127.0.0.1");
     address.port = 23973;
 
-    peer = enet_host_connect(client, &address, 2, 0);
+    peer = enet_host_connect(client, &address, 1, 0);
 
     if (peer == NULL)
     {
         fmt::print("No available peers for initiating an ENet connection.");
         exit(EXIT_FAILURE);
     }
+
+    Global::get().peer = peer;
 
     while (true)
     {
@@ -109,7 +111,15 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
     }
 #endif
 
+    if (MH_Initialize() != MH_OK) {
+        fmt::print("An error occurred while initializing Minhook.\n");
+        return FALSE;
+    }
+
     CreateThread(NULL, 0x1000, reinterpret_cast<LPTHREAD_START_ROUTINE>(&eventThread), NULL, 0, NULL);
 
+    createHook();
+    MH_EnableHook(MH_ALL_HOOKS);
+    
     return TRUE;
 }

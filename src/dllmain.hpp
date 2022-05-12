@@ -5,14 +5,5 @@
 
 #include <nlohmann/json.hpp>
 
-#include <packet.hpp>
-#include <struct.hpp>
-
-#include <enet/enet.h>
-#include <fmt/core.h>
-
-#include <MinHook.h>
-#include <gd.h>
-
-#include <cocos2d.h>
-using namespace cocos2d;
+#include "include.hpp"
+#include "hooks.hpp"
