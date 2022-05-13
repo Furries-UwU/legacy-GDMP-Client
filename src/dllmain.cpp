@@ -4,34 +4,36 @@ using json = nlohmann::json;
 
 ENetPeer* peer;
 
+void WINAPI SendPlayerData() {
+    auto gameManager = GameManager::sharedState();
+    auto playerName = gameManager->m_sPlayerName;
+
+    auto serverPlayerData = ServerPlayerData();
+
+    serverPlayerData.username = playerName.c_str();
+    serverPlayerData.ship = gameManager->getPlayerShip();
+    serverPlayerData.ball = gameManager->getPlayerBall();
+    serverPlayerData.bird = gameManager->getPlayerBird();
+    serverPlayerData.dart = gameManager->getPlayerDart();
+    serverPlayerData.robot = gameManager->getPlayerRobot();
+    serverPlayerData.spider = gameManager->getPlayerSpider();
+    serverPlayerData.glow = gameManager->getPlayerGlow();
+    serverPlayerData.color = gameManager->getPlayerColor();
+    serverPlayerData.color2 = gameManager->getPlayerColor2();
+
+    const std::string playerDataJson = json(serverPlayerData).dump();
+
+    Packet(PLAYER_DATA, playerDataJson.length() + 1, reinterpret_cast<uint8_t*>((char*)playerDataJson.c_str())).send(peer);
+}
+
 void WINAPI OnRecievedPacket(ENetPeer* peer, ENetEvent event) {
 
     Packet recievedPacket = Packet(event.packet);
     switch (recievedPacket.type)
     {
-        case 0x01:
-        {
-            auto gameManager = GameManager::sharedState();
-            auto playerName = gameManager->m_sPlayerName;
-
-            auto playerData = PlayerData();
-			
-            playerData.username = playerName.c_str();
-            playerData.ship = gameManager->getPlayerShip();
-            playerData.ball = gameManager->getPlayerBall();
-            playerData.bird = gameManager->getPlayerBird();
-            playerData.dart = gameManager->getPlayerDart();
-            playerData.robot = gameManager->getPlayerRobot();
-            playerData.spider = gameManager->getPlayerSpider();
-            playerData.glow = gameManager->getPlayerGlow();
-            playerData.color = gameManager->getPlayerColor();
-            playerData.color2 = gameManager->getPlayerColor2();
-			
-            const std::string playerDataJson = json(playerData).dump();
-			
-            Packet(PLAYER_DATA, (uint32_t) playerDataJson.length()+1, reinterpret_cast<uint8_t*>((char *) playerDataJson.c_str())).send(peer);
-            break;
-        }
+    case 0x01: {
+        break;
+    }
     }
 }
 
@@ -79,12 +81,16 @@ void WINAPI eventThread(LPVOID lpParam) {
         {
             switch (event.type)
             {
-                case ENET_EVENT_TYPE_RECEIVE: {
-					OnRecievedPacket(peer, event);
+            case ENET_EVENT_TYPE_CONNECT: {
+                SendPlayerData();
+                break;
+            }
+            case ENET_EVENT_TYPE_RECEIVE: {
+                OnRecievedPacket(peer, event);
 
-                    enet_packet_destroy(event.packet);
-                    break;
-                }
+                enet_packet_destroy(event.packet);
+                break;
+            }
             }
         }
     }
@@ -118,6 +124,6 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 
     createHook();
     MH_EnableHook(MH_ALL_HOOKS);
-    
+
     return TRUE;
 }
