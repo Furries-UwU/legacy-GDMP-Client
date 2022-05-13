@@ -53,6 +53,8 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 
 		global.playerDataList.erase(playerId);
 		global.playerObjectHolderList.erase(playerId);
+
+		break;
 	}
 	case PLAYER_JOIN_LEVEL:
 	{
@@ -72,6 +74,7 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 
 		global.playerObjectHolderList[playerJoinLevel.playerId].playerOne = player1;
 		global.playerObjectHolderList[playerJoinLevel.playerId].playerTwo = player2;
+
 		break;
 	}
 	case UPDATE_PLAYER_RENDER_DATA:
@@ -108,7 +111,7 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 		}
 
 		fmt::print("X: {}\nY: {}\nScale: {}", renderData.playerOne.posX, renderData.playerOne.posY, renderData.playerOne.scale);
-/*
+
 		player1->setPosition(CCPoint(renderData.playerOne.posX, renderData.playerOne.posY));
 		player1->setRotation(renderData.playerOne.rotation);
 		player1->setScale(renderData.playerOne.scale);
@@ -116,7 +119,7 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 		player2->setPosition(CCPoint(renderData.playerTwo.posX, renderData.playerTwo.posY));
 		player2->setRotation(renderData.playerTwo.rotation);
 		player2->setScale(renderData.playerTwo.scale);
-		*/
+		
 		break;
 	}
 	case UPDATE_PLAYER_DATA:
