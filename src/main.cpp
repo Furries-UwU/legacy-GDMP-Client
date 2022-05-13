@@ -36,6 +36,14 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 {
 
 	Packet recievedPacket = Packet(event.packet);
+
+	fmt::print("Host -> Me\nPacket Length: {}\nPacket Type: {}\nPacket's Data Length: {}\nHex:", event.packet->dataLength, recievedPacket.type, recievedPacket.length);
+	for (int x = 0; x < event.packet->dataLength; x++)
+	{
+		fmt::print(" {:#04x}", recievedPacket[x]);
+	}
+	fmt::print("\n\n");
+
 	switch (recievedPacket.type)
 	{
 	case PLAYER_LEAVE_LEVEL:
@@ -44,7 +52,7 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 			*reinterpret_cast<unsigned int *>(recievedPacket.data);
 
 		Global global = Global::get();
-		SimplePlayerHolder holder = global.playerObjectHolderList[playerId];
+		SimplePlayerHolder holder = global.simplePlayerObjectHolderList[playerId];
 
 		if (holder.playerOne)
 			holder.playerOne->removeFromParent();
@@ -52,16 +60,25 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 			holder.playerTwo->removeFromParent();
 
 		global.playerDataList.erase(playerId);
-		global.playerObjectHolderList.erase(playerId);
+		global.simplePlayerObjectHolderList.erase(playerId);
 
 		break;
 	}
 	case PLAYER_JOIN_LEVEL:
 	{
 		Global global = Global::get();
-		auto objectLayer = GameManager::sharedState()->getPlayLayer()->getObjectLayer();
+		const auto playLayer = GameManager::sharedState()->getPlayLayer();
+		fmt::print("{}\n", playLayer == NULL);
 
-		PlayerJoinLevel playerJoinLevel = *reinterpret_cast<PlayerJoinLevel *>(recievedPacket.data);
+		if (!playLayer)
+			break;
+
+		const auto objectLayer = playLayer->getObjectLayer();
+
+		unsigned int playerId =
+			*reinterpret_cast<unsigned int *>(recievedPacket.data);
+
+		fmt::print("OwO , {} has joined\n", playerId);
 
 		SimplePlayer *player1 = SimplePlayer::create(1);
 		player1->updatePlayerFrame(1, IconType::Cube);
@@ -72,8 +89,8 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 		objectLayer->addChild(player1);
 		objectLayer->addChild(player2);
 
-		global.playerObjectHolderList[playerJoinLevel.playerId].playerOne = player1;
-		global.playerObjectHolderList[playerJoinLevel.playerId].playerTwo = player2;
+		global.simplePlayerObjectHolderList[playerId].playerOne = player1;
+		global.simplePlayerObjectHolderList[playerId].playerTwo = player2;
 
 		break;
 	}
@@ -84,42 +101,29 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 		GameManager *gm = GameManager::sharedState();
 
 		Global global = Global::get();
-		SimplePlayerHolder holder = global.playerObjectHolderList[renderData.playerId];
+		SimplePlayerHolder holder = global.simplePlayerObjectHolderList[renderData.playerId];
 
 		SimplePlayer *player1 = holder.playerOne;
 		SimplePlayer *player2 = holder.playerTwo;
 
-		if (player1 == NULL || player2 == NULL)
-			break;
-		
+		// fmt::print("X: {}\nY: {}\nScale: {}", renderData.playerOne.posX, renderData.playerOne.posY, renderData.playerOne.scale);
 
-
-		if (!renderData.visible)
+		if (player1)
 		{
-			player1->setVisible(false);
-			player2->setVisible(false);
-		}
-		else if (!renderData.dual)
-		{
-			player1->setVisible(true);
-			player2->setVisible(false);
-		}
-		else
-		{
-			player1->setVisible(true);
-			player2->setVisible(true);
+			player1->setVisible(renderData.visible);
+			player1->setPosition({renderData.playerOne.posX, renderData.playerOne.posY});
+			player1->setRotation(renderData.playerOne.rotation);
+			player1->setScale(renderData.playerOne.scale);
 		}
 
-		fmt::print("X: {}\nY: {}\nScale: {}", renderData.playerOne.posX, renderData.playerOne.posY, renderData.playerOne.scale);
+		if (player2)
+		{
+			player2->setVisible(renderData.dual);
+			player2->setPosition({renderData.playerTwo.posX, renderData.playerTwo.posY});
+			player2->setRotation(renderData.playerTwo.rotation);
+			player2->setScale(renderData.playerTwo.scale);
+		}
 
-		player1->setPosition(CCPoint(renderData.playerOne.posX, renderData.playerOne.posY));
-		player1->setRotation(renderData.playerOne.rotation);
-		player1->setScale(renderData.playerOne.scale);
-
-		player2->setPosition(CCPoint(renderData.playerTwo.posX, renderData.playerTwo.posY));
-		player2->setRotation(renderData.playerTwo.rotation);
-		player2->setScale(renderData.playerTwo.scale);
-		
 		break;
 	}
 	case UPDATE_PLAYER_DATA:

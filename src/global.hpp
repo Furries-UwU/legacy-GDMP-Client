@@ -14,7 +14,7 @@ public:
     ENetHost *host;
     ENetPeer *peer;
 
-    std::unordered_map<unsigned int, SimplePlayerHolder> playerObjectHolderList;
+    std::unordered_map<unsigned int, SimplePlayerHolder> simplePlayerObjectHolderList;
     std::unordered_map<unsigned int, ServerPlayerData> playerDataList;
 
     static auto &get()

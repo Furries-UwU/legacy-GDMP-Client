@@ -20,7 +20,7 @@ void onQuit()
 
     Global global = Global::get();
 
-    for (auto it = global.playerObjectHolderList.begin(); it != global.playerObjectHolderList.end(); it++)
+    for (auto it = global.simplePlayerObjectHolderList.begin(); it != global.simplePlayerObjectHolderList.end(); it++)
     {
         SimplePlayerHolder holder = it->second;
         if (holder.playerOne)
@@ -30,7 +30,7 @@ void onQuit()
     }
 
     global.playerDataList.clear();
-    global.playerObjectHolderList.clear();
+    global.simplePlayerObjectHolderList.clear();
 }
 
 void update(float p0)
