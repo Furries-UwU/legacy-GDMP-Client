@@ -1,16 +1,11 @@
 #include "dllmain.hpp"
 
-using json = nlohmann::json;
-
 ENetPeer* peer;
 
 void WINAPI SendPlayerData() {
     auto gameManager = GameManager::sharedState();
-    auto playerName = gameManager->m_sPlayerName;
-
-    auto serverPlayerData = ServerPlayerData();
-
-    serverPlayerData.username = playerName.c_str();
+	
+    ServerPlayerData serverPlayerData = ServerPlayerData();
     serverPlayerData.ship = gameManager->getPlayerShip();
     serverPlayerData.ball = gameManager->getPlayerBall();
     serverPlayerData.bird = gameManager->getPlayerBird();
@@ -21,9 +16,7 @@ void WINAPI SendPlayerData() {
     serverPlayerData.color = gameManager->getPlayerColor();
     serverPlayerData.color2 = gameManager->getPlayerColor2();
 
-    const std::string playerDataJson = json(serverPlayerData).dump();
-
-    Packet(PLAYER_DATA, playerDataJson.length() + 1, reinterpret_cast<uint8_t*>((char*)playerDataJson.c_str())).send(peer);
+    Packet(PLAYER_DATA, sizeof(serverPlayerData), reinterpret_cast<uint8_t*>(&serverPlayerData)).send(peer);
 }
 
 void WINAPI OnRecievedPacket(ENetPeer* peer, ENetEvent event) {

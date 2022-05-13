@@ -31,27 +31,28 @@ void __fastcall PlayLayer_onUpdate_H(PlayLayer* self, void*, float dt) {
             player1->m_isSpider,
             player1->m_isUpsideDown,
             player1->m_isDashing,
-            player1->m_position.x,
-			player1->m_position.y,
+            player1->getPositionX(),
+            player1->getPositionY(),
 			player1->getRotationX()
         },
         {
-            player2->m_isShip,
-            player2->m_isBird,
-            player2->m_isBall,
-            player2->m_isDart,
-            player2->m_isRobot,
-            player2->m_isSpider,
-            player2->m_isUpsideDown,
-            player2->m_isDashing,
-            player2->m_position.x,
-            player2->m_position.y,
-            player2->getRotationX()
+            player2 ? player2->m_isShip : false,
+            player2 ? player2->m_isBird : false,
+            player2 ? player2->m_isBall : false,
+            player2 ? player2->m_isDart : false,
+            player2 ? player2->m_isRobot : false,
+            player2 ? player2->m_isSpider : false,
+            player2 ? player2->m_isUpsideDown : false,
+            player2 ? player2->m_isDashing : false,
+            player2 ? player2->getPositionX() : 0.0f,
+            player2 ? player2->getPositionY() : 0.0f,
+            player2 ? player2->getRotationX() : 0.0f
         },
-        player1->isVisible() && player2->isVisible()
+        player1->isVisible() && player2->isVisible(),
+		player1 && player2
     };
 
-    Packet(PLAYER_DATA, sizeof(renderData), (uint8_t*) &renderData).send(Global::get().peer);
+    Packet(RENDER_DATA, sizeof(renderData), (uint8_t*) &renderData).send(Global::get().peer);
 }
 
 void createHook() {

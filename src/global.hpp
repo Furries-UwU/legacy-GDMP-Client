@@ -1,5 +1,14 @@
 #pragma once
+#include <unordered_map>
 #include <enet/enet.h>
+
+#include "struct.hpp"
+
+#include <gd.h>
+using namespace gd;
+
+#include <cocos2d.h>
+using namespace cocos2d;
 
 class Global {
 public:
