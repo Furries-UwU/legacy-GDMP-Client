@@ -2,20 +2,23 @@
 #include <unordered_map>
 #include "include.hpp"
 
-struct PlayerObjectHolder {
-    PlayerObject* playerOne;
-    PlayerObject* playerTwo;
+struct SimplePlayerHolder
+{
+    SimplePlayer *playerOne;
+    SimplePlayer *playerTwo;
 };
 
-class Global {
+class Global
+{
 public:
-    ENetHost* host;
-    ENetPeer* peer;
-	
-    std::unordered_map<unsigned int, PlayerObjectHolder> playerObjectHolderList;
+    ENetHost *host;
+    ENetPeer *peer;
+
+    std::unordered_map<unsigned int, SimplePlayerHolder> playerObjectHolderList;
     std::unordered_map<unsigned int, ServerPlayerData> playerDataList;
 
-    static auto& get() {
+    static auto &get()
+    {
         static Global instance;
         return instance;
     }

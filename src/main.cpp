@@ -44,7 +44,7 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 			*reinterpret_cast<unsigned int *>(recievedPacket.data);
 
 		Global global = Global::get();
-		PlayerObjectHolder holder = global.playerObjectHolderList[playerId];
+		SimplePlayerHolder holder = global.playerObjectHolderList[playerId];
 
 		if (holder.playerOne)
 			holder.playerOne->removeFromParent();
@@ -53,6 +53,39 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 
 		global.playerDataList.erase(playerId);
 		global.playerObjectHolderList.erase(playerId);
+	}
+	case UPDATE_PLAYER_RENDER_DATA:
+	{
+		PlayerRenderData renderData = *reinterpret_cast<PlayerRenderData *>(recievedPacket.data);
+
+		Global global = Global::get();
+		SimplePlayerHolder holder = global.playerObjectHolderList[renderData.playerId];
+
+		SimplePlayer *player1 = holder.playerOne;
+		SimplePlayer *player2 = holder.playerTwo;
+
+		if (!renderData.visible)
+		{
+			player1->setVisible(false);
+			player2->setVisible(false);
+		}
+		else if (!renderData.dual)
+		{
+			player1->setVisible(true);
+			player2->setVisible(false);
+		}
+		else
+		{
+			player1->setVisible(true);
+			player2->setVisible(true);
+		}
+
+		player1->setPosition(CCPoint(renderData.playerOne.posX, renderData.playerOne.posY));
+		player2->setRotation(renderData.playerOne.rotation);
+
+		player2->setPosition(CCPoint(renderData.playerTwo.posX, renderData.playerTwo.posY));
+		player2->setRotation(renderData.playerTwo.rotation);
+		break;
 	}
 	case UPDATE_PLAYER_DATA:
 	{

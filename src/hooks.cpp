@@ -2,10 +2,17 @@
 
 USE_GEODE_NAMESPACE();
 
+SimplePlayer *simplePlayer;
+
 class $modify(PlayLayer){
+
     bool init(GJGameLevel * level){
         if (!PlayLayer::init(level)) return false;
 Packet(JOIN_LEVEL, 4, (uint8_t *)&level->m_levelID).send(Global::get().peer);
+
+simplePlayer = SimplePlayer::create(1);
+this->m_objectLayer->addChild(simplePlayer);
+
 return true;
 }
 
@@ -18,13 +25,14 @@ void onQuit()
 
     for (auto it = global.playerObjectHolderList.begin(); it != global.playerObjectHolderList.end(); it++)
     {
-        PlayerObjectHolder holder = it->second;
+        SimplePlayerHolder holder = it->second;
         if (holder.playerOne)
             holder.playerOne->removeFromParent();
         if (holder.playerTwo)
             holder.playerTwo->removeFromParent();
     }
 
+    simplePlayer->updatePlayerFrame(1, IconType::Cube);
     global.playerDataList.clear();
     global.playerObjectHolderList.clear();
 }
@@ -39,9 +47,17 @@ void update(float p0)
     PlayerObject *player2 = this->m_player2;
 
     RenderData renderData = {
-        {player1->m_isShip, player1->m_isBird, player1->m_isBall,
-         player1->m_isDart, player1->m_isRobot, player1->m_isSpider,
-         player1->m_isUpsideDown, player1->m_isDashing, player1->m_playerSpeed, player1->getPositionX(), player1->getPositionY(),
+        {player1->m_isShip,
+         player1->m_isBird,
+         player1->m_isBall,
+         player1->m_isDart,
+         player1->m_isRobot,
+         player1->m_isSpider,
+         player1->m_isUpsideDown,
+         player1->m_isDashing,
+         player1->m_playerSpeed,
+         player1->getPositionX(),
+         player1->getPositionY(),
          player1->getRotationX()},
         {player2 ? player2->m_isShip : false,
          player2 ? player2->m_isBird : false,
