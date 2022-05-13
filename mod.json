@@ -1,0 +1,10 @@
+{
+  "geode": 1,
+  "version": "v1.0.0",
+  "id": "io.github.xhayper.gdmp-client",
+  "name": "GDMP-Client",
+  "developer": "xhayper",
+  "description": "",
+  "binary": "GDMP-Client",
+  "dependencies": null
+}
