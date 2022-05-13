@@ -13,8 +13,8 @@ void WINAPI SendPlayerData() {
     serverPlayerData.robot = gameManager->getPlayerRobot();
     serverPlayerData.spider = gameManager->getPlayerSpider();
     serverPlayerData.glow = gameManager->getPlayerGlow();
-    serverPlayerData.color = gameManager->getPlayerColor();
-    serverPlayerData.color2 = gameManager->getPlayerColor2();
+    serverPlayerData.primaryColor = gameManager->getPlayerColor();
+    serverPlayerData.secondaryColor = gameManager->getPlayerColor2();
 
     Packet(PLAYER_DATA, sizeof(serverPlayerData), reinterpret_cast<uint8_t*>(&serverPlayerData)).send(peer);
 }
