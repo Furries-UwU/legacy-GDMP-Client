@@ -54,15 +54,37 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 		global.playerDataList.erase(playerId);
 		global.playerObjectHolderList.erase(playerId);
 	}
+	case PLAYER_JOIN_LEVEL:
+	{
+		Global global = Global::get();
+		auto objectLayer = GameManager::sharedState()->getPlayLayer()->getObjectLayer();
+
+		PlayerJoinLevel playerJoinLevel = *reinterpret_cast<PlayerJoinLevel *>(recievedPacket.data);
+
+		SimplePlayer *player1 = SimplePlayer::create(1);
+		objectLayer->addChild(player1);
+
+		SimplePlayer *player2 = SimplePlayer::create(1);
+		objectLayer->addChild(player2);
+
+		global.playerObjectHolderList[playerJoinLevel.playerId].playerOne = player1;
+		global.playerObjectHolderList[playerJoinLevel.playerId].playerTwo = player2;
+		break;
+	}
 	case UPDATE_PLAYER_RENDER_DATA:
 	{
 		PlayerRenderData renderData = *reinterpret_cast<PlayerRenderData *>(recievedPacket.data);
+
+		GameManager *gm = GameManager::sharedState();
 
 		Global global = Global::get();
 		SimplePlayerHolder holder = global.playerObjectHolderList[renderData.playerId];
 
 		SimplePlayer *player1 = holder.playerOne;
 		SimplePlayer *player2 = holder.playerTwo;
+
+		if (player1 == NULL || player2 == NULL)
+			return;
 
 		if (!renderData.visible)
 		{

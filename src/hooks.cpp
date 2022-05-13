@@ -10,9 +10,6 @@ class $modify(PlayLayer){
         if (!PlayLayer::init(level)) return false;
 Packet(JOIN_LEVEL, 4, (uint8_t *)&level->m_levelID).send(Global::get().peer);
 
-simplePlayer = SimplePlayer::create(1);
-this->m_objectLayer->addChild(simplePlayer);
-
 return true;
 }
 
@@ -32,7 +29,6 @@ void onQuit()
             holder.playerTwo->removeFromParent();
     }
 
-    simplePlayer->updatePlayerFrame(1, IconType::Cube);
     global.playerDataList.clear();
     global.playerObjectHolderList.clear();
 }
