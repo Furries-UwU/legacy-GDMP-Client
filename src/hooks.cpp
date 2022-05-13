@@ -10,6 +10,17 @@ void(__thiscall* PlayLayer_onQuit)(PlayLayer* self);
 void __fastcall PlayLayer_onQuit_H(PlayLayer* self) {
     PlayLayer_onQuit(self);
     Packet(LEAVE_LEVEL).send(Global::get().peer);
+
+    Global global = Global::get();
+
+    for (auto it = global.playerObjectHolderList.begin(); it != global.playerObjectHolderList.end(); it++) {
+        PlayerObjectHolder holder = it->second;
+        if (holder.playerOne) holder.playerOne->removeFromParent();
+        if (holder.playerTwo) holder.playerTwo->removeFromParent();
+    }
+
+    global.playerDataList.clear();
+	global.playerObjectHolderList.clear();
 }
 
 void(__thiscall* PlayLayer_onUpdate)(PlayLayer* self, float dt);

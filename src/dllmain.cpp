@@ -24,7 +24,31 @@ void WINAPI OnRecievedPacket(ENetPeer* peer, ENetEvent event) {
     Packet recievedPacket = Packet(event.packet);
     switch (recievedPacket.type)
     {
-    case 0x01: {
+    case PLAYER_LEAVE_LEVEL: {
+        unsigned int playerId = *reinterpret_cast<unsigned int*>(recievedPacket.data);
+
+        Global global = Global::get();
+        PlayerObjectHolder holder = global.playerObjectHolderList[playerId];
+
+        if (holder.playerOne) holder.playerOne->removeFromParent();
+        if (holder.playerTwo) holder.playerTwo->removeFromParent();
+
+        global.playerDataList.erase(playerId);
+        global.playerObjectHolderList.erase(playerId);
+    }
+    case UPDATE_PLAYER_DATA: {
+        ClientPlayerData clientPlayerData = *reinterpret_cast<ClientPlayerData*>(recievedPacket.data);
+        Global::get().playerDataList[clientPlayerData.playerId] = { //TODO: Find a better way
+			clientPlayerData.ship,
+			clientPlayerData.ball,
+			clientPlayerData.bird,
+			clientPlayerData.dart,
+			clientPlayerData.robot,
+			clientPlayerData.spider,
+			clientPlayerData.glow,
+			clientPlayerData.primaryColor,
+			clientPlayerData.secondaryColor
+		};
         break;
     }
     }

@@ -11,7 +11,7 @@ endif()
 
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp src/*.c src/*.h)
 
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} "src/hooks.hpp" "src/hooks.cpp" "src/include.hpp")
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} "src/hooks.hpp" "src/hooks.cpp" "src/include.hpp" )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
 	external/minhook/include

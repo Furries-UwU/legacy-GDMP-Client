@@ -10,12 +10,17 @@ using namespace gd;
 #include <cocos2d.h>
 using namespace cocos2d;
 
+struct PlayerObjectHolder {
+    PlayerObject* playerOne;
+    PlayerObject* playerTwo;
+};
+
 class Global {
 public:
     ENetPeer* peer;
 	
-    std::unordered_map<unsigned int, PlayerObject*> playerObjectList;
-    std::unordered_map<unsigned int, ClientPlayerData> playerDataList;
+    std::unordered_map<unsigned int, PlayerObjectHolder> playerObjectHolderList;
+    std::unordered_map<unsigned int, ServerPlayerData> playerDataList;
 
     static auto& get() {
         static Global instance;
