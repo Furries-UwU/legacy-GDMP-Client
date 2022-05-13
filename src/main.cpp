@@ -62,9 +62,12 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 		PlayerJoinLevel playerJoinLevel = *reinterpret_cast<PlayerJoinLevel *>(recievedPacket.data);
 
 		SimplePlayer *player1 = SimplePlayer::create(1);
-		objectLayer->addChild(player1);
+		player1->updatePlayerFrame(1, IconType::Cube);
 
 		SimplePlayer *player2 = SimplePlayer::create(1);
+		player2->updatePlayerFrame(1, IconType::Cube);
+
+		objectLayer->addChild(player1);
 		objectLayer->addChild(player2);
 
 		global.playerObjectHolderList[playerJoinLevel.playerId].playerOne = player1;
@@ -84,7 +87,9 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 		SimplePlayer *player2 = holder.playerTwo;
 
 		if (player1 == NULL || player2 == NULL)
-			return;
+			break;
+		
+
 
 		if (!renderData.visible)
 		{
@@ -102,6 +107,8 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 			player2->setVisible(true);
 		}
 
+		fmt::print("X: {}\nY: {}\nScale: {}", renderData.playerOne.posX, renderData.playerOne.posY, renderData.playerOne.scale);
+/*
 		player1->setPosition(CCPoint(renderData.playerOne.posX, renderData.playerOne.posY));
 		player1->setRotation(renderData.playerOne.rotation);
 		player1->setScale(renderData.playerOne.scale);
@@ -109,10 +116,12 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 		player2->setPosition(CCPoint(renderData.playerTwo.posX, renderData.playerTwo.posY));
 		player2->setRotation(renderData.playerTwo.rotation);
 		player2->setScale(renderData.playerTwo.scale);
+		*/
 		break;
 	}
 	case UPDATE_PLAYER_DATA:
 	{
+		/*
 		ClientPlayerData clientPlayerData =
 			*reinterpret_cast<ClientPlayerData *>(recievedPacket.data);
 		Global::get().playerDataList[clientPlayerData.playerId] = {
@@ -123,6 +132,7 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 			clientPlayerData.robot, clientPlayerData.spider,
 			clientPlayerData.glow, clientPlayerData.primaryColor,
 			clientPlayerData.secondaryColor};
+			*/
 		break;
 	}
 	}
