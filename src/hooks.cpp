@@ -31,6 +31,7 @@ void __fastcall PlayLayer_onUpdate_H(PlayLayer* self, void*, float dt) {
             player1->m_isSpider,
             player1->m_isUpsideDown,
             player1->m_isDashing,
+            player1->m_playerSpeed,
             player1->getPositionX(),
             player1->getPositionY(),
 			player1->getRotationX()
@@ -44,6 +45,7 @@ void __fastcall PlayLayer_onUpdate_H(PlayLayer* self, void*, float dt) {
             player2 ? player2->m_isSpider : false,
             player2 ? player2->m_isUpsideDown : false,
             player2 ? player2->m_isDashing : false,
+            player2 ? player2->m_playerSpeed : 0.0f,
             player2 ? player2->getPositionX() : 0.0f,
             player2 ? player2->getPositionY() : 0.0f,
             player2 ? player2->getRotationX() : 0.0f
