@@ -16,19 +16,19 @@ void SendPlayerData()
 {
 	auto gameManager = GameManager::sharedState();
 
-	ServerPlayerData serverPlayerData = ServerPlayerData();
-	serverPlayerData.ship = gameManager->getPlayerShip();
-	serverPlayerData.ball = gameManager->getPlayerBall();
-	serverPlayerData.bird = gameManager->getPlayerBird();
-	serverPlayerData.dart = gameManager->getPlayerDart();
-	serverPlayerData.robot = gameManager->getPlayerRobot();
-	serverPlayerData.spider = gameManager->getPlayerSpider();
-	serverPlayerData.glow = gameManager->getPlayerGlow();
-	serverPlayerData.primaryColor = gameManager->getPlayerColor();
-	serverPlayerData.secondaryColor = gameManager->getPlayerColor2();
+	ServerPlayerData serverPlayerData = {
+		gameManager->getPlayerFrame(),
+		gameManager->getPlayerShip(),
+		gameManager->getPlayerBall(),
+		gameManager->getPlayerBird(),
+		gameManager->getPlayerDart(),
+		gameManager->getPlayerRobot(),
+		gameManager->getPlayerSpider(),
+		gameManager->getPlayerGlow(),
+		gameManager->getPlayerColor(),
+		gameManager->getPlayerColor2()};
 
-	Packet(PLAYER_DATA, sizeof(serverPlayerData),
-		   reinterpret_cast<uint8_t *>(&serverPlayerData))
+	Packet(PLAYER_DATA, sizeof(serverPlayerData), reinterpret_cast<uint8_t *>(&serverPlayerData))
 		.send(Global::get().peer);
 }
 
@@ -81,10 +81,12 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 		}
 
 		player1->setPosition(CCPoint(renderData.playerOne.posX, renderData.playerOne.posY));
-		player2->setRotation(renderData.playerOne.rotation);
+		player1->setRotation(renderData.playerOne.rotation);
+		player1->setScale(renderData.playerOne.scale);
 
 		player2->setPosition(CCPoint(renderData.playerTwo.posX, renderData.playerTwo.posY));
 		player2->setRotation(renderData.playerTwo.rotation);
+		player2->setScale(renderData.playerTwo.scale);
 		break;
 	}
 	case UPDATE_PLAYER_DATA:
@@ -93,6 +95,7 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 			*reinterpret_cast<ClientPlayerData *>(recievedPacket.data);
 		Global::get().playerDataList[clientPlayerData.playerId] = {
 			// TODO: Find a better way
+			clientPlayerData.cube,
 			clientPlayerData.ship, clientPlayerData.ball,
 			clientPlayerData.bird, clientPlayerData.dart,
 			clientPlayerData.robot, clientPlayerData.spider,

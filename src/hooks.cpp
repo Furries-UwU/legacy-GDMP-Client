@@ -58,7 +58,8 @@ void update(float p0)
          player1->m_playerSpeed,
          player1->getPositionX(),
          player1->getPositionY(),
-         player1->getRotationX()},
+         player1->getRotation(),
+         player1->getScale()},
         {player2 ? player2->m_isShip : false,
          player2 ? player2->m_isBird : false,
          player2 ? player2->m_isBall : false,
@@ -70,7 +71,8 @@ void update(float p0)
          player2 ? player2->m_playerSpeed : 0.0f,
          player2 ? player2->getPositionX() : 0.0f,
          player2 ? player2->getPositionY() : 0.0f,
-         player2 ? player2->getRotationX() : 0.0f},
+         player2 ? player2->getRotationX() : 0.0f,
+         player2 ? player2->getScale() : 0.0f},
         player1->isVisible() && player2->isVisible(),
         player1 && player2};
 
