@@ -1,26 +1,25 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.3.0)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_C_STANDARD 11)
-
-project(GDMP-Client)
-
-if (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-	add_compile_definitions(DEBUG)
-endif()
+project(GDMP-Client VERSION 1.0.0)
 
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp src/*.c src/*.h)
 
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} "src/hooks.hpp" "src/hooks.cpp" "src/include.hpp" )
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
+target_link_libraries(${PROJECT_NAME} GDMP-Shared)
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-	external/minhook/include
-	external/gd.h/include
-	external/gd.h
+find_path(GEODE_SDK_PATH
+  NAMES Geode.cmake
+  PATHS $ENV{GEODE_SUITE}/sdk /Users/Shared/Geode/suite/sdk /usr/local/geode/sdk
+  DOC "Geode SDK path."
+  REQUIRED
 )
+include(${GEODE_SDK_PATH}/Geode.cmake)
+
+setup_geode_mod()
+
+create_geode_file(${PROJECT_NAME})
 
 add_subdirectory(external/GDMP-Shared)
-add_subdirectory(external/minhook)
-add_subdirectory(external/cocos-headers)
-
-target_link_libraries(${PROJECT_NAME} GDMP-Shared minhook cocos2d)
