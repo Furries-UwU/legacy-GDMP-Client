@@ -24,9 +24,9 @@ void SendPlayerData()
 		gameManager->getPlayerDart(),
 		gameManager->getPlayerRobot(),
 		gameManager->getPlayerSpider(),
-		gameManager->getPlayerGlow(),
 		gameManager->getPlayerColor(),
-		gameManager->getPlayerColor2()};
+		gameManager->getPlayerColor2(),
+		gameManager->getPlayerGlow()};
 
 	Packet(PLAYER_DATA, sizeof(serverPlayerData), reinterpret_cast<uint8_t *>(&serverPlayerData))
 		.send(Global::get()->peer);
@@ -58,14 +58,13 @@ void OnRecievedPacket(ENetEvent event)
 {
 
 	Packet recievedPacket = Packet(event.packet);
-/*
+
 	fmt::print("Host -> Me\nPacket Length: {}\nPacket Type: {}\nPacket's Data Length: {}\nHex:", event.packet->dataLength, recievedPacket.type, recievedPacket.length);
 	for (int x = 0; x < event.packet->dataLength; x++)
 	{
 		fmt::print(" {:#04x}", recievedPacket[x]);
 	}
 	fmt::print("\n\n");
-*/
 
 	switch (recievedPacket.type)
 	{
@@ -74,7 +73,7 @@ void OnRecievedPacket(ENetEvent event)
 		unsigned int playerId =
 			*reinterpret_cast<unsigned int *>(recievedPacket.data);
 
-		Global* global = Global::get();
+		Global *global = Global::get();
 		SimplePlayerHolder holder = global->simplePlayerObjectHolderList[playerId];
 
 		if (holder.playerOne)
@@ -89,7 +88,7 @@ void OnRecievedPacket(ENetEvent event)
 	}
 	case PLAYER_JOIN_LEVEL:
 	{
-		Global* global = Global::get();
+		Global *global = Global::get();
 		const auto playLayer = global->playLayer;
 
 		if (!playLayer)
@@ -126,7 +125,7 @@ void OnRecievedPacket(ENetEvent event)
 
 		GameManager *gm = GameManager::sharedState();
 
-		Global* global = Global::get();
+		Global *global = Global::get();
 		SimplePlayerHolder holder = global->simplePlayerObjectHolderList[renderData.playerId];
 
 		SimplePlayer *player1 = holder.playerOne;
@@ -162,8 +161,9 @@ void OnRecievedPacket(ENetEvent event)
 			clientPlayerData.ship, clientPlayerData.ball,
 			clientPlayerData.bird, clientPlayerData.dart,
 			clientPlayerData.robot, clientPlayerData.spider,
-			clientPlayerData.glow, clientPlayerData.primaryColor,
-			clientPlayerData.secondaryColor};
+			clientPlayerData.primaryColor,
+			clientPlayerData.secondaryColor,
+			clientPlayerData.glow};
 		break;
 	}
 	}
