@@ -49,28 +49,14 @@ void update(float p0)
   PlayerObject *player1 = this->m_player1;
   PlayerObject *player2 = this->m_player2;
 
-  bool isPlayerOneCube = !player1->m_isShip &&
-                         !player1->m_isBird &&
-                         !player1->m_isBall &&
-                         !player1->m_isDart &&
-                         !player1->m_isRobot &&
-                         !player1->m_isSpider;
-
-  bool isPlayerTwoCube = !(player2 ? player2->m_isShip : false) &&
-                         !(player2 ? player2->m_isBird : false) &&
-                         !(player2 ? player2->m_isBall : false) &&
-                         !(player2 ? player2->m_isDart : false) &&
-                         !(player2 ? player2->m_isRobot : false) &&
-                         !(player2 ? player2->m_isSpider : false);
-
   RenderData renderData = {
-      {Util::toBitwise(isPlayerOneCube,
-                       player1->m_isShip,
-                       player1->m_isBird,
-                       player1->m_isBall,
-                       player1->m_isDart,
-                       player1->m_isRobot,
-                       player1->m_isSpider),
+      {Util::toBitwise(
+           player1->m_isShip,
+           player1->m_isBird,
+           player1->m_isBall,
+           player1->m_isDart,
+           player1->m_isRobot,
+           player1->m_isSpider),
        player1->m_isUpsideDown,
        player1->m_isDashing,
        player1->m_playerSpeed,
@@ -78,13 +64,13 @@ void update(float p0)
        player1->getPositionY(),
        player1->getRotation(),
        player1->getScale()},
-      {Util::toBitwise(isPlayerTwoCube,
-                       player2 ? player2->m_isShip : false,
-                       player2 ? player2->m_isBird : false,
-                       player2 ? player2->m_isBall : false,
-                       player2 ? player2->m_isDart : false,
-                       player2 ? player2->m_isRobot : false,
-                       player2 ? player2->m_isSpider : false),
+      {Util::toBitwise(
+           player2 ? player2->m_isShip : false,
+           player2 ? player2->m_isBird : false,
+           player2 ? player2->m_isBall : false,
+           player2 ? player2->m_isDart : false,
+           player2 ? player2->m_isRobot : false,
+           player2 ? player2->m_isSpider : false),
        player2 ? player2->m_isUpsideDown : false,
        player2 ? player2->m_isDashing : false,
        player2 ? player2->m_playerSpeed : 0.0f,
