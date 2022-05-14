@@ -51,6 +51,7 @@ void updateSkin(SimplePlayer *simplePlayer, ServerPlayerData playerData, bool sw
 
 	simplePlayer->setColor(swapColor ? secondaryColor : primaryColor);
 	simplePlayer->setSecondColor(swapColor ? primaryColor : secondaryColor);
+	simplePlayer->updateColors();
 	simplePlayer->setGlowOutline(playerData.glow);
 }
 
@@ -89,14 +90,12 @@ void OnRecievedPacket(ENetEvent event)
 	case PLAYER_JOIN_LEVEL:
 	{
 		Global* global = Global::get();
-		const auto playLayer = GameManager::sharedState()->getPlayLayer();
+		auto playLayer = GameManager::sharedState()->getPlayLayer();
 
-		if (!playLayer) {
-			fmt::print("PlayLayer doesn't exist!");
+		if (!playLayer) 
 			break;
-		}
 
-		const auto objectLayer = playLayer->getObjectLayer();
+		auto objectLayer = playLayer->getObjectLayer();
 
 		unsigned int playerId =
 			*reinterpret_cast<unsigned int *>(recievedPacket.data);
