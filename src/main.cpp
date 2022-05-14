@@ -9,7 +9,7 @@ void connect(char *ipAdress, int port)
 	enet_address_set_host(&address, ipAdress);
 	address.port = port;
 
-	Global::get().peer = enet_host_connect(Global::get().host, &address, 1, 0);
+	Global::get()->peer = enet_host_connect(Global::get()->host, &address, 1, 0);
 }
 
 void SendPlayerData()
@@ -29,7 +29,7 @@ void SendPlayerData()
 		gameManager->getPlayerColor2()};
 
 	Packet(PLAYER_DATA, sizeof(serverPlayerData), reinterpret_cast<uint8_t *>(&serverPlayerData))
-		.send(Global::get().peer);
+		.send(Global::get()->peer);
 }
 
 void updateRender(SimplePlayer *simplePlayer, ServerPlayerData playerData, BaseRenderData renderData)
@@ -58,13 +58,14 @@ void OnRecievedPacket(ENetEvent event)
 {
 
 	Packet recievedPacket = Packet(event.packet);
-
+/*
 	fmt::print("Host -> Me\nPacket Length: {}\nPacket Type: {}\nPacket's Data Length: {}\nHex:", event.packet->dataLength, recievedPacket.type, recievedPacket.length);
 	for (int x = 0; x < event.packet->dataLength; x++)
 	{
 		fmt::print(" {:#04x}", recievedPacket[x]);
 	}
 	fmt::print("\n\n");
+*/
 
 	switch (recievedPacket.type)
 	{
@@ -73,24 +74,23 @@ void OnRecievedPacket(ENetEvent event)
 		unsigned int playerId =
 			*reinterpret_cast<unsigned int *>(recievedPacket.data);
 
-		Global global = Global::get();
-		SimplePlayerHolder holder = global.simplePlayerObjectHolderList[playerId];
+		Global* global = Global::get();
+		SimplePlayerHolder holder = global->simplePlayerObjectHolderList[playerId];
 
 		if (holder.playerOne)
 			holder.playerOne->removeMeAndCleanup();
 		if (holder.playerTwo)
 			holder.playerTwo->removeMeAndCleanup();
 
-		global.playerDataList.erase(playerId);
-		global.simplePlayerObjectHolderList.erase(playerId);
+		global->playerDataList.erase(playerId);
+		global->simplePlayerObjectHolderList.erase(playerId);
 
 		break;
 	}
 	case PLAYER_JOIN_LEVEL:
 	{
-		Global global = Global::get();
-		const auto playLayer = global.playLayer;
-		fmt::print("{}\n", playLayer == NULL);
+		Global* global = Global::get();
+		const auto playLayer = global->playLayer;
 
 		if (!playLayer)
 			break;
@@ -100,14 +100,12 @@ void OnRecievedPacket(ENetEvent event)
 		unsigned int playerId =
 			*reinterpret_cast<unsigned int *>(recievedPacket.data);
 
-		fmt::print("OwO , {} has joined\n", playerId);
+		ServerPlayerData serverPlayerData = global->playerDataList[playerId];
 
-		ServerPlayerData serverPlayerData = global.playerDataList[playerId];
-
-		SimplePlayer *player1 = SimplePlayer::create(global.playerDataList[playerId].cube);
+		SimplePlayer *player1 = SimplePlayer::create(global->playerDataList[playerId].cube);
 		player1->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
 
-		SimplePlayer *player2 = SimplePlayer::create(global.playerDataList[playerId].cube);
+		SimplePlayer *player2 = SimplePlayer::create(global->playerDataList[playerId].cube);
 		player2->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
 		player2->setVisible(false);
 
@@ -117,8 +115,8 @@ void OnRecievedPacket(ENetEvent event)
 		objectLayer->addChild(player1);
 		objectLayer->addChild(player2);
 
-		global.simplePlayerObjectHolderList[playerId].playerOne = player1;
-		global.simplePlayerObjectHolderList[playerId].playerTwo = player2;
+		global->simplePlayerObjectHolderList[playerId].playerOne = player1;
+		global->simplePlayerObjectHolderList[playerId].playerTwo = player2;
 
 		break;
 	}
@@ -128,15 +126,13 @@ void OnRecievedPacket(ENetEvent event)
 
 		GameManager *gm = GameManager::sharedState();
 
-		Global global = Global::get();
-		SimplePlayerHolder holder = global.simplePlayerObjectHolderList[renderData.playerId];
+		Global* global = Global::get();
+		SimplePlayerHolder holder = global->simplePlayerObjectHolderList[renderData.playerId];
 
 		SimplePlayer *player1 = holder.playerOne;
 		SimplePlayer *player2 = holder.playerTwo;
 
-		// fmt::print("X: {}\nY: {}\nScale: {}", renderData.playerOne.posX, renderData.playerOne.posY, renderData.playerOne.scale);
-
-		ServerPlayerData serverPlayerData = global.playerDataList[renderData.playerId];
+		ServerPlayerData serverPlayerData = global->playerDataList[renderData.playerId];
 
 		if (player1)
 		{
@@ -160,7 +156,7 @@ void OnRecievedPacket(ENetEvent event)
 	{
 		ClientPlayerData clientPlayerData =
 			*reinterpret_cast<ClientPlayerData *>(recievedPacket.data);
-		Global::get().playerDataList[clientPlayerData.playerId] = {
+		Global::get()->playerDataList[clientPlayerData.playerId] = {
 			// TODO: Find a better way
 			clientPlayerData.cube,
 			clientPlayerData.ship, clientPlayerData.ball,
@@ -178,7 +174,7 @@ void pollEvent()
 {
 	while (true)
 	{
-		ENetHost *host = Global::get().host;
+		ENetHost *host = Global::get()->host;
 		ENetEvent event;
 
 		while (enet_host_service(host, &event, 0) > 0)
@@ -186,22 +182,21 @@ void pollEvent()
 			switch (event.type)
 			{
 			case ENET_EVENT_TYPE_DISCONNECT:
-				for (auto v : Global::get().simplePlayerObjectHolderList)
+				for (auto v : Global::get()->simplePlayerObjectHolderList)
 				{
 					v.second.playerOne->removeMeAndCleanup();
 					v.second.playerTwo->removeMeAndCleanup();
 				};
 
-				Global::get().playerDataList.clear();
-				Global::get().simplePlayerObjectHolderList.clear();
+				Global::get()->playerDataList.clear();
+				Global::get()->simplePlayerObjectHolderList.clear();
 				break;
 			case ENET_EVENT_TYPE_CONNECT:
+				fmt::print("Connected!");
 				SendPlayerData();
 				break;
 			case ENET_EVENT_TYPE_RECEIVE:
-				OnRecievedPacket(event);
-				// runOnMainThread(std::bind(OnRecievedPacket, event));
-				//  std::bind(OnRecievedPacket, event)();
+				Global::get()->queueInGDThread(std::bind(OnRecievedPacket, event));
 				enet_packet_destroy(event.packet);
 				break;
 			}
@@ -227,7 +222,7 @@ GEODE_API bool GEODE_CALL geode_load(Mod *mod)
 		exit(EXIT_FAILURE);
 	}
 
-	Global::get().host = host;
+	Global::get()->host = host;
 
 	connect("127.0.0.1", 23973);
 
@@ -239,6 +234,6 @@ GEODE_API bool GEODE_CALL geode_load(Mod *mod)
 
 GEODE_API void GEODE_CALL geode_unload()
 {
-	enet_host_destroy(Global::get().host);
+	enet_host_destroy(Global::get()->host);
 	enet_deinitialize();
 }

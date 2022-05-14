@@ -2,6 +2,7 @@
 #include "include.hpp"
 
 #include <unordered_map>
+#include <vector>
 
 struct SimplePlayerHolder
 {
@@ -11,6 +12,9 @@ struct SimplePlayerHolder
 
 class Global
 {
+protected:
+    std::vector<std::function<void(void)>> gdThreadQueue;
+
 public:
     ENetHost *host;
     ENetPeer *peer;
@@ -20,9 +24,8 @@ public:
 
     PlayLayer *playLayer;
 
-    static auto &get()
-    {
-        static Global instance;
-        return instance;
-    }
+    void queueInGDThread(std::function<void()> func);
+    void executeGDThreadQueue();
+
+    static Global *get();
 };
