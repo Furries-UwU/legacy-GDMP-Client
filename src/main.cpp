@@ -229,7 +229,7 @@ GEODE_API bool GEODE_CALL geode_load(Mod *mod)
 
 	Global::get()->host = host;
 
-	connect("144.91.110.176", 23973);
+	connect("127.0.0.1", 23973);
 
 	std::thread eventThread(&pollEvent);
 	eventThread.detach();

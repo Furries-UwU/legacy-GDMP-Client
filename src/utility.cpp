@@ -1,8 +1,26 @@
 #include "utility.hpp"
 
+Gamemode Utility::getGamemode(BaseRenderData renderData) {
+    if (renderData.m_isShip) {
+        return Gamemode::SHIP;
+    } else if (renderData.m_isBird) {
+        return Gamemode::UFO;
+    } else if (renderData.m_isBall) {
+        return Gamemode::BALL;
+    } else if (renderData.m_isDart) {
+        return Gamemode::WAVE;
+    } else if (renderData.m_isRobot) {
+        return Gamemode::ROBOT;
+    } else if (renderData.m_isSpider) {
+        return Gamemode::SPIDER;
+    } else {
+        return Gamemode::CUBE;
+    }
+}
+
 IconType Utility::getIconType(BaseRenderData renderData)
 {
-    return Utility::getIconType(Util::fromBitwise(renderData.gamemodeFlags));
+    return Utility::getIconType(Utility::getGamemode(renderData));
 }
 
 IconType Utility::getIconType(Gamemode gamemode)
