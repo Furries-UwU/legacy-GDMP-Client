@@ -34,10 +34,10 @@ void SendPlayerData()
 
 void updateRender(SimplePlayer *simplePlayer, ServerPlayerData playerData, BaseRenderData renderData)
 {
-	IconType iconType = Utility::getIconType(renderData);
+	//IconType iconType = Utility::getIconType(renderData);
 
 	// simplePlayer->updatePlayerFrame(Utility::getIconId(iconType, playerData), iconType);
-	simplePlayer->updatePlayerFrame(1, iconType);
+	//simplePlayer->updatePlayerFrame(1, iconType);
 	simplePlayer->setPosition({renderData.posX, renderData.posY});
 	simplePlayer->setRotation(renderData.rotation);
 	simplePlayer->setScale(renderData.scale);
@@ -60,8 +60,8 @@ void updateSkin(SimplePlayer *simplePlayer, ServerPlayerData playerData, bool sw
 
 void OnRecievedPacket(ENetEvent event)
 {
-
 	Packet recievedPacket = Packet(event.packet);
+
 
 	fmt::print("Host -> Me\nPacket Length: {}\nPacket Type: {}\nPacket's Data Length: {}\nHex:", event.packet->dataLength, recievedPacket.type, recievedPacket.length);
 	for (int x = 0; x < event.packet->dataLength; x++)
@@ -100,8 +100,12 @@ void OnRecievedPacket(ENetEvent event)
 
 		auto objectLayer = playLayer->getObjectLayer();
 
-		unsigned int playerId =
-			*reinterpret_cast<unsigned int *>(recievedPacket.data);
+		if (!objectLayer)
+			break;
+
+		unsigned int playerId = *reinterpret_cast<unsigned int*>(recievedPacket.data);
+
+		fmt::print("{} has joined\n", playerId);
 
 		ServerPlayerData serverPlayerData = global->playerDataList[playerId];
 
@@ -109,19 +113,19 @@ void OnRecievedPacket(ENetEvent event)
 		player1->updatePlayerFrame(1, IconType::Cube);
 		// player1->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
 
-		SimplePlayer *player2 = SimplePlayer::create(global->playerDataList[playerId].cube);
-		player2->updatePlayerFrame(1, IconType::Cube);
+		//SimplePlayer *player2 = SimplePlayer::create(global->playerDataList[playerId].cube);
+		//player2->updatePlayerFrame(1, IconType::Cube);
 		// player2->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
-		player2->setVisible(false);
+		//player2->setVisible(false);
 
-		updateSkin(player1, serverPlayerData);
-		updateSkin(player2, serverPlayerData, true);
+		//updateSkin(player1, serverPlayerData);
+		//updateSkin(player2, serverPlayerData, true);
 
 		objectLayer->addChild(player1);
-		objectLayer->addChild(player2);
+		//objectLayer->addChild(player2);
 
 		global->simplePlayerObjectHolderList[playerId].playerOne = player1;
-		global->simplePlayerObjectHolderList[playerId].playerTwo = player2;
+		//global->simplePlayerObjectHolderList[playerId].playerTwo = player2;
 
 		break;
 	}
@@ -141,7 +145,7 @@ void OnRecievedPacket(ENetEvent event)
 
 		if (player1)
 		{
-			updateSkin(player1, serverPlayerData);
+			//updateSkin(player1, serverPlayerData);
 			updateRender(player1, serverPlayerData, renderData.playerOne);
 
 			player1->setVisible(renderData.visible);
@@ -149,16 +153,17 @@ void OnRecievedPacket(ENetEvent event)
 
 		if (player2)
 		{
-			updateSkin(player2, serverPlayerData, true);
-			updateRender(player2, serverPlayerData, renderData.playerTwo);
+			//updateSkin(player2, serverPlayerData, true);
+			//updateRender(player2, serverPlayerData, renderData.playerTwo);
 
-			player2->setVisible(renderData.dual);
+			//player2->setVisible(renderData.dual);
 		}
 
 		break;
 	}
 	case UPDATE_PLAYER_DATA:
 	{
+		/*
 		ClientPlayerData clientPlayerData =
 			*reinterpret_cast<ClientPlayerData *>(recievedPacket.data);
 		Global::get()->playerDataList[clientPlayerData.playerId] = {
@@ -169,6 +174,7 @@ void OnRecievedPacket(ENetEvent event)
 			clientPlayerData.robot, clientPlayerData.spider,
 			clientPlayerData.glow, clientPlayerData.primaryColor,
 			clientPlayerData.secondaryColor};
+			*/
 		break;
 	}
 	}
