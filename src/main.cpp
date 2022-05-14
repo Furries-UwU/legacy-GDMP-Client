@@ -58,14 +58,13 @@ void OnRecievedPacket(ENetEvent event)
 {
 
 	Packet recievedPacket = Packet(event.packet);
-/*
+
 	fmt::print("Host -> Me\nPacket Length: {}\nPacket Type: {}\nPacket's Data Length: {}\nHex:", event.packet->dataLength, recievedPacket.type, recievedPacket.length);
 	for (int x = 0; x < event.packet->dataLength; x++)
 	{
 		fmt::print(" {:#04x}", recievedPacket[x]);
 	}
 	fmt::print("\n\n");
-*/
 
 	switch (recievedPacket.type)
 	{
@@ -90,10 +89,12 @@ void OnRecievedPacket(ENetEvent event)
 	case PLAYER_JOIN_LEVEL:
 	{
 		Global* global = Global::get();
-		const auto playLayer = global->playLayer;
+		const auto playLayer = GameManager::sharedState()->getPlayLayer();
 
-		if (!playLayer)
+		if (!playLayer) {
+			fmt::print("PlayLayer doesn't exist!");
 			break;
+		}
 
 		const auto objectLayer = playLayer->getObjectLayer();
 
@@ -224,7 +225,7 @@ GEODE_API bool GEODE_CALL geode_load(Mod *mod)
 
 	Global::get()->host = host;
 
-	connect("127.0.0.1", 23973);
+	connect("144.91.110.176", 23973);
 
 	std::thread eventThread(&pollEvent);
 	eventThread.detach();
