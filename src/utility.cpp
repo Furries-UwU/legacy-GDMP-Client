@@ -2,32 +2,50 @@
 
 IconType Utility::getIconType(BaseRenderData renderData)
 {
-    if (renderData.m_isShip)
+    return Utility::getIconType(Util::fromBitwise(renderData.gamemodeFlags));
+}
+
+IconType Utility::getIconType(Gamemode gamemode)
+{
+    switch (gamemode)
     {
+    default:
+    case NONE:
+    case CUBE:
+        return IconType::Cube;
+    case SHIP:
         return IconType::Ship;
-    }
-    else if (renderData.m_isBird)
-    {
-        return IconType::Ship;
-    }
-    else if (renderData.m_isBall)
-    {
+    case BALL:
         return IconType::Ball;
-    }
-    else if (renderData.m_isDart)
-    {
+    case UFO:
+        return IconType::Ufo;
+    case WAVE:
         return IconType::Wave;
-    }
-    else if (renderData.m_isRobot)
-    {
+    case ROBOT:
         return IconType::Robot;
-    }
-    else if (renderData.m_isSpider)
-    {
+    case SPIDER:
         return IconType::Spider;
     }
-    else
+}
+
+int Utility::getIconId(IconType iconType, ServerPlayerData playerData)
+{
+    switch (iconType)
     {
-        return IconType::Cube;
+    default:
+    case IconType::Cube:
+        return playerData.cube;
+    case IconType::Ship:
+        return playerData.ship;
+    case IconType::Ball:
+        return playerData.ball;
+    case IconType::Ufo:
+        return playerData.bird;
+    case IconType::Wave:
+        return playerData.dart;
+    case IconType::Robot:
+        return  playerData.robot;
+    case IconType::Spider:
+        return playerData.spider;
     }
 }

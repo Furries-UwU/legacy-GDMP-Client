@@ -80,11 +80,11 @@ void OnRecievedPacket(ENetEvent event)
 
 		fmt::print("OwO , {} has joined\n", playerId);
 
-		SimplePlayer *player1 = SimplePlayer::create(1);
-		player1->updatePlayerFrame(1, IconType::Cube);
+		SimplePlayer *player1 = SimplePlayer::create(global.playerDataList[playerId].cube);
+		player1->updatePlayerFrame(Utility::getIconId(IconType::Cube, global.playerDataList[playerId]), IconType::Cube);
 
-		SimplePlayer *player2 = SimplePlayer::create(1);
-		player2->updatePlayerFrame(1, IconType::Cube);
+		SimplePlayer *player2 = SimplePlayer::create(global.playerDataList[playerId].cube);
+		player2->updatePlayerFrame(Utility::getIconId(IconType::Cube, global.playerDataList[playerId]), IconType::Cube);
 
 		objectLayer->addChild(player1);
 		objectLayer->addChild(player2);
@@ -110,6 +110,8 @@ void OnRecievedPacket(ENetEvent event)
 
 		if (player1)
 		{
+			auto playerOneIconType = Utility::getIconType(renderData.playerOne);
+			player1->updatePlayerFrame(Utility::getIconId(playerOneIconType, global.playerDataList[renderData.playerId]), playerOneIconType);
 			player1->setVisible(renderData.visible);
 			player1->setPosition({renderData.playerOne.posX, renderData.playerOne.posY});
 			player1->setRotation(renderData.playerOne.rotation);
@@ -118,6 +120,8 @@ void OnRecievedPacket(ENetEvent event)
 
 		if (player2)
 		{
+			auto playerTwoIconType = Utility::getIconType(renderData.playerTwo);
+			player2->updatePlayerFrame(Utility::getIconId(playerTwoIconType, global.playerDataList[renderData.playerId]), playerTwoIconType);
 			player2->setVisible(renderData.dual);
 			player2->setPosition({renderData.playerTwo.posX, renderData.playerTwo.posY});
 			player2->setRotation(renderData.playerTwo.rotation);
@@ -157,7 +161,8 @@ void pollEvent()
 			{
 			case ENET_EVENT_TYPE_DISCONNECT:
 				Global::get().playerDataList.clear();
-				for (auto v: Global::get().simplePlayerObjectHolderList) {
+				for (auto v : Global::get().simplePlayerObjectHolderList)
+				{
 					v.second.playerOne->removeMeAndCleanup();
 					v.second.playerTwo->removeMeAndCleanup();
 				};

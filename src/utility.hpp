@@ -1,5 +1,7 @@
 #pragma once
 #include "struct.hpp"
+#include "util.hpp"
+#include "enum.hpp"
 
 #include <Geode.hpp>
 
@@ -7,4 +9,6 @@ class Utility
 {
 public:
     static IconType getIconType(BaseRenderData renderData);
+    static IconType getIconType(Gamemode gamemode);
+    static int getIconId(IconType iconType, ServerPlayerData playerData);
 };
