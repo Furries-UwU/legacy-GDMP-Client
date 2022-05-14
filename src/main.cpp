@@ -34,11 +34,10 @@ void SendPlayerData()
 
 void updateRender(SimplePlayer *simplePlayer, ServerPlayerData playerData, BaseRenderData renderData)
 {
-	//IconType iconType = Utility::getIconType(renderData);
+	IconType iconType = Utility::getIconType(renderData);
 
-	// simplePlayer->updatePlayerFrame(Utility::getIconId(iconType, playerData), iconType);
-	//simplePlayer->updatePlayerFrame(1, iconType);
-	fmt::print("{}, {}, {}, {}", renderData.posX, renderData.posY, renderData.rotation, renderData.scale);
+	simplePlayer->updatePlayerFrame(Utility::getIconId(iconType, playerData), iconType);
+	simplePlayer->updatePlayerFrame(1, iconType);
 	simplePlayer->setPosition({renderData.posX, renderData.posY});
 	simplePlayer->setRotation(renderData.rotation);
 	simplePlayer->setScale(renderData.scale);
@@ -46,7 +45,6 @@ void updateRender(SimplePlayer *simplePlayer, ServerPlayerData playerData, BaseR
 
 void updateSkin(SimplePlayer *simplePlayer, ServerPlayerData playerData, bool swapColor = false)
 {
-	/*
 	GameManager *gm = GameManager::sharedState();
 
 	_ccColor3B primaryColor = gm->colorForIdx(playerData.primaryColor);
@@ -56,7 +54,6 @@ void updateSkin(SimplePlayer *simplePlayer, ServerPlayerData playerData, bool sw
 	simplePlayer->setSecondColor(swapColor ? primaryColor : secondaryColor);
 	simplePlayer->updateColors();
 	simplePlayer->setGlowOutline(playerData.glow);
-	*/
 }
 
 void OnRecievedPacket(ENetEvent event)
@@ -104,29 +101,27 @@ void OnRecievedPacket(ENetEvent event)
 		if (!objectLayer)
 			break;
 
-		uint32_t playerId = Util::uint8_t_to_uint32_t(recievedPacket.data); //*reinterpret_cast<uint32_t*>(recievedPacket.data);
-
-		fmt::print("{} has joined\n", playerId);
+		uint32_t playerId = *reinterpret_cast<uint32_t*>(recievedPacket.data);
 
 		ServerPlayerData serverPlayerData = global->playerDataList[playerId];
 
 		SimplePlayer *player1 = SimplePlayer::create(global->playerDataList[playerId].cube);
 		player1->updatePlayerFrame(1, IconType::Cube);
-		// player1->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
+		player1->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
 
-		//SimplePlayer *player2 = SimplePlayer::create(global->playerDataList[playerId].cube);
-		//player2->updatePlayerFrame(1, IconType::Cube);
-		// player2->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
-		//player2->setVisible(false);
+		SimplePlayer *player2 = SimplePlayer::create(global->playerDataList[playerId].cube);
+		player2->updatePlayerFrame(1, IconType::Cube);
+		player2->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
+		player2->setVisible(false);
 
-		//updateSkin(player1, serverPlayerData);
-		//updateSkin(player2, serverPlayerData, true);
+		updateSkin(player1, serverPlayerData);
+		updateSkin(player2, serverPlayerData, true);
 
 		objectLayer->addChild(player1);
-		//objectLayer->addChild(player2);
+		objectLayer->addChild(player2);
 
 		global->simplePlayerObjectHolderList[playerId].playerOne = player1;
-		//global->simplePlayerObjectHolderList[playerId].playerTwo = player2;
+		global->simplePlayerObjectHolderList[playerId].playerTwo = player2;
 
 		break;
 	}
@@ -146,7 +141,7 @@ void OnRecievedPacket(ENetEvent event)
 
 		if (player1)
 		{
-			//updateSkin(player1, serverPlayerData);
+			updateSkin(player1, serverPlayerData);
 			updateRender(player1, serverPlayerData, renderData.playerOne);
 
 			player1->setVisible(renderData.visible);
@@ -154,17 +149,16 @@ void OnRecievedPacket(ENetEvent event)
 
 		if (player2)
 		{
-			//updateSkin(player2, serverPlayerData, true);
-			//updateRender(player2, serverPlayerData, renderData.playerTwo);
+			updateSkin(player2, serverPlayerData, true);
+			updateRender(player2, serverPlayerData, renderData.playerTwo);
 
-			//player2->setVisible(renderData.dual);
+			player2->setVisible(renderData.dual);
 		}
 
 		break;
 	}
 	case UPDATE_PLAYER_DATA:
 	{
-		/*
 		ClientPlayerData clientPlayerData =
 			*reinterpret_cast<ClientPlayerData *>(recievedPacket.data);
 		Global::get()->playerDataList[clientPlayerData.playerId] = {
@@ -175,7 +169,6 @@ void OnRecievedPacket(ENetEvent event)
 			clientPlayerData.robot, clientPlayerData.spider,
 			clientPlayerData.glow, clientPlayerData.primaryColor,
 			clientPlayerData.secondaryColor};
-			*/
 		break;
 	}
 	}
