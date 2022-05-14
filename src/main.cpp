@@ -89,7 +89,7 @@ void OnRecievedPacket(ENetEvent event)
 	case PLAYER_JOIN_LEVEL:
 	{
 		Global global = Global::get();
-		const auto playLayer = GameManager::sharedState()->getPlayLayer();
+		const auto playLayer = global.playLayer;
 		fmt::print("{}\n", playLayer == NULL);
 
 		if (!playLayer)
@@ -150,7 +150,7 @@ void OnRecievedPacket(ENetEvent event)
 		{
 			updateSkin(player2, serverPlayerData, true);
 			updateRender(player2, serverPlayerData, renderData.playerTwo);
-			
+
 			player2->setVisible(renderData.dual);
 		}
 
@@ -200,7 +200,8 @@ void pollEvent()
 				break;
 			case ENET_EVENT_TYPE_RECEIVE:
 				OnRecievedPacket(event);
-				runOnMainThread(std::bind(OnRecievedPacket, event));
+				// runOnMainThread(std::bind(OnRecievedPacket, event));
+				//  std::bind(OnRecievedPacket, event)();
 				enet_packet_destroy(event.packet);
 				break;
 			}

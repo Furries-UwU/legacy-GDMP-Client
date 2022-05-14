@@ -18,6 +18,8 @@ public:
     std::unordered_map<unsigned int, SimplePlayerHolder> simplePlayerObjectHolderList;
     std::unordered_map<unsigned int, ServerPlayerData> playerDataList;
 
+    PlayLayer *playLayer;
+
     static auto &get()
     {
         static Global instance;
