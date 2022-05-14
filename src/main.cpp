@@ -32,7 +32,7 @@ void SendPlayerData()
 		.send(Global::get().peer);
 }
 
-void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
+void OnRecievedPacket(ENetEvent event)
 {
 
 	Packet recievedPacket = Packet(event.packet);
@@ -55,9 +55,9 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 		SimplePlayerHolder holder = global.simplePlayerObjectHolderList[playerId];
 
 		if (holder.playerOne)
-			holder.playerOne->removeFromParent();
+			holder.playerOne->removeMeAndCleanup();
 		if (holder.playerTwo)
-			holder.playerTwo->removeFromParent();
+			holder.playerTwo->removeMeAndCleanup();
 
 		global.playerDataList.erase(playerId);
 		global.simplePlayerObjectHolderList.erase(playerId);
@@ -128,7 +128,6 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 	}
 	case UPDATE_PLAYER_DATA:
 	{
-		/*
 		ClientPlayerData clientPlayerData =
 			*reinterpret_cast<ClientPlayerData *>(recievedPacket.data);
 		Global::get().playerDataList[clientPlayerData.playerId] = {
@@ -139,7 +138,6 @@ void OnRecievedPacket(ENetPeer *peer, ENetEvent event)
 			clientPlayerData.robot, clientPlayerData.spider,
 			clientPlayerData.glow, clientPlayerData.primaryColor,
 			clientPlayerData.secondaryColor};
-			*/
 		break;
 	}
 	}
@@ -157,11 +155,20 @@ void pollEvent()
 		{
 			switch (event.type)
 			{
+			case ENET_EVENT_TYPE_DISCONNECT:
+				Global::get().playerDataList.clear();
+				for (auto v: Global::get().simplePlayerObjectHolderList) {
+					v.second.playerOne->removeMeAndCleanup();
+					v.second.playerTwo->removeMeAndCleanup();
+				};
+				Global::get().simplePlayerObjectHolderList.clear();
+				break;
 			case ENET_EVENT_TYPE_CONNECT:
 				SendPlayerData();
 				break;
 			case ENET_EVENT_TYPE_RECEIVE:
-				OnRecievedPacket(event.peer, event);
+				OnRecievedPacket(event);
+				runOnMainThread(std::bind(OnRecievedPacket, event));
 				enet_packet_destroy(event.packet);
 				break;
 			}

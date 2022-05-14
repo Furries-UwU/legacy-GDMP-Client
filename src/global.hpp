@@ -1,6 +1,7 @@
 #pragma once
-#include <unordered_map>
 #include "include.hpp"
+
+#include <unordered_map>
 
 struct SimplePlayerHolder
 {

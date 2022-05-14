@@ -1,5 +1,6 @@
 #pragma once
 #include "struct.hpp"
+
 #include <Geode.hpp>
 
 class Utility
