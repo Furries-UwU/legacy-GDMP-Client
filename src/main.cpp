@@ -32,6 +32,28 @@ void SendPlayerData()
 		.send(Global::get().peer);
 }
 
+void updateRender(SimplePlayer *simplePlayer, ServerPlayerData playerData, BaseRenderData renderData)
+{
+	IconType iconType = Utility::getIconType(renderData);
+
+	simplePlayer->updatePlayerFrame(Utility::getIconId(iconType, playerData), iconType);
+	simplePlayer->setPosition({renderData.posX, renderData.posY});
+	simplePlayer->setRotation(renderData.rotation);
+	simplePlayer->setScale(renderData.scale);
+}
+
+void updateSkin(SimplePlayer *simplePlayer, ServerPlayerData playerData, bool swapColor = false)
+{
+	GameManager *gm = GameManager::sharedState();
+
+	_ccColor3B primaryColor = gm->colorForIdx(playerData.primaryColor);
+	_ccColor3B secondaryColor = gm->colorForIdx(playerData.secondaryColor);
+
+	simplePlayer->setColor(swapColor ? secondaryColor : primaryColor);
+	simplePlayer->setSecondColor(swapColor ? primaryColor : secondaryColor);
+	simplePlayer->setGlowOutline(playerData.glow);
+}
+
 void OnRecievedPacket(ENetEvent event)
 {
 
@@ -80,11 +102,17 @@ void OnRecievedPacket(ENetEvent event)
 
 		fmt::print("OwO , {} has joined\n", playerId);
 
+		ServerPlayerData serverPlayerData = global.playerDataList[playerId];
+
 		SimplePlayer *player1 = SimplePlayer::create(global.playerDataList[playerId].cube);
-		player1->updatePlayerFrame(Utility::getIconId(IconType::Cube, global.playerDataList[playerId]), IconType::Cube);
+		player1->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
 
 		SimplePlayer *player2 = SimplePlayer::create(global.playerDataList[playerId].cube);
-		player2->updatePlayerFrame(Utility::getIconId(IconType::Cube, global.playerDataList[playerId]), IconType::Cube);
+		player2->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
+		player2->setVisible(false);
+
+		updateSkin(player1, serverPlayerData);
+		updateSkin(player2, serverPlayerData, true);
 
 		objectLayer->addChild(player1);
 		objectLayer->addChild(player2);
@@ -108,24 +136,20 @@ void OnRecievedPacket(ENetEvent event)
 
 		// fmt::print("X: {}\nY: {}\nScale: {}", renderData.playerOne.posX, renderData.playerOne.posY, renderData.playerOne.scale);
 
+		ServerPlayerData serverPlayerData = global.playerDataList[renderData.playerId];
+
 		if (player1)
 		{
-			auto playerOneIconType = Utility::getIconType(renderData.playerOne);
-			player1->updatePlayerFrame(Utility::getIconId(playerOneIconType, global.playerDataList[renderData.playerId]), playerOneIconType);
+			updateSkin(player1, serverPlayerData);
+			updateRender(player1, serverPlayerData, renderData.playerOne);
 			player1->setVisible(renderData.visible);
-			player1->setPosition({renderData.playerOne.posX, renderData.playerOne.posY});
-			player1->setRotation(renderData.playerOne.rotation);
-			player1->setScale(renderData.playerOne.scale);
 		}
 
 		if (player2)
 		{
-			auto playerTwoIconType = Utility::getIconType(renderData.playerTwo);
-			player2->updatePlayerFrame(Utility::getIconId(playerTwoIconType, global.playerDataList[renderData.playerId]), playerTwoIconType);
+			updateSkin(player2, serverPlayerData, true);
+			updateRender(player2, serverPlayerData, renderData.playerTwo);
 			player2->setVisible(renderData.dual);
-			player2->setPosition({renderData.playerTwo.posX, renderData.playerTwo.posY});
-			player2->setRotation(renderData.playerTwo.rotation);
-			player2->setScale(renderData.playerTwo.scale);
 		}
 
 		break;
