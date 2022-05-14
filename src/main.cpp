@@ -142,6 +142,7 @@ void OnRecievedPacket(ENetEvent event)
 		{
 			updateSkin(player1, serverPlayerData);
 			updateRender(player1, serverPlayerData, renderData.playerOne);
+
 			player1->setVisible(renderData.visible);
 		}
 
@@ -149,6 +150,7 @@ void OnRecievedPacket(ENetEvent event)
 		{
 			updateSkin(player2, serverPlayerData, true);
 			updateRender(player2, serverPlayerData, renderData.playerTwo);
+			
 			player2->setVisible(renderData.dual);
 		}
 
@@ -184,12 +186,13 @@ void pollEvent()
 			switch (event.type)
 			{
 			case ENET_EVENT_TYPE_DISCONNECT:
-				Global::get().playerDataList.clear();
 				for (auto v : Global::get().simplePlayerObjectHolderList)
 				{
 					v.second.playerOne->removeMeAndCleanup();
 					v.second.playerTwo->removeMeAndCleanup();
 				};
+
+				Global::get().playerDataList.clear();
 				Global::get().simplePlayerObjectHolderList.clear();
 				break;
 			case ENET_EVENT_TYPE_CONNECT:
