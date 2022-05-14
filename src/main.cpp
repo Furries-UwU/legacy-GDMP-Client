@@ -38,6 +38,7 @@ void updateRender(SimplePlayer *simplePlayer, ServerPlayerData playerData, BaseR
 
 	// simplePlayer->updatePlayerFrame(Utility::getIconId(iconType, playerData), iconType);
 	//simplePlayer->updatePlayerFrame(1, iconType);
+	fmt::print("{}, {}, {}, {}", renderData.posX, renderData.posY, renderData.rotation, renderData.scale);
 	simplePlayer->setPosition({renderData.posX, renderData.posY});
 	simplePlayer->setRotation(renderData.rotation);
 	simplePlayer->setScale(renderData.scale);
@@ -103,7 +104,7 @@ void OnRecievedPacket(ENetEvent event)
 		if (!objectLayer)
 			break;
 
-		unsigned int playerId = *reinterpret_cast<unsigned int*>(recievedPacket.data);
+		uint32_t playerId = Util::uint8_t_to_uint32_t(recievedPacket.data); //*reinterpret_cast<uint32_t*>(recievedPacket.data);
 
 		fmt::print("{} has joined\n", playerId);
 
@@ -203,7 +204,7 @@ void pollEvent()
 				Global::get()->simplePlayerObjectHolderList.clear();
 				break;
 			case ENET_EVENT_TYPE_CONNECT:
-				fmt::print("Connected!");
+				fmt::print("Connected!\n");
 				SendPlayerData();
 				break;
 			case ENET_EVENT_TYPE_RECEIVE:
