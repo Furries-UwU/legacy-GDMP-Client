@@ -18,8 +18,6 @@ void onQuit()
   PlayLayer::onQuit();
   Packet(LEAVE_LEVEL).send(global->peer);
 
-  global->playLayer = nullptr;
-
   for (auto it = global->simplePlayerObjectHolderList.begin(); it != global->simplePlayerObjectHolderList.end(); it++)
   {
     SimplePlayerHolder holder = it->second;

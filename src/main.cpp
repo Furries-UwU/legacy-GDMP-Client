@@ -36,7 +36,8 @@ void updateRender(SimplePlayer *simplePlayer, ServerPlayerData playerData, BaseR
 {
 	IconType iconType = Utility::getIconType(renderData);
 
-	simplePlayer->updatePlayerFrame(Utility::getIconId(iconType, playerData), iconType);
+	// simplePlayer->updatePlayerFrame(Utility::getIconId(iconType, playerData), iconType);
+	simplePlayer->updatePlayerFrame(1, iconType);
 	simplePlayer->setPosition({renderData.posX, renderData.posY});
 	simplePlayer->setRotation(renderData.rotation);
 	simplePlayer->setScale(renderData.scale);
@@ -44,6 +45,7 @@ void updateRender(SimplePlayer *simplePlayer, ServerPlayerData playerData, BaseR
 
 void updateSkin(SimplePlayer *simplePlayer, ServerPlayerData playerData, bool swapColor = false)
 {
+	/*
 	GameManager *gm = GameManager::sharedState();
 
 	_ccColor3B primaryColor = gm->colorForIdx(playerData.primaryColor);
@@ -53,6 +55,7 @@ void updateSkin(SimplePlayer *simplePlayer, ServerPlayerData playerData, bool sw
 	simplePlayer->setSecondColor(swapColor ? primaryColor : secondaryColor);
 	simplePlayer->updateColors();
 	simplePlayer->setGlowOutline(playerData.glow);
+	*/
 }
 
 void OnRecievedPacket(ENetEvent event)
@@ -74,7 +77,7 @@ void OnRecievedPacket(ENetEvent event)
 		unsigned int playerId =
 			*reinterpret_cast<unsigned int *>(recievedPacket.data);
 
-		Global* global = Global::get();
+		Global *global = Global::get();
 		SimplePlayerHolder holder = global->simplePlayerObjectHolderList[playerId];
 
 		if (holder.playerOne)
@@ -89,10 +92,10 @@ void OnRecievedPacket(ENetEvent event)
 	}
 	case PLAYER_JOIN_LEVEL:
 	{
-		Global* global = Global::get();
+		Global *global = Global::get();
 		auto playLayer = GameManager::sharedState()->getPlayLayer();
 
-		if (!playLayer) 
+		if (!playLayer)
 			break;
 
 		auto objectLayer = playLayer->getObjectLayer();
@@ -103,10 +106,12 @@ void OnRecievedPacket(ENetEvent event)
 		ServerPlayerData serverPlayerData = global->playerDataList[playerId];
 
 		SimplePlayer *player1 = SimplePlayer::create(global->playerDataList[playerId].cube);
-		player1->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
+		player1->updatePlayerFrame(1, IconType::Cube);
+		// player1->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
 
 		SimplePlayer *player2 = SimplePlayer::create(global->playerDataList[playerId].cube);
-		player2->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
+		player2->updatePlayerFrame(1, IconType::Cube);
+		// player2->updatePlayerFrame(Utility::getIconId(IconType::Cube, serverPlayerData), IconType::Cube);
 		player2->setVisible(false);
 
 		updateSkin(player1, serverPlayerData);
@@ -126,7 +131,7 @@ void OnRecievedPacket(ENetEvent event)
 
 		GameManager *gm = GameManager::sharedState();
 
-		Global* global = Global::get();
+		Global *global = Global::get();
 		SimplePlayerHolder holder = global->simplePlayerObjectHolderList[renderData.playerId];
 
 		SimplePlayer *player1 = holder.playerOne;
