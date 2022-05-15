@@ -1,17 +1,17 @@
 #include "utility.hpp"
 
 Gamemode Utility::getGamemode(BaseRenderData renderData) {
-    if (renderData.m_isShip) {
+    if (renderData.isShip) {
         return Gamemode::SHIP;
-    } else if (renderData.m_isBird) {
+    } else if (renderData.isUFO) {
         return Gamemode::UFO;
-    } else if (renderData.m_isBall) {
+    } else if (renderData.isBall) {
         return Gamemode::BALL;
-    } else if (renderData.m_isDart) {
+    } else if (renderData.isWave) {
         return Gamemode::WAVE;
-    } else if (renderData.m_isRobot) {
+    } else if (renderData.isRobot) {
         return Gamemode::ROBOT;
-    } else if (renderData.m_isSpider) {
+    } else if (renderData.isSpider) {
         return Gamemode::SPIDER;
     } else {
         return Gamemode::CUBE;
@@ -46,24 +46,24 @@ IconType Utility::getIconType(Gamemode gamemode)
     }
 }
 
-int Utility::getIconId(IconType iconType, ServerPlayerData playerData)
+int Utility::getIconId(IconType iconType, IconData iconData)
 {
     switch (iconType)
     {
     default:
     case IconType::Cube:
-        return playerData.cube;
+        return iconData.cubeId;
     case IconType::Ship:
-        return playerData.ship;
+        return iconData.shipId;
     case IconType::Ball:
-        return playerData.ball;
+        return iconData.ballId;
     case IconType::Ufo:
-        return playerData.bird;
+        return iconData.ufoId;
     case IconType::Wave:
-        return playerData.dart;
+        return iconData.waveId;
     case IconType::Robot:
-        return  playerData.robot;
+        return  iconData.robotId;
     case IconType::Spider:
-        return playerData.spider;
+        return iconData.spiderId;
     }
 }

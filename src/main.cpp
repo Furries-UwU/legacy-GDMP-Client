@@ -48,7 +48,7 @@ void connect(char *ipAddress, int port)
 		fmt::print("Failed to create connection");
 }
 
-void sendColorData()
+void sendIconData()
 {
 	auto gameManager = GameManager::sharedState();
 
