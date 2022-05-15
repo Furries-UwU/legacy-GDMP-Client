@@ -1,5 +1,6 @@
 #pragma once
-#include <enet/enet.h>
+#include <steam/steamnetworkingsockets.h>
+#include <steam/isteamnetworkingutils.h>
 #include <fmt/core.h>
 #include <Geode.hpp>
 

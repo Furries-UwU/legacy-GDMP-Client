@@ -1,6 +1,6 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudio,cmake,c++,windows
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,cmake,c++,windows
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudio,cmake,c++,windows,macos
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,cmake,c++,windows,macos
 
 ### C++ ###
 # Prerequisites
@@ -52,6 +52,39 @@ _deps
 ### CMake Patch ###
 # External projects
 *-prefix/
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+### macOS Patch ###
+# iCloud generated files
+*.icloud
 
 ### Windows ###
 # Windows thumbnail cache files
@@ -473,7 +506,7 @@ FodyWeavers.xsd
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudio,cmake,c++,windows
+# End of https://www.toptal.com/developers/gitignore/api/visualstudio,cmake,c++,windows,macos
 
 build/
 out/
