@@ -25,7 +25,7 @@ protected:
     std::vector<std::function<void(void)>> gdThreadQueue;
 
 public:
-    ISteamNetworkingSockets *interface;
+    ISteamNetworkingSockets *nInterface;
     HSteamListenSocket connection;
     HSteamNetPollGroup pollGroup;
 

@@ -4,8 +4,6 @@ USE_GEODE_NAMESPACE();
 
 void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t *statusInfo)
 {
-	if (statusInfo->m_hConn != m_hConnection && m_hConnection != k_HSteamNetConnection_Invalid) return;
-
 	switch (statusInfo->m_info.m_eState)
 	{
 	case k_ESteamNetworkingConnectionState_None:
@@ -14,7 +12,7 @@ void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t
 	case k_ESteamNetworkingConnectionState_ClosedByPeer:
 	case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
 	{
-		Global::get()->interface->CloseConnection(statusInfo->m_hConn, 0, nullptr, false);
+		Global::get()->nInterface->CloseConnection(statusInfo->m_hConn, 0, nullptr, false);
 		Global::get()->connection = k_HSteamNetConnection_Invalid;
 		break;
 	}
@@ -42,15 +40,15 @@ void connect(char *ipAddress, int port)
 	serverAddress.m_port = port;
 
 	SteamNetworkingConfigValue_t option;
-	option.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void *)SteamNetConnectionStatusChangedCallback);
+	option.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void *)OnSteamNetConnectionStatusChanged);
 
-	global->connection = global->interface->ConnectByIPAddress(serverAddress, 1, &option);
+	global->connection = global->nInterface->ConnectByIPAddress(serverAddress, 1, &option);
 
 	if (global->connection == k_HSteamNetConnection_Invalid)
 		fmt::print("Failed to create connection");
 }
 
-void SendPlayerData()
+void sendColorData()
 {
 	auto gameManager = GameManager::sharedState();
 
@@ -64,7 +62,29 @@ void SendPlayerData()
 		gameManager->getPlayerSpider()};
 
 	Packet(ICON_DATA, sizeof(iconData), reinterpret_cast<uint8_t *>(&iconData))
-		.send(Global::get()->interface, Global::get()->connection);
+		.send(Global::get()->nInterface, Global::get()->connection);
+}
+
+void sendColorData()
+{
+	auto gameManager = GameManager::sharedState();
+
+	ColorData colorData = {
+		gameManager->m_playerColor,
+		gameManager->m_playerColor2,
+		gameManager->m_playerGlow};
+
+	Packet(COLOR_DATA, sizeof(colorData), reinterpret_cast<uint8_t *>(&colorData))
+		.send(Global::get()->nInterface, Global::get()->connection);
+}
+
+void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData)
+{
+	IconType iconType = Utility::getIconType(renderData);
+
+	simplePlayer->setPosition({renderData.position.x, renderData.position.y});
+	simplePlayer->setRotation(renderData.rotation);
+	simplePlayer->setScale(renderData.scale);
 }
 
 void OnRecievedMessage(ISteamNetworkingMessage *incomingMessage)
@@ -78,6 +98,81 @@ void OnRecievedMessage(ISteamNetworkingMessage *incomingMessage)
 	}
 	fmt::print("\n\n");
 
+	switch (recievedPacket.type)
+	{
+	case (RENDER_DATA):
+	{
+		IncomingRenderData incomingRenderData = *reinterpret_cast<IncomingRenderData *>(recievedPacket.data);
+
+		Global *global = Global::get();
+		SimplePlayerHolder playerHolder = global->simplePlayerHolderList[incomingRenderData.playerId];
+
+		if (playerHolder.playerOne)
+		{
+			updateRender(playerHolder.playerOne, incomingRenderData.renderData.playerOne);
+			playerHolder.playerOne->setVisible(incomingRenderData.renderData.isVisible);
+		}
+
+		if (playerHolder.playerTwo)
+		{
+			updateRender(playerHolder.playerTwo, incomingRenderData.renderData.playerTwo);
+			playerHolder.playerTwo->setVisible(incomingRenderData.renderData.isDual);
+		}
+
+		break;
+	}
+
+	case (LEAVE_LEVEL):
+	{
+		int playerId = *reinterpret_cast<int *>(recievedPacket.data);
+
+		Global *global = Global::get();
+
+		auto playerOne = global->simplePlayerHolderList[playerId].playerOne;
+		auto playerTwo = global->simplePlayerHolderList[playerId].playerTwo;
+
+		if (playerOne)
+			playerOne->removeMeAndCleanup();
+
+		if (playerTwo)
+			playerTwo->removeMeAndCleanup();
+
+		global->simplePlayerHolderList.erase(playerId);
+		global->playerDataMap.erase(playerId);
+	}
+
+	case (JOIN_LEVEL):
+	{
+		int playerId = *reinterpret_cast<int *>(recievedPacket.data);
+
+		Global::get()->queueInGDThread([playerId]()
+									   {
+      Global * global = Global::get();
+
+      auto playLayer = GameManager::sharedState() -> getPlayLayer();
+
+      if (!playLayer)
+        return;
+
+      const auto objectLayer = playLayer -> getObjectLayer();
+
+      SimplePlayer * player1 = SimplePlayer::create(1);
+      player1 -> updatePlayerFrame(1, IconType::Cube);
+
+      SimplePlayer * player2 = SimplePlayer::create(1);
+      player2 -> updatePlayerFrame(1, IconType::Cube);
+      player2 -> setVisible(false);
+
+      objectLayer -> addChild(player1);
+      objectLayer -> addChild(player2);
+
+      global -> simplePlayerHolderList[playerId].playerOne = player1;
+      global -> simplePlayerHolderList[playerId].playerTwo = player2; });
+
+		break;
+	}
+	}
+
 	incomingMessage->Release();
 }
 
@@ -86,6 +181,25 @@ void pollEvent()
 {
 	while (true)
 	{
+		ISteamNetworkingMessage *incomingMessage = nullptr;
+		int numMsgs = Global::get()->nInterface->ReceiveMessagesOnPollGroup(Global::get()->pollGroup, &incomingMessage, 1);
+
+		if (numMsgs == 0)
+			continue;
+
+		if (numMsgs < 0)
+		{
+			fmt::print("Error checking for messages");
+			return;
+		}
+
+		if (incomingMessage->m_cbSize < 5)
+		{
+			fmt::print("Recieved invalid packet");
+			continue;
+		}
+
+		OnRecievedMessage(incomingMessage);
 	}
 }
 
@@ -98,7 +212,7 @@ GEODE_API bool GEODE_CALL geode_load(Mod *mod)
 		return false;
 	}
 
-	Global::get()->interface = SteamNetworkingSockets();
+	Global::get()->nInterface = SteamNetworkingSockets();
 
 	connect("127.0.0.1", 23973);
 
