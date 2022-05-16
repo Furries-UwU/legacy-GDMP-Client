@@ -15,7 +15,7 @@ make
 ## Windows
 
 ```cmd
-vcpkg install openssl protobuf
+vcpkg install --triplet=x86-windows-static openssl protobuf
 cmake .
 make
 ```
