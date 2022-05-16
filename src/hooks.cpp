@@ -72,7 +72,7 @@ class $modify(PlayLayer) {
         auto renderDataBson = json::to_bson(json(renderData));
 
         Packet(RENDER_DATA, renderDataBson.size(),
-               reinterpret_cast<uint8_t *>(renderDataBson.data()))
+               renderDataBson.data())
                 .sendPacket(global->peer);
     }
 };
