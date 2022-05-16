@@ -40,7 +40,7 @@ class $modify(PlayLayer) {
 
         Global *global = Global::get();
 
-        RenderData renderData;
+        RenderData renderData{};
 
         renderData.playerOne = {
                 {this->m_player1->getPositionX(),
