@@ -25,7 +25,8 @@ protected:
     std::vector<std::function<void(void)>> gdThreadQueue;
 
 public:
-    ENetHost* host;
+    ENetHost *host;
+    ENetPeer *peer;
 
     std::unordered_map<int, SimplePlayerHolder> simplePlayerHolderList;
     std::unordered_map<int, PlayerData> playerDataMap;

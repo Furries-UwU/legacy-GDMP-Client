@@ -69,7 +69,11 @@ class $modify(PlayLayer) {
         renderData.isDual = this->m_player1->isVisible() && this->m_player2->isVisible();
         renderData.isVisible = this->m_player1->isVisible();
 
-        Packet(RENDER_DATA, sizeof(renderData), (uint8_t *) &renderData).sendPacket(global->peer);
+        auto renderDataBson = json::to_bson(json(renderData));
+
+        Packet(RENDER_DATA, renderDataBson.size(),
+               reinterpret_cast<uint8_t *>(renderDataBson.data()))
+                .sendPacket(global->peer);
     }
 };
 

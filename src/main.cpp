@@ -11,8 +11,8 @@ void connect(char *ipAddress, int port) {
     enet_address_set_host(&address, ipAddress);
     address.port = port;
 
-    peer = enet_host_connect(global->host, &address, 1, 0);
-    if (peer == NULL) {
+    global->peer = enet_host_connect(global->host, &address, 1, 0);
+    if (global->peer == NULL) {
         fmt::print(stderr,
                    "No available peers for initiating an ENet connection.\n");
         exit(EXIT_FAILURE);
