@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(GDMP-Client VERSION 1.0.0)
 
-set(VCPKG_TARGET_TRIPLET x86-windows-static)
 add_subdirectory(external/GDMP-Shared)
 
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp src/*.c src/*.h)
