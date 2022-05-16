@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(GDMP-Client VERSION 1.0.0)
 
+set(VCPKG_TARGET_TRIPLET x86-windows-static)
+add_subdirectory(external/GDMP-Shared)
+
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp src/*.c src/*.h)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
@@ -22,5 +25,3 @@ include(${GEODE_SDK_PATH}/Geode.cmake)
 setup_geode_mod()
 
 create_geode_file(${PROJECT_NAME})
-
-add_subdirectory(external/GDMP-Shared)
