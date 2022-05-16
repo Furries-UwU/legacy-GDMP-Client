@@ -1,6 +1,5 @@
 #pragma once
 #include "struct.hpp"
-#include "util.hpp"
 #include "enum.hpp"
 
 #include <Geode.hpp>

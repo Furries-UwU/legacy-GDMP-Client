@@ -1,6 +1,6 @@
 #include "global.hpp"
 
-void Global::queueInGDThread(std::function<void()> func)
+void Global::queueInGDThread(const std::function<void()>& func)
 {
     this->gdThreadQueue.push_back(func);
 }

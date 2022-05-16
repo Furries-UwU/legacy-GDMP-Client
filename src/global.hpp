@@ -25,14 +25,12 @@ protected:
     std::vector<std::function<void(void)>> gdThreadQueue;
 
 public:
-    ISteamNetworkingSockets *nInterface;
-    HSteamListenSocket connection;
-    HSteamNetPollGroup pollGroup;
+    ENetHost* host;
 
     std::unordered_map<int, SimplePlayerHolder> simplePlayerHolderList;
     std::unordered_map<int, PlayerData> playerDataMap;
 
-    void queueInGDThread(std::function<void()> func);
+    void queueInGDThread(const std::function<void()>& func);
     void executeGDThreadQueue();
 
     static Global *get();
