@@ -1,17 +1,17 @@
 #include "utility.hpp"
 
 Gamemode Utility::getGamemode(BaseRenderData renderData) {
-    if (renderData.m_isShip) {
+    if (renderData.isShip) {
         return Gamemode::SHIP;
-    } else if (renderData.m_isBird) {
+    } else if (renderData.isUFO) {
         return Gamemode::UFO;
-    } else if (renderData.m_isBall) {
+    } else if (renderData.isBall) {
         return Gamemode::BALL;
-    } else if (renderData.m_isDart) {
+    } else if (renderData.isWave) {
         return Gamemode::WAVE;
-    } else if (renderData.m_isRobot) {
+    } else if (renderData.isRobot) {
         return Gamemode::ROBOT;
-    } else if (renderData.m_isSpider) {
+    } else if (renderData.isSpider) {
         return Gamemode::SPIDER;
     } else {
         return Gamemode::CUBE;

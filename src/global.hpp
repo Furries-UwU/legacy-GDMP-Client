@@ -5,6 +5,7 @@
 #include <functional>
 #include <thread>
 #include <vector>
+#include <mutex>
 
 struct SimplePlayerHolder
 {
@@ -15,13 +16,15 @@ struct SimplePlayerHolder
 struct PlayerData
 {
     std::string username;
-    PlayerRenderData renderData;
+    IconData iconData;
+    ColorData colorData;
 };
 
 class Global
 {
 protected:
     std::vector<std::function<void(void)>> gdThreadQueue;
+    std::mutex gdThreadQueueMutex;
 
 public:
     ENetHost *host;
