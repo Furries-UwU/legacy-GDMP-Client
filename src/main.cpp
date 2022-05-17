@@ -6,13 +6,11 @@ void connect(char *ipAddress, int port) {
     Global *global = Global::get();
 
     ENetAddress address;
-    ENetPeer *peer;
-
     enet_address_set_host(&address, ipAddress);
     address.port = port;
 
     global->peer = enet_host_connect(global->host, &address, 1, 0);
-    if (global->peer == NULL) {
+    if (global->peer == nullptr) {
         fmt::print(stderr,
                    "No available peers for initiating an ENet connection.\n");
         exit(EXIT_FAILURE);
@@ -21,15 +19,16 @@ void connect(char *ipAddress, int port) {
 
 void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData) {
     fmt::print("updateRender {}\n", simplePlayer == nullptr);
-    simplePlayer->setPosition({renderData.posX, renderData.posY});
+    simplePlayer->setPosition({renderData.position.x, renderData.position.y});
     fmt::print("updateRender 1\n");
     simplePlayer->setRotation(renderData.rotation);
     fmt::print("updateRender 2\n");
     simplePlayer->setScale(renderData.scale);
 }
 
-void OnRecievedMessage(ENetPacket *eNetPacket) {
+void onRecievedMessage(ENetPacket *eNetPacket) {
     if (eNetPacket->dataLength < 5) {
+        fmt::print("Got invalid packet here");
         enet_packet_destroy(eNetPacket);
         return;
     }
@@ -44,35 +43,37 @@ void OnRecievedMessage(ENetPacket *eNetPacket) {
     fmt::print("\n\n");
 
     switch (packet.type) {
-        case (S2C_UPDATE_PLAYER_RENDER_DATA): {
-            fmt::print("S2C_UPDATE_PLAYER_RENDER_DATA\n");
-            auto incomingRenderData = *reinterpret_cast<PlayerRenderData*>(packet.data);
+        case (RENDER_DATA): {
+            fmt::print("RENDER_DATA\n");
+            auto incomingRenderData = *reinterpret_cast<IncomingRenderData *>(packet.data);
             fmt::print("Player {}: P1[{} {}]\t P2[{} {}]\n", incomingRenderData.playerId,
-                                       incomingRenderData.playerOne.posX, incomingRenderData.playerOne.posY,
-                                       incomingRenderData.playerTwo.posX, incomingRenderData.playerTwo.posY);
+                       incomingRenderData.renderData.playerOne.position.x,
+                       incomingRenderData.renderData.playerOne.position.y,
+                       incomingRenderData.renderData.playerTwo.position.x,
+                       incomingRenderData.renderData.playerTwo.position.y);
 
             Global::get()->queueInGDThread([incomingRenderData]() {
                 Global *global = Global::get();
                 SimplePlayerHolder playerHolder = global->simplePlayerHolderList[incomingRenderData.playerId];
-                
+
                 fmt::print("update render 0 pid {}\n", incomingRenderData.playerId);
                 if (playerHolder.playerOne) {
-                    updateRender(playerHolder.playerOne, incomingRenderData.playerOne);
-                    playerHolder.playerOne->setVisible(incomingRenderData.visible);
+                    updateRender(playerHolder.playerOne, incomingRenderData.renderData.playerOne);
+                    playerHolder.playerOne->setVisible(incomingRenderData.renderData.isVisible);
                 }
-                
+
                 if (playerHolder.playerTwo) {
-                    updateRender(playerHolder.playerTwo, incomingRenderData.playerTwo);
-                    playerHolder.playerTwo->setVisible(incomingRenderData.dual);
+                    updateRender(playerHolder.playerTwo, incomingRenderData.renderData.playerTwo);
+                    playerHolder.playerTwo->setVisible(incomingRenderData.renderData.isDual);
                 }
             });
-            
+
             break;
         }
 
-        case (X2X_JOIN_LEVEL): {
+        case (JOIN_LEVEL): {
             int playerId = *reinterpret_cast<int *>(packet.data);
-            fmt::print("join: {}\n", playerId);
+            fmt::print("Join: {}\n", playerId);
 
             Global::get()->queueInGDThread([playerId]() {
                 Global *global = Global::get();
@@ -80,11 +81,11 @@ void OnRecievedMessage(ENetPacket *eNetPacket) {
                 auto playLayer = global->playLayer;
 
                 if (!playLayer) {
-                    fmt::print("no playlayer? (cringe)\n");
+                    fmt::print(stderr, "no PlayLayer? (cringe)\n");
                     return;
                 }
 
-                if(global->simplePlayerHolderList[playerId].playerOne != nullptr) {
+                if (global->simplePlayerHolderList[playerId].playerOne != nullptr) {
                     global->simplePlayerHolderList.erase(playerId);
                 }
 
@@ -113,14 +114,35 @@ void OnRecievedMessage(ENetPacket *eNetPacket) {
 }
 
 // PLEASE RUN THIS IN ANOTHER THREAD
-void pollEvent() {
+[[noreturn]] void pollEvent() {
     while (true) {
         ENetEvent event;
         while (enet_host_service(Global::get()->host, &event, 0) > 0) {
             switch (event.type) {
-                case ENET_EVENT_TYPE_RECEIVE:
-                    OnRecievedMessage(event.packet);
+                case ENET_EVENT_TYPE_DISCONNECT: {
+                    Global *global = Global::get();
+
+                    for (auto &player: global->simplePlayerHolderList) {
+                        auto playerOne = player.second.playerOne;
+                        auto playerTwo = player.second.playerTwo;
+
+                        if (playerOne)
+                            playerOne->removeMeAndCleanup();
+
+                        if (playerTwo)
+                            playerTwo->removeMeAndCleanup();
+
+                        global->simplePlayerHolderList.erase(player.first);
+                    }
+
+                    global->playerDataMap.clear();
+
                     break;
+                }
+                case ENET_EVENT_TYPE_RECEIVE: {
+                    onRecievedMessage(event.packet);
+                    break;
+                }
             }
         }
     }
@@ -129,7 +151,7 @@ void pollEvent() {
 GEODE_API bool GEODE_CALL geode_load(Mod *mod) {
     if (enet_initialize() != 0) {
         fmt::print(stderr, "An error occurred while initializing ENet.\n");
-        return EXIT_FAILURE;
+        return false;
     }
     atexit(enet_deinitialize);
 
