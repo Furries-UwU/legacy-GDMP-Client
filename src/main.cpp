@@ -18,12 +18,10 @@ void connect(char *ipAddress, int port) {
 }
 
 void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData) {
-    fmt::print("updateRender {}\n", simplePlayer == nullptr);
     simplePlayer->setPosition({renderData.position.x, renderData.position.y});
-    fmt::print("updateRender 1\n");
     simplePlayer->setRotation(renderData.rotation);
-    fmt::print("updateRender 2\n");
     simplePlayer->setScale(renderData.scale);
+    simplePlayer->updatePlayerFrame(1, Utility::getIconType(renderData));
 }
 
 void onRecievedMessage(ENetPacket *eNetPacket) {
@@ -35,16 +33,16 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
 
     auto packet = Packet(eNetPacket);
 
-    fmt::print("Host -> Me\nPacket Length: {}\nPacket Type: {}\nPacket's Data Length: {}\nHex:", eNetPacket->dataLength,
-               packet.type, packet.length);
-    for (int x = 0; x < eNetPacket->dataLength; x++) {
+    fmt::print("Host -> Me\nPacket Length: {}\nPacket Type: {}\nPacket's Data Length: {}\nHex:", eNetPacket->dataLength, packet.type, packet.length);
+    /*for (int x = 0; x < eNetPacket->dataLength; x++) {
         fmt::print(" {:#04x}", packet[x]);
     }
-    fmt::print("\n\n");
+    fmt::print("\n\n");*/
 
     switch (packet.type) {
         case (RENDER_DATA): {
             fmt::print("RENDER_DATA\n");
+            
             auto incomingRenderData = *reinterpret_cast<IncomingRenderData *>(packet.data);
             fmt::print("Player {}: P1[{} {}]\t P2[{} {}]\n", incomingRenderData.playerId,
                        incomingRenderData.renderData.playerOne.position.x,
@@ -52,19 +50,27 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                        incomingRenderData.renderData.playerTwo.position.x,
                        incomingRenderData.renderData.playerTwo.position.y);
 
-            Global::get()->queueInGDThread([incomingRenderData]() {
+            Global *global = Global::get();
+
+            auto check = global->simplePlayerHolderList.find(incomingRenderData.playerId);
+            if(check == global->simplePlayerHolderList.end()) {
+                fmt::print("no exist yes\n");
+                break;
+            }
+
+            addCallback([incomingRenderData]() {
                 Global *global = Global::get();
                 SimplePlayerHolder playerHolder = global->simplePlayerHolderList[incomingRenderData.playerId];
 
                 fmt::print("update render 0 pid {}\n", incomingRenderData.playerId);
                 if (playerHolder.playerOne) {
                     updateRender(playerHolder.playerOne, incomingRenderData.renderData.playerOne);
-                    playerHolder.playerOne->setVisible(incomingRenderData.renderData.isVisible);
+                    playerHolder.playerOne->setVisible(true);
                 }
 
                 if (playerHolder.playerTwo) {
                     updateRender(playerHolder.playerTwo, incomingRenderData.renderData.playerTwo);
-                    playerHolder.playerTwo->setVisible(incomingRenderData.renderData.isDual);
+                    playerHolder.playerTwo->setVisible(false);
                 }
             });
 
@@ -75,7 +81,7 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
             int playerId = *reinterpret_cast<int *>(packet.data);
             fmt::print("Join: {}\n", playerId);
 
-            Global::get()->queueInGDThread([playerId]() {
+            addCallback([playerId]() {
                 Global *global = Global::get();
 
                 auto playLayer = global->playLayer;
@@ -85,9 +91,9 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                     return;
                 }
 
-                if (global->simplePlayerHolderList[playerId].playerOne != nullptr) {
+                /*if (global->simplePlayerHolderList[playerId].playerOne != nullptr) {
                     global->simplePlayerHolderList.erase(playerId);
-                }
+                }*/
 
                 const auto objectLayer = playLayer->getObjectLayer();
 
@@ -102,8 +108,11 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 objectLayer->addChild(player1);
                 objectLayer->addChild(player2);
 
-                global->simplePlayerHolderList[playerId].playerOne = player1;
-                global->simplePlayerHolderList[playerId].playerTwo = player2;
+                if(player1 != nullptr)
+                    global->simplePlayerHolderList[playerId].playerOne = player1;
+                
+                if(player2 != nullptr)
+                    global->simplePlayerHolderList[playerId].playerTwo = player2;
             });
 
             break;
@@ -134,11 +143,13 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                         auto playerOne = player.second.playerOne;
                         auto playerTwo = player.second.playerTwo;
 
-                        if (playerOne)
+                        if (playerOne) {
                             playerOne->removeMeAndCleanup();
+                        }
 
-                        if (playerTwo)
+                        if (playerTwo) {
                             playerTwo->removeMeAndCleanup();
+                        }
 
                         global->simplePlayerHolderList.erase(player.first);
                     }

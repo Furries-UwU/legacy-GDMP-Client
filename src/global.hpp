@@ -16,8 +16,6 @@ struct SimplePlayerHolder
 struct PlayerData
 {
     std::string username;
-    IconData iconData;
-    ColorData colorData;
 };
 
 class Global
@@ -33,7 +31,7 @@ public:
     std::unordered_map<int, SimplePlayerHolder> simplePlayerHolderList;
     std::unordered_map<int, PlayerData> playerDataMap;
 
-    PlayLayer *playLayer;
+    PlayLayer *playLayer = nullptr;
 
     void queueInGDThread(const std::function<void()>& func);
     void executeGDThreadQueue();
