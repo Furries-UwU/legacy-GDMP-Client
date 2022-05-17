@@ -120,7 +120,7 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
         while (enet_host_service(Global::get()->host, &event, 0) > 0) {
             switch (event.type) {
                 case ENET_EVENT_TYPE_RECEIVE: {
-                    OnRecievedMessage(event.packet);
+                    onRecievedMessage(event.packet);
                     break;
                 }
                 case ENET_EVENT_TYPE_CONNECT: {
