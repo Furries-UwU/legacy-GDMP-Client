@@ -20,8 +20,11 @@ void connect(char *ipAddress, int port) {
 }
 
 void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData) {
-    simplePlayer->setPosition({renderData.position.x, renderData.position.y});
+    fmt::print("updateRender {}\n", simplePlayer == nullptr);
+    simplePlayer->setPosition({renderData.posX, renderData.posY});
+    fmt::print("updateRender 1\n");
     simplePlayer->setRotation(renderData.rotation);
+    fmt::print("updateRender 2\n");
     simplePlayer->setScale(renderData.scale);
 }
 
@@ -31,7 +34,7 @@ void OnRecievedMessage(ENetPacket *eNetPacket) {
         return;
     }
 
-    auto packet = Packet::serialize(eNetPacket);
+    auto packet = Packet(eNetPacket);
 
     fmt::print("Host -> Me\nPacket Length: {}\nPacket Type: {}\nPacket's Data Length: {}\nHex:", eNetPacket->dataLength,
                packet.type, packet.length);
@@ -41,41 +44,55 @@ void OnRecievedMessage(ENetPacket *eNetPacket) {
     fmt::print("\n\n");
 
     switch (packet.type) {
-        case (RENDER_DATA): {
-            auto incomingRenderData = json(*reinterpret_cast<uint8_t *>(packet.data),
-                                           packet.length).get<IncomingRenderData>();
+        case (S2C_UPDATE_PLAYER_RENDER_DATA): {
+            fmt::print("S2C_UPDATE_PLAYER_RENDER_DATA\n");
+            auto incomingRenderData = *reinterpret_cast<PlayerRenderData*>(packet.data);
+            fmt::print("Player {}: P1[{} {}]\t P2[{} {}]\n", incomingRenderData.playerId,
+                                       incomingRenderData.playerOne.posX, incomingRenderData.playerOne.posY,
+                                       incomingRenderData.playerTwo.posX, incomingRenderData.playerTwo.posY);
 
-            Global *global = Global::get();
-            SimplePlayerHolder playerHolder = global->simplePlayerHolderList[incomingRenderData.playerId];
-
-            if (playerHolder.playerOne) {
-                updateRender(playerHolder.playerOne, incomingRenderData.renderData.playerOne);
-                playerHolder.playerOne->setVisible(incomingRenderData.renderData.isVisible);
-            }
-
-            if (playerHolder.playerTwo) {
-                updateRender(playerHolder.playerTwo, incomingRenderData.renderData.playerTwo);
-                playerHolder.playerTwo->setVisible(incomingRenderData.renderData.isDual);
-            }
-
+            Global::get()->queueInGDThread([incomingRenderData]() {
+                Global *global = Global::get();
+                SimplePlayerHolder playerHolder = global->simplePlayerHolderList[incomingRenderData.playerId];
+                
+                fmt::print("update render 0 pid {}\n", incomingRenderData.playerId);
+                if (playerHolder.playerOne) {
+                    updateRender(playerHolder.playerOne, incomingRenderData.playerOne);
+                    playerHolder.playerOne->setVisible(incomingRenderData.visible);
+                }
+                
+                if (playerHolder.playerTwo) {
+                    updateRender(playerHolder.playerTwo, incomingRenderData.playerTwo);
+                    playerHolder.playerTwo->setVisible(incomingRenderData.dual);
+                }
+            });
+            
             break;
         }
 
-        case (JOIN_LEVEL): {
+        case (X2X_JOIN_LEVEL): {
             int playerId = *reinterpret_cast<int *>(packet.data);
+            fmt::print("join: {}\n", playerId);
 
             Global::get()->queueInGDThread([playerId]() {
                 Global *global = Global::get();
 
-                auto playLayer = GameManager::sharedState()->getPlayLayer();
+                auto playLayer = global->playLayer;
 
-                if (!playLayer)
+                if (!playLayer) {
+                    fmt::print("no playlayer? (cringe)\n");
                     return;
+                }
+
+                if(global->simplePlayerHolderList[playerId].playerOne != nullptr) {
+                    global->simplePlayerHolderList.erase(playerId);
+                }
 
                 const auto objectLayer = playLayer->getObjectLayer();
 
                 SimplePlayer *player1 = SimplePlayer::create(1);
                 player1->updatePlayerFrame(1, IconType::Cube);
+                player1->setVisible(true);
 
                 SimplePlayer *player2 = SimplePlayer::create(1);
                 player2->updatePlayerFrame(1, IconType::Cube);

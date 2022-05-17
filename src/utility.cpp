@@ -1,17 +1,17 @@
 #include "utility.hpp"
 
 Gamemode Utility::getGamemode(BaseRenderData renderData) {
-    if (renderData.isShip) {
+    if (renderData.m_isShip) {
         return Gamemode::SHIP;
-    } else if (renderData.isUFO) {
+    } else if (renderData.m_isBird) {
         return Gamemode::UFO;
-    } else if (renderData.isBall) {
+    } else if (renderData.m_isBall) {
         return Gamemode::BALL;
-    } else if (renderData.isWave) {
+    } else if (renderData.m_isDart) {
         return Gamemode::WAVE;
-    } else if (renderData.isRobot) {
+    } else if (renderData.m_isRobot) {
         return Gamemode::ROBOT;
-    } else if (renderData.isSpider) {
+    } else if (renderData.m_isSpider) {
         return Gamemode::SPIDER;
     } else {
         return Gamemode::CUBE;
@@ -46,6 +46,7 @@ IconType Utility::getIconType(Gamemode gamemode)
     }
 }
 
+/*
 int Utility::getIconId(IconType iconType, IconData iconData)
 {
     switch (iconType)
@@ -67,3 +68,4 @@ int Utility::getIconId(IconType iconType, IconData iconData)
         return iconData.spiderId;
     }
 }
+*/

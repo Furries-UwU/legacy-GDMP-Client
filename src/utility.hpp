@@ -10,5 +10,5 @@ public:
     static Gamemode getGamemode(BaseRenderData renderData);
     static IconType getIconType(BaseRenderData renderData);
     static IconType getIconType(Gamemode gamemode);
-    static int getIconId(IconType iconType, IconData iconData);
+    /*static int getIconId(IconType iconType, IconData iconData);*/
 };
