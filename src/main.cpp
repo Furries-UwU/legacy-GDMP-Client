@@ -118,9 +118,21 @@ void pollEvent() {
         ENetEvent event;
         while (enet_host_service(Global::get()->host, &event, 0) > 0) {
             switch (event.type) {
-                case ENET_EVENT_TYPE_RECEIVE:
+                case ENET_EVENT_TYPE_RECEIVE: {
                     OnRecievedMessage(event.packet);
                     break;
+                }
+                case ENET_EVENT_TYPE_CONNECT: {
+                    fmt::print("Connected to server at port {}\n", Global::get()->host->address.port);
+                    break;
+                }
+                case ENET_EVENT_TYPE_DISCONNECT: {
+                    fmt::print("Disconnected from server!\n");
+                    break;
+                }
+                case ENET_EVENT_TYPE_NONE: { // idk what this is supposed to be
+                    break;
+                }
             }
         }
     }
