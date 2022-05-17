@@ -34,10 +34,10 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
     auto packet = Packet(eNetPacket);
 
     fmt::print("Host -> Me\nPacket Length: {}\nPacket Type: {}\nPacket's Data Length: {}\nHex:", eNetPacket->dataLength, packet.type, packet.length);
-    /*for (int x = 0; x < eNetPacket->dataLength; x++) {
+    for (int x = 0; x < eNetPacket->dataLength; x++) {
         fmt::print(" {:#04x}", packet[x]);
     }
-    fmt::print("\n\n");*/
+    fmt::print("\n\n");
 
     switch (packet.type) {
         case (RENDER_DATA): {
