@@ -43,7 +43,7 @@ class $modify(PlayLayer) {
     void update(float p0) {
         PlayLayer::update(p0);
 
-        if (this->m_isPaused)
+        if (this->m_isPaused || this->m_player1 == nullptr)
             return;
 
         Global *global = Global::get();
