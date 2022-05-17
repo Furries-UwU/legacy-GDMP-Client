@@ -6,7 +6,7 @@ class $modify(PlayLayer) {
 
     bool init(GJGameLevel *level) {
         if (!PlayLayer::init(level)) return false;
-        Packet(JOIN_LEVEL, 4, reinterpret_cast<uint8_t *>(&level->m_levelID)).send(
+        Packet(JOIN_LEVEL, sizeof(int), reinterpret_cast<uint8_t *>(&level->m_levelID)).send(
                 Global::get()->peer); // manually specifying length is bad -rooot
                 // Just use `sizeof(int)` -hayper
 
