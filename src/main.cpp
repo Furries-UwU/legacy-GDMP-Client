@@ -19,9 +19,17 @@ void connect(char *ipAddress, int port) {
 
 void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData) {
     simplePlayer->setPosition({renderData.position.x, renderData.position.y});
-    simplePlayer->setRotation(renderData.rotation);
-    simplePlayer->setScale(renderData.scale);
-    simplePlayer->updatePlayerFrame(1, Utility::getIconType(renderData));
+    simplePlayer->setRotation(renderData.position.rotation);
+    simplePlayer->setScale(renderData.iconData.scale);
+    simplePlayer->updatePlayerFrame(renderData.iconData.iconId, Utility::getIconType(renderData));
+    simplePlayer->setColor(
+        ccc3(renderData.iconData.primaryColor.red,
+            renderData.iconData.primaryColor.green,
+            renderData.iconData.primaryColor.blue));
+    simplePlayer->setSecondColor(
+        ccc3(renderData.iconData.secondaryColor.red,
+            renderData.iconData.secondaryColor.green,
+            renderData.iconData.secondaryColor.blue));
 }
 
 void onRecievedMessage(ENetPacket *eNetPacket) {
@@ -65,12 +73,12 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 fmt::print("update render 0 pid {}\n", incomingRenderData.playerId);
                 if (playerHolder.playerOne) {
                     updateRender(playerHolder.playerOne, incomingRenderData.renderData.playerOne);
-                    playerHolder.playerOne->setVisible(true);
+                    playerHolder.playerOne->setVisible(incomingRenderData.renderData.isVisible);
                 }
 
                 if (playerHolder.playerTwo) {
                     updateRender(playerHolder.playerTwo, incomingRenderData.renderData.playerTwo);
-                    playerHolder.playerTwo->setVisible(false);
+                    playerHolder.playerTwo->setVisible(incomingRenderData.renderData.isDual);
                 }
             });
 
@@ -91,9 +99,9 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                     return;
                 }
 
-                /*if (global->simplePlayerHolderList[playerId].playerOne != nullptr) {
+                if (global->simplePlayerHolderList[playerId].playerOne != nullptr) {
                     global->simplePlayerHolderList.erase(playerId);
-                }*/
+                } // todo: check if this if statement works
 
                 const auto objectLayer = playLayer->getObjectLayer();
 
@@ -113,6 +121,30 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 
                 if(player2 != nullptr)
                     global->simplePlayerHolderList[playerId].playerTwo = player2;
+            });
+
+            break;
+        }
+
+        case (LEAVE_LEVEL): {
+            int playerId = *reinterpret_cast<int *>(packet.data);
+            fmt::print("Leave: {}\n", playerId);
+
+            addCallback([playerId]() {
+                Global *global = Global::get();
+
+                if(global->simplePlayerHolderList[playerId].playerOne != nullptr) {
+                    global->simplePlayerHolderList[playerId].playerOne->setVisible(false);
+                    global->simplePlayerHolderList[playerId].playerOne->removeMeAndCleanup();
+                }
+
+                if(global->simplePlayerHolderList[playerId].playerTwo != nullptr) {
+                    global->simplePlayerHolderList[playerId].playerTwo->setVisible(false);
+                    global->simplePlayerHolderList[playerId].playerTwo->removeMeAndCleanup();
+                }
+
+                global->simplePlayerHolderList.erase(playerId);
+                global->playerDataMap.erase(playerId);
             });
 
             break;

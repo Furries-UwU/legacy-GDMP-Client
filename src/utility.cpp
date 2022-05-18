@@ -1,26 +1,62 @@
 #include "utility.hpp"
 
-Gamemode Utility::getGamemode(BaseRenderData renderData) {
-    if (renderData.isShip) {
+Gamemode Utility::getGamemodeFromPlayer(PlayerObject* player) {
+    if(player->m_isShip) {
         return Gamemode::SHIP;
-    } else if (renderData.isUFO) {
-        return Gamemode::UFO;
-    } else if (renderData.isBall) {
+    } else if(player->m_isBall) {
         return Gamemode::BALL;
-    } else if (renderData.isWave) {
+    } else if(player->m_isBird) {
+        return Gamemode::UFO;
+    } else if(player->m_isDart) {
         return Gamemode::WAVE;
-    } else if (renderData.isRobot) {
+    } else if(player->m_isRobot) {
         return Gamemode::ROBOT;
-    } else if (renderData.isSpider) {
+    } else if(player->m_isSpider) {
         return Gamemode::SPIDER;
     } else {
         return Gamemode::CUBE;
     }
 }
 
+int Utility::getIconID(Gamemode gamemode) {
+    GameManager* gm = GameManager::sharedState();
+    switch(gamemode) {
+        default:
+        case NONE:
+        case CUBE: {
+            return gm->getPlayerShip(); // todo: check if this is even the correct thing
+            break;
+        }
+        case SHIP: {
+            return gm->getPlayerShip();
+            break;
+        }
+        case BALL: {
+            return gm->getPlayerBall();
+            break;
+        }
+        case UFO: {
+            return gm->getPlayerBird();
+            break;
+        }
+        case WAVE: {
+            return gm->getPlayerDart();
+            break;
+        }
+        case ROBOT: {
+            return gm->getPlayerRobot();
+            break;
+        }
+        case SPIDER: {
+            return gm->getPlayerSpider();
+            break;
+        }
+    }
+}
+
 IconType Utility::getIconType(BaseRenderData renderData)
 {
-    return Utility::getIconType(Utility::getGamemode(renderData));
+    return Utility::getIconType(renderData.iconData.gamemode);
 }
 
 IconType Utility::getIconType(Gamemode gamemode)

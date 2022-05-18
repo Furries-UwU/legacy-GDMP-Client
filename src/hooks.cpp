@@ -70,42 +70,58 @@ class $modify(PlayLayer) {
             return;
 
         Global *global = Global::get();
+        GameManager* gm = GameManager::sharedState();
 
         PlayerObject *player1 = this->m_player1;
         PlayerObject *player2 = this->m_player2;
 
         RenderData renderData{
+            {
                 {
-                        {
-                                player1->getPositionX(),
-                                player1->getPositionY(),
-                        },
-                        player1->getRotation(),
-                        player1->getScale(),
-                        player1->m_isShip,
-                        player1->m_isBird,
-                        player1->m_isBall,
-                        player1->m_isDart,
-                        player1->m_isRobot,
-                        player1->m_isSpider,
+                    player1->getPositionX(),
+                    player1->getPositionY(),
+                    player1->getRotation()
                 },
-
+                Utility::getIconID(Utility::getGamemodeFromPlayer(player1)),
+                gm->getPlayerFrame(), // todo - this should do the thing do the yes thing ok
+                Utility::getGamemodeFromPlayer(player1),
+                player1->getScale(),
+                gm->getPlayerGlow(), // todo - test if thats correct
                 {
-                        {
-                                player2 ? player2->getPositionX() : 0.0f,
-                                player2 ? player2->getPositionY() : 0.0f,
-                        },
-                        player2 ? player2->getRotation() : 0.0f,
-                        player2 ? player2->getScale() : 0.0f,
-                        player2 != nullptr && player2->m_isShip,
-                        player2 != nullptr && player2->m_isBird,
-                        player2 != nullptr && player2->m_isBall,
-                        player2 != nullptr && player2->m_isDart,
-                        player2 != nullptr && player2->m_isRobot,
-                        player2 != nullptr && player2->m_isSpider
+                    player1->getColor().r,
+                    player1->getColor().g,
+                    player1->getColor().b
                 },
-                player1->isVisible(),
-                player1->isVisible() && player2->isVisible() // this is probably a bad way to check if its dual
+                {
+                    /*player1->getSecondColor().r,
+                    player1->getSecondColor().g,
+                    player1->getSecondColor().b*/0, 0, 0
+                }
+            },
+            {
+                {
+                    player2->getPositionX(),
+                    player2->getPositionY(),
+                    player2->getRotation()
+                },
+                Utility::getIconID(Utility::getGamemodeFromPlayer(player2)),
+                gm->getPlayerFrame(),
+                Utility::getGamemodeFromPlayer(player2),
+                player2->getScale(),
+                true, // todo - make this get the actual value if its glowing
+                {
+                    player2->getColor().r,
+                    player2->getColor().g,
+                    player2->getColor().b
+                },
+                {
+                    /*player2->getSecondColor().r,
+                    player2->getSecondColor().g,
+                    player2->getSecondColor().b*/0, 0, 0
+                }
+            },
+            player1->isVisible(),
+            player1->isVisible() && player2->isVisible() // this is probably a bad way to check if its dual
         };
 
         Packet(RENDER_DATA, sizeof(renderData), reinterpret_cast<uint8_t *>(&renderData)).send(global->peer);
