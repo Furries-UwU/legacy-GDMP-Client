@@ -5,14 +5,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(GDMP-Client VERSION 1.0.0)
 
-add_subdirectory(external/GDMP-Shared)
-
-file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp src/*.c src/*.h)
-
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} GDMP-Shared)
-set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
-
 find_path(GEODE_SDK_PATH
         NAMES Geode.cmake
         PATHS $ENV{GEODE_SUITE}/sdk /Users/Shared/Geode/suite/sdk /usr/local/geode/sdk
@@ -20,6 +12,14 @@ find_path(GEODE_SDK_PATH
         REQUIRED
         )
 include(${GEODE_SDK_PATH}/Geode.cmake)
+
+add_subdirectory(external/GDMP-Shared)
+
+file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp src/*.c src/*.h)
+
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
+target_link_libraries(${PROJECT_NAME} GDMP-Shared)
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
 setup_geode_mod()
 
