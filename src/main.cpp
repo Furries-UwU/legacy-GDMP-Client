@@ -22,10 +22,12 @@ void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData) {
     simplePlayer->setRotation(renderData.position.rotation);
     simplePlayer->setScale(renderData.iconData.scale);
     simplePlayer->updatePlayerFrame(renderData.iconData.iconId, Utility::getIconType(renderData));
+    #ifdef _WIN32
     simplePlayer->setColor(
         ccc3(renderData.iconData.primaryColor.red,
             renderData.iconData.primaryColor.green,
             renderData.iconData.primaryColor.blue));
+    #endif
     simplePlayer->setSecondColor(
         ccc3(renderData.iconData.secondaryColor.red,
             renderData.iconData.secondaryColor.green,
