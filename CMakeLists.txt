@@ -18,8 +18,8 @@ add_subdirectory(external/GDMP-Shared)
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.hpp src/*.c src/*.h)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} GDMP-Shared)
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
+target_link_libraries(${PROJECT_NAME} GDMP-Shared)
 
 setup_geode_mod()
 
