@@ -1,7 +1,4 @@
 #include "hooks.hpp"
-#include <vector>
-#include <mutex>
-#include <functional>
 
 USE_GEODE_NAMESPACE();
 
@@ -12,6 +9,32 @@ void executeInGDThread(std::function<void()> f) {
     std::lock_guard<std::mutex> lock(threadMutex);
     functionQueue.push_back(std::move(f));
 }
+
+class $modify(MenuLayer) {
+    bool init() {
+        if (!MenuLayer::init()) return false;
+
+        auto director = CCDirector::sharedDirector();
+        auto size = director->getWinSize();
+
+        auto buttonSprite = CCSprite::createWithSpriteFrameName("GJ_arrow_01_001.png");
+        buttonSprite->setFlipX(true);
+
+        auto button = CCMenuItemSpriteExtra::create(
+            buttonSprite,
+            this,
+            menu_selector(MultiplayerLayer::switchToCustomLayerButton)
+        );
+
+        auto menu = CCMenu::create();
+        menu->addChild(button);
+        menu->setPosition(size.width - 40, size.height - 40);
+
+        this->addChild(menu);
+
+        return true;
+    }
+};
 
 class $modify(CCScheduler) {
     void update(float dt) {
