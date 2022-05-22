@@ -37,15 +37,17 @@ void updateRender(PlayerObject *playerObject, BaseRenderData renderData) {
     playerObject->setPosition({renderData.position.x, renderData.position.y});
     playerObject->setRotation(renderData.position.rotation);
     playerObject->setScale(renderData.iconData.scale);
-    playerObject->updatePlayerFrame(renderData.iconData.iconId, Utility::getIconType(renderData));
-    playerObject->setColor(
-        ccc3(renderData.iconData.primaryColor.red,
-            renderData.iconData.primaryColor.green,
-            renderData.iconData.primaryColor.blue));
-    playerObject->setSecondColor(
-        ccc3(renderData.iconData.secondaryColor.red,
-            renderData.iconData.secondaryColor.green,
-            renderData.iconData.secondaryColor.blue));
+
+    // playerObject->updatePlayerFrame(renderData.iconData.iconId);
+
+    // playerObject->setColor(
+    //     ccc3(renderData.iconData.primaryColor.red,
+    //         renderData.iconData.primaryColor.green,
+    //         renderData.iconData.primaryColor.blue));
+    // playerObject->setSecondColor(
+    //     ccc3(renderData.iconData.secondaryColor.red,
+    //         renderData.iconData.secondaryColor.green,
+    //         renderData.iconData.secondaryColor.blue));
 }
 #endif
 
@@ -122,16 +124,27 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
 
                 const auto objectLayer = playLayer->getObjectLayer();
 
-                SimplePlayer *player1 = SimplePlayer::create(1);
+#if WIN32
+                auto *player1 = SimplePlayer::create(1);
                 player1->updatePlayerFrame(1, IconType::Cube);
                 player1->setVisible(true);
 
-                SimplePlayer *player2 = SimplePlayer::create(1);
+
+                auto *player2 = SimplePlayer::create(1);
                 player2->updatePlayerFrame(1, IconType::Cube);
                 player2->setVisible(false);
 
                 objectLayer->addChild(player1);
                 objectLayer->addChild(player2);
+#else
+                auto *player1 = PlayerObject::create(1, Gamemode::CUBE, playLayer);
+                // player1->updatePlayerFrame(1);
+                player1->setVisible(true);
+
+                auto *player2 = PlayerObject::create(1, Gamemode::CUBE, playLayer);
+                // player2->updatePlayerFrame(1);
+                player2->setVisible(false);
+#endif
 
                 if(player1 != nullptr)
                     global->playerHolderList[playerId].playerOne = player1;
