@@ -5,12 +5,23 @@
 
 USE_GEODE_NAMESPACE();
 
+std::vector<std::function<void()>> functionQueue;
+std::mutex threadMutex;
+
+void executeInGDThread(std::function<void()> f) {
+    std::lock_guard<std::mutex> lock(threadMutex);
+    functionQueue.push_back(std::move(f));
+}
+
 class $modify(CCScheduler) {
     void update(float dt) {
         CCScheduler::update(dt);
 
-        Global* global = Global::get();
-        global->executeGDThreadQueue();
+        threadMutex.lock();
+        auto buffer = std::move(functionQueue);
+        threadMutex.unlock();
+
+        for (auto& f : buffer) f();
     }
 };
 

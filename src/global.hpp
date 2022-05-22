@@ -28,10 +28,6 @@ struct PlayerData
 
 class Global
 {
-protected:
-    std::vector<std::function<void(void)>> gdThreadQueue;
-    std::mutex gdThreadQueueMutex;
-
 public:
     ENetHost *host;
     ENetPeer *peer;
@@ -40,9 +36,6 @@ public:
     std::unordered_map<int, PlayerData> playerDataMap;
 
     PlayLayer *playLayer = nullptr;
-
-    void queueInGDThread(const std::function<void()>& func);
-    void executeGDThreadQueue();
 
     static Global *get();
 };

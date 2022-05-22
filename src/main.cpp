@@ -76,7 +76,7 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 break;
             }
 
-            global->queueInGDThread([incomingRenderData]() {
+            executeInGDThread([incomingRenderData]() {
                 Global *global = Global::get();
                 auto playerHolder = global->playerHolderList[incomingRenderData.playerId];
 
@@ -96,12 +96,10 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
         }
 
         case (JOIN_LEVEL): {
-            Global* global = Global::get();
-
             int playerId = *reinterpret_cast<int *>(packet.data);
             fmt::print("Join: {}\n", playerId);
 
-            global->queueInGDThread([playerId]() {
+            executeInGDThread([playerId]() {
                 GameManager* gm = GameManager::sharedState();
                 Global *global = Global::get();
 
@@ -149,12 +147,10 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
         }
 
         case (LEAVE_LEVEL): {
-            Global* global = Global::get();
-
             int playerId = *reinterpret_cast<int *>(packet.data);
             fmt::print("Leave: {}\n", playerId);
 
-            global->queueInGDThread([playerId]() {
+            executeInGDThread([playerId]() {
                 Global *global = Global::get();
 
                 if(global->playerHolderList[playerId].playerOne != nullptr) {
