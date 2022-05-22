@@ -7,11 +7,19 @@
 #include <vector>
 #include <mutex>
 
-struct SimplePlayerHolder
+#if WIN32
+struct PlayerHolder
 {
     SimplePlayer *playerOne;
     SimplePlayer *playerTwo;
 };
+#else
+struct PlayerHolder
+{
+    PlayerObject *playerOne;
+    PlayerObject *playerTwo;
+};
+#endif
 
 struct PlayerData
 {
@@ -28,7 +36,7 @@ public:
     ENetHost *host;
     ENetPeer *peer;
 
-    std::unordered_map<int, SimplePlayerHolder> simplePlayerHolderList;
+    std::unordered_map<int, PlayerHolder> playerHolderList;
     std::unordered_map<int, PlayerData> playerDataMap;
 
     PlayLayer *playLayer = nullptr;

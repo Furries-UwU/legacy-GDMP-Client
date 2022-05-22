@@ -1,6 +1,7 @@
 #include "utility.hpp"
 
 Gamemode Utility::getGamemodeFromPlayer(PlayerObject* player) {
+#if WIN32
     if(player->m_isShip) {
         return Gamemode::SHIP;
     } else if(player->m_isBall) {
@@ -16,6 +17,9 @@ Gamemode Utility::getGamemodeFromPlayer(PlayerObject* player) {
     } else {
         return Gamemode::CUBE;
     }
+#else
+    return Gamemode::CUBE;
+#endif
 }
 
 int Utility::getIconID(Gamemode gamemode) {

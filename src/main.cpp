@@ -17,22 +17,37 @@ void connect(char *ipAddress, int port) {
     }
 }
 
+#if WIN32
 void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData) {
     simplePlayer->setPosition({renderData.position.x, renderData.position.y});
     simplePlayer->setRotation(renderData.position.rotation);
     simplePlayer->setScale(renderData.iconData.scale);
     simplePlayer->updatePlayerFrame(renderData.iconData.iconId, Utility::getIconType(renderData));
-    #ifdef _WIN32
     simplePlayer->setColor(
         ccc3(renderData.iconData.primaryColor.red,
             renderData.iconData.primaryColor.green,
             renderData.iconData.primaryColor.blue));
-    #endif
     simplePlayer->setSecondColor(
         ccc3(renderData.iconData.secondaryColor.red,
             renderData.iconData.secondaryColor.green,
             renderData.iconData.secondaryColor.blue));
 }
+#else
+void updateRender(PlayerObject *playerObject, BaseRenderData renderData) {
+    playerObject->setPosition({renderData.position.x, renderData.position.y});
+    playerObject->setRotation(renderData.position.rotation);
+    playerObject->setScale(renderData.iconData.scale);
+    playerObject->updatePlayerFrame(renderData.iconData.iconId, Utility::getIconType(renderData));
+    playerObject->setColor(
+        ccc3(renderData.iconData.primaryColor.red,
+            renderData.iconData.primaryColor.green,
+            renderData.iconData.primaryColor.blue));
+    playerObject->setSecondColor(
+        ccc3(renderData.iconData.secondaryColor.red,
+            renderData.iconData.secondaryColor.green,
+            renderData.iconData.secondaryColor.blue));
+}
+#endif
 
 void onRecievedMessage(ENetPacket *eNetPacket) {
     if (eNetPacket->dataLength < 5) {
@@ -62,15 +77,15 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
 
             Global *global = Global::get();
 
-            auto check = global->simplePlayerHolderList.find(incomingRenderData.playerId);
-            if(check == global->simplePlayerHolderList.end()) {
+            auto check = global->playerHolderList.find(incomingRenderData.playerId);
+            if(check == global->playerHolderList.end()) {
                 fmt::print("no exist yes\n");
                 break;
             }
 
             addCallback([incomingRenderData]() {
                 Global *global = Global::get();
-                SimplePlayerHolder playerHolder = global->simplePlayerHolderList[incomingRenderData.playerId];
+                auto playerHolder = global->playerHolderList[incomingRenderData.playerId];
 
                 fmt::print("update render 0 pid {}\n", incomingRenderData.playerId);
                 if (playerHolder.playerOne) {
@@ -101,8 +116,8 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                     return;
                 }
 
-                if (global->simplePlayerHolderList[playerId].playerOne != nullptr) {
-                    global->simplePlayerHolderList.erase(playerId);
+                if (global->playerHolderList[playerId].playerOne != nullptr) {
+                    global->playerHolderList.erase(playerId);
                 } // todo: check if this if statement works
 
                 const auto objectLayer = playLayer->getObjectLayer();
@@ -119,10 +134,10 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 objectLayer->addChild(player2);
 
                 if(player1 != nullptr)
-                    global->simplePlayerHolderList[playerId].playerOne = player1;
+                    global->playerHolderList[playerId].playerOne = player1;
                 
                 if(player2 != nullptr)
-                    global->simplePlayerHolderList[playerId].playerTwo = player2;
+                    global->playerHolderList[playerId].playerTwo = player2;
             });
 
             break;
@@ -135,17 +150,17 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
             addCallback([playerId]() {
                 Global *global = Global::get();
 
-                if(global->simplePlayerHolderList[playerId].playerOne != nullptr) {
-                    global->simplePlayerHolderList[playerId].playerOne->setVisible(false);
-                    global->simplePlayerHolderList[playerId].playerOne->removeMeAndCleanup();
+                if(global->playerHolderList[playerId].playerOne != nullptr) {
+                    global->playerHolderList[playerId].playerOne->setVisible(false);
+                    global->playerHolderList[playerId].playerOne->removeMeAndCleanup();
                 }
 
-                if(global->simplePlayerHolderList[playerId].playerTwo != nullptr) {
-                    global->simplePlayerHolderList[playerId].playerTwo->setVisible(false);
-                    global->simplePlayerHolderList[playerId].playerTwo->removeMeAndCleanup();
+                if(global->playerHolderList[playerId].playerTwo != nullptr) {
+                    global->playerHolderList[playerId].playerTwo->setVisible(false);
+                    global->playerHolderList[playerId].playerTwo->removeMeAndCleanup();
                 }
 
-                global->simplePlayerHolderList.erase(playerId);
+                global->playerHolderList.erase(playerId);
                 global->playerDataMap.erase(playerId);
             });
 
@@ -173,7 +188,7 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 case ENET_EVENT_TYPE_DISCONNECT: {
                     Global *global = Global::get();
 
-                    for (auto &player: global->simplePlayerHolderList) {
+                    for (auto &player: global->playerHolderList) {
                         auto playerOne = player.second.playerOne;
                         auto playerTwo = player.second.playerTwo;
 
@@ -185,7 +200,7 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                             playerTwo->removeMeAndCleanup();
                         }
 
-                        global->simplePlayerHolderList.erase(player.first);
+                        global->playerHolderList.erase(player.first);
                     }
 
                     global->playerDataMap.clear();

@@ -45,7 +45,7 @@ class $modify(PlayLayer) {
 
         global->playLayer = nullptr;
 
-        for (auto &player: global->simplePlayerHolderList) {
+        for (auto &player: global->playerHolderList) {
             auto playerOne = player.second.playerOne;
             auto playerTwo = player.second.playerTwo;
 
@@ -55,7 +55,7 @@ class $modify(PlayLayer) {
             if (playerTwo)
                 playerTwo->removeMeAndCleanup();
 
-            global->simplePlayerHolderList.erase(player.first);
+            global->playerHolderList.erase(player.first);
         }
 
         global->playerDataMap.clear();
