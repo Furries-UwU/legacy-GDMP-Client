@@ -109,6 +109,7 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
             fmt::print("Join: {}\n", playerId);
 
             addCallback([playerId]() {
+                GameManager* gm = GameManager::sharedState();
                 Global *global = Global::get();
 
                 auto playLayer = global->playLayer;
@@ -137,11 +138,11 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 objectLayer->addChild(player1);
                 objectLayer->addChild(player2);
 #else
-                auto *player1 = PlayerObject::create(1, Gamemode::CUBE, playLayer);
+                auto *player1 = PlayerObject::create(gm->m_playerFrameRand1 - gm->m_playerFrameRand2, gm->m_playerShipRand1 - gm->m_playerShipRand2, objectLayer);
                 // player1->updatePlayerFrame(1);
                 player1->setVisible(true);
 
-                auto *player2 = PlayerObject::create(1, Gamemode::CUBE, playLayer);
+                auto *player2 = PlayerObject::create(gm->m_playerFrameRand1 - gm->m_playerFrameRand2, gm->m_playerShipRand1 - gm->m_playerShipRand2, objectLayer);
                 // player2->updatePlayerFrame(1);
                 player2->setVisible(false);
 #endif
