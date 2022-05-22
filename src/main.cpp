@@ -105,10 +105,12 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
         }
 
         case (JOIN_LEVEL): {
+            Global* global = Global::get();
+
             int playerId = *reinterpret_cast<int *>(packet.data);
             fmt::print("Join: {}\n", playerId);
 
-            addCallback([playerId]() {
+            global->queueInGDThread([playerId]() {
                 GameManager* gm = GameManager::sharedState();
                 Global *global = Global::get();
 
@@ -158,10 +160,12 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
         }
 
         case (LEAVE_LEVEL): {
+            Global* global = Global::get();
+
             int playerId = *reinterpret_cast<int *>(packet.data);
             fmt::print("Leave: {}\n", playerId);
 
-            addCallback([playerId]() {
+            global->queueInGDThread([playerId]() {
                 Global *global = Global::get();
 
                 if(global->playerHolderList[playerId].playerOne != nullptr) {
