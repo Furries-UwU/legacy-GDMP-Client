@@ -208,7 +208,7 @@ GEODE_API bool GEODE_CALL geode_load(Mod *mod) {
     Global *global = Global::get();
     global->host = enet_host_create(nullptr, 1, 1, 0, 0);
 
-    connect("127.0.0.1", 23973);
+    connect("192.168.1.33", 23973);
 
     std::thread eventThread(&pollEvent);
     eventThread.detach();
