@@ -25,6 +25,7 @@ bool MultiplayerLayer::init() {
     auto input = CCTextInputNode::create(500, 500, "Enter DA IP", "bigFont.fnt");
     input->setPosition(ccp(director->getWinSize().width / 2,
                            director->getWinSize().height / 2));
+    input->setAllowedChars("0123456789.:");
     addChild(input);
 
     auto backgroundSprite = CCSprite::create("GJ_gradientBG.png");
