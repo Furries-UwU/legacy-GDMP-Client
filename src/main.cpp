@@ -2,20 +2,20 @@
 
 USE_GEODE_NAMESPACE();
 
-void connect(char *ipAddress, int port) {
-    Global *global = Global::get();
+// void connect(char *ipAddress, int port) {
+//     Global *global = Global::get();
 
-    ENetAddress address;
-    enet_address_set_host(&address, ipAddress);
-    address.port = port;
+//     ENetAddress address;
+//     enet_address_set_host(&address, ipAddress);
+//     address.port = port;
 
-    global->peer = enet_host_connect(global->host, &address, 1, 0);
-    if (global->peer == nullptr) {
-        fmt::print(stderr,
-                   "No available peers for initiating an ENet connection.\n");
-        exit(EXIT_FAILURE);
-    }
-}
+//     global->peer = enet_host_connect(global->host, &address, 1, 0);
+//     if (global->peer == nullptr) {
+//         fmt::print(stderr,
+//                    "No available peers for initiating an ENet connection.\n");
+//         exit(EXIT_FAILURE);
+//     }
+// }
 
 #if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
 void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData) {
@@ -225,8 +225,6 @@ GEODE_API bool GEODE_CALL geode_load(Mod *mod) {
 
     Global *global = Global::get();
     global->host = enet_host_create(nullptr, 1, 1, 0, 0);
-
-    connect("192.168.1.33", 23973);
 
     std::thread eventThread(&pollEvent);
     eventThread.detach();
