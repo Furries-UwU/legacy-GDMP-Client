@@ -22,7 +22,7 @@ bool MultiplayerLayer::init() {
                            director->getWinSize().height - 25));
     addChild(label);
 
-    auto input = CCTextInputNode::create(500, 500, "Enter DA IP", "bigFont.fnt");
+    auto input = CCTextInputNode::create(500, 500, "127.0.0.1", "bigFont.fnt");
     input->setPosition(ccp(director->getWinSize().width / 2,
                            director->getWinSize().height / 2));
     input->setAllowedChars("0123456789.:");
