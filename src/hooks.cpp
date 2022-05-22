@@ -3,25 +3,14 @@
 #include <mutex>
 #include <functional>
 
-std::vector<std::function<void()>> g_Buffer;
-std::mutex g_Mtx;
-
 USE_GEODE_NAMESPACE();
-
-void addCallback(std::function<void()> f) {
-    std::lock_guard<std::mutex> lock(g_Mtx);
-    g_Buffer.push_back(std::move(f));
-}
 
 class $modify(CCScheduler) {
     void update(float dt) {
         CCScheduler::update(dt);
 
-        g_Mtx.lock();
-        auto buffer = std::move(g_Buffer);
-        g_Mtx.unlock();
-
-        for (auto& f : buffer) f();
+        Global* global = Global::get();
+        global->executeGDThreadQueue();
     }
 };
 

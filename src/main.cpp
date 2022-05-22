@@ -35,8 +35,8 @@ void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData) {
 #else
 void updateRender(PlayerObject *playerObject, BaseRenderData renderData) {
     playerObject->setPosition({renderData.position.x, renderData.position.y});
-    playerObject->setRotation(renderData.position.rotation);
-    playerObject->setScale(renderData.iconData.scale);
+    // playerObject->setRotation(renderData.position.rotation);
+    // playerObject->setScale(renderData.iconData.scale);
 
     // playerObject->updatePlayerFrame(renderData.iconData.iconId);
 
@@ -85,19 +85,19 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 break;
             }
 
-            addCallback([incomingRenderData]() {
+            global->queueInGDThread([incomingRenderData]() {
                 Global *global = Global::get();
                 auto playerHolder = global->playerHolderList[incomingRenderData.playerId];
 
                 fmt::print("update render 0 pid {}\n", incomingRenderData.playerId);
                 if (playerHolder.playerOne) {
                     updateRender(playerHolder.playerOne, incomingRenderData.renderData.playerOne);
-                    playerHolder.playerOne->setVisible(incomingRenderData.renderData.isVisible);
+                    // playerHolder.playerOne->setVisible(incomingRenderData.renderData.isVisible);
                 }
 
                 if (playerHolder.playerTwo) {
                     updateRender(playerHolder.playerTwo, incomingRenderData.renderData.playerTwo);
-                    playerHolder.playerTwo->setVisible(incomingRenderData.renderData.isDual);
+                    // playerHolder.playerTwo->setVisible(incomingRenderData.renderData.isDual);
                 }
             });
 
