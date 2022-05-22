@@ -7,14 +7,20 @@ void MultiplayerLayer::connectButtonCallback(CCObject* object) {
 
     if (global->peer != nullptr) enet_peer_disconnect_now(global->peer, {});
 
+    int port = 23973;
+
+    const auto portI = portInput->getString();
+    const auto result = std::from_chars(portI, portI + std::strlen(portI), port);
+
     ENetAddress address;
     enet_address_set_host(&address, std::string(ipInput->getString()).c_str());
-    address.port = atoi(portInput->getString());
+    address.port = port;
 
     global->peer = enet_host_connect(global->host, &address, 1, 0);
     if (global->peer == nullptr) {
         fmt::print(stderr,
                    "No available peers for initiating an ENet connection.\n");
+        return;
     }
 }
 
