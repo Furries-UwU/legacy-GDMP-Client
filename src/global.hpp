@@ -7,7 +7,7 @@
 #include <vector>
 #include <mutex>
 
-#if WIN32
+#if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
 struct PlayerHolder
 {
     SimplePlayer *playerOne;

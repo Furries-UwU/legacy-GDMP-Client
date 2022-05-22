@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(GDMP-Client VERSION 1.0.0)
 
+# add_definitions(-DMAC_EXPERIMENTAL)
+
 find_path(GEODE_SDK_PATH
         NAMES Geode.cmake
         PATHS $ENV{GEODE_SUITE}/sdk /Users/Shared/Geode/suite/sdk /usr/local/geode/sdk

@@ -17,12 +17,13 @@ void connect(char *ipAddress, int port) {
     }
 }
 
-#if WIN32
+#if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
 void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData) {
     simplePlayer->setPosition({renderData.position.x, renderData.position.y});
     simplePlayer->setRotation(renderData.position.rotation);
     simplePlayer->setScale(renderData.iconData.scale);
     simplePlayer->updatePlayerFrame(renderData.iconData.iconId, Utility::getIconType(renderData));
+    #if defined(WIN32)
     simplePlayer->setColor(
         ccc3(renderData.iconData.primaryColor.red,
             renderData.iconData.primaryColor.green,
@@ -31,23 +32,13 @@ void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData) {
         ccc3(renderData.iconData.secondaryColor.red,
             renderData.iconData.secondaryColor.green,
             renderData.iconData.secondaryColor.blue));
+    #endif
 }
 #else
 void updateRender(PlayerObject *playerObject, BaseRenderData renderData) {
     playerObject->setPosition({renderData.position.x, renderData.position.y});
-    // playerObject->setRotation(renderData.position.rotation);
-    // playerObject->setScale(renderData.iconData.scale);
-
-    // playerObject->updatePlayerFrame(renderData.iconData.iconId);
-
-    // playerObject->setColor(
-    //     ccc3(renderData.iconData.primaryColor.red,
-    //         renderData.iconData.primaryColor.green,
-    //         renderData.iconData.primaryColor.blue));
-    // playerObject->setSecondColor(
-    //     ccc3(renderData.iconData.secondaryColor.red,
-    //         renderData.iconData.secondaryColor.green,
-    //         renderData.iconData.secondaryColor.blue));
+    playerObject->setRotation(renderData.position.rotation);
+    playerObject->setScale(renderData.iconData.scale);
 }
 #endif
 
@@ -92,12 +83,12 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 fmt::print("update render 0 pid {}\n", incomingRenderData.playerId);
                 if (playerHolder.playerOne) {
                     updateRender(playerHolder.playerOne, incomingRenderData.renderData.playerOne);
-                    // playerHolder.playerOne->setVisible(incomingRenderData.renderData.isVisible);
+                    playerHolder.playerOne->setVisible(incomingRenderData.renderData.isVisible);
                 }
 
                 if (playerHolder.playerTwo) {
                     updateRender(playerHolder.playerTwo, incomingRenderData.renderData.playerTwo);
-                    // playerHolder.playerTwo->setVisible(incomingRenderData.renderData.isDual);
+                    playerHolder.playerTwo->setVisible(incomingRenderData.renderData.isDual);
                 }
             });
 
@@ -127,7 +118,7 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
 
                 const auto objectLayer = playLayer->getObjectLayer();
 
-#if WIN32
+#if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
                 auto *player1 = SimplePlayer::create(1);
                 player1->updatePlayerFrame(1, IconType::Cube);
                 player1->setVisible(true);
@@ -141,11 +132,9 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 objectLayer->addChild(player2);
 #else
                 auto *player1 = PlayerObject::create(gm->m_playerFrameRand1 - gm->m_playerFrameRand2, gm->m_playerShipRand1 - gm->m_playerShipRand2, objectLayer);
-                // player1->updatePlayerFrame(1);
                 player1->setVisible(true);
 
                 auto *player2 = PlayerObject::create(gm->m_playerFrameRand1 - gm->m_playerFrameRand2, gm->m_playerShipRand1 - gm->m_playerShipRand2, objectLayer);
-                // player2->updatePlayerFrame(1);
                 player2->setVisible(false);
 #endif
 
