@@ -136,10 +136,10 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 player2->setVisible(false);
 #endif
 
-                if(player1 != nullptr)
+                if(player1)
                     global->playerHolderList[playerId].playerOne = player1;
                 
-                if(player2 != nullptr)
+                if(player2)
                     global->playerHolderList[playerId].playerTwo = player2;
             });
 
@@ -153,12 +153,12 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
             executeInGDThread([playerId]() {
                 Global *global = Global::get();
 
-                if(global->playerHolderList[playerId].playerOne != nullptr) {
+                if(global->playerHolderList[playerId].playerOne) {
                     global->playerHolderList[playerId].playerOne->setVisible(false);
                     global->playerHolderList[playerId].playerOne->removeMeAndCleanup();
                 }
 
-                if(global->playerHolderList[playerId].playerTwo != nullptr) {
+                if(global->playerHolderList[playerId].playerTwo) {
                     global->playerHolderList[playerId].playerTwo->setVisible(false);
                     global->playerHolderList[playerId].playerTwo->removeMeAndCleanup();
                 }
