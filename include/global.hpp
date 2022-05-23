@@ -20,6 +20,8 @@ struct PlayerHolder
 struct PlayerData
 {
     std::string username;
+    IconData iconData;
+    ColorData colorData;
 };
 
 class Global

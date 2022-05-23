@@ -4,10 +4,10 @@ USE_GEODE_NAMESPACE();
 
 // 23973 - default port
 
-void MultiplayerLayer::connectButtonCallback(CCObject* object) {
+void MultiplayerLayer::connectButtonCallback(CCObject *object) {
     Global *global = Global::get();
 
-    if (global->peer) enet_peer_disconnect_now(global->peer, {});
+    if (global->peer) enet_peer_disconnect(global->peer, 0);
 
     ENetAddress address;
     enet_address_set_host(&address, std::string(ipInput->getString()).c_str());
@@ -21,7 +21,7 @@ void MultiplayerLayer::connectButtonCallback(CCObject* object) {
     }
 }
 
-MultiplayerLayer* MultiplayerLayer::create() {
+MultiplayerLayer *MultiplayerLayer::create() {
     auto ret = new MultiplayerLayer();
     if (ret && ret->init()) {
         ret->autorelease();
@@ -42,15 +42,15 @@ bool MultiplayerLayer::init() {
     addChild(label);
 
     ipInput = CCTextInputNode::create(100, 100, "IP Address", "bigFont.fnt");
-    ipInput->setPosition(ccp((director->getWinSize().width / 2 )-150,
-                           director->getWinSize().height / 2));
+    ipInput->setPosition(ccp((director->getWinSize().width / 2) - 150,
+                             director->getWinSize().height / 2));
     ipInput->setAllowedChars("0123456789.");
     ipInput->setString("127.0.0.1");
     addChild(ipInput);
 
     portInput = CCTextInputNode::create(100, 100, "Port", "bigFont.fnt");
-    portInput->setPosition(ccp((director->getWinSize().width / 2)+150,
-                           director->getWinSize().height / 2));
+    portInput->setPosition(ccp((director->getWinSize().width / 2) + 150,
+                               director->getWinSize().height / 2));
     portInput->setAllowedChars("0123456789");
     portInput->setString("23973");
     addChild(portInput);
@@ -60,15 +60,15 @@ bool MultiplayerLayer::init() {
     confirmButtonSprite->setScaleY(0.5);
 
     auto confirmButton = CCMenuItemSpriteExtra::create(
-        confirmButtonSprite,
-        this,
-        menu_selector(MultiplayerLayer::connectButtonCallback)
+            confirmButtonSprite,
+            this,
+            menu_selector(MultiplayerLayer::connectButtonCallback)
     );
 
     auto backButton = CCMenuItemSpriteExtra::create(
-        CCSprite::createWithSpriteFrameName("GJ_arrow_01_001.png"),
-        this,
-        menu_selector(MultiplayerLayer::backButtonCallback)
+            CCSprite::createWithSpriteFrameName("GJ_arrow_01_001.png"),
+            this,
+            menu_selector(MultiplayerLayer::backButtonCallback)
     );
 
     auto backgroundSprite = CCSprite::create("GJ_gradientBG.png");
@@ -78,7 +78,7 @@ bool MultiplayerLayer::init() {
     backgroundSprite->setScaleY(winSize.height / backgroundSize.height);
     backgroundSprite->setAnchorPoint({0, 0});
     backgroundSprite->setColor({0, 0, 0});
-    
+
     backgroundSprite->setZOrder(-1);
     addChild(backgroundSprite);
 
@@ -105,11 +105,11 @@ void MultiplayerLayer::keyBackClicked() {
     exitMenu();
 }
 
-void MultiplayerLayer::backButtonCallback(CCObject* object) {
+void MultiplayerLayer::backButtonCallback(CCObject *object) {
     exitMenu();
 }
 
-void MultiplayerLayer::switchToCustomLayerButton(CCObject* object) {
+void MultiplayerLayer::switchToCustomLayerButton(CCObject *object) {
     auto layer = MultiplayerLayer::create();
     auto scene = CCScene::create();
     scene->addChild(layer);

@@ -9,8 +9,7 @@ class Utility
 public:
     static Gamemode getGamemode(BaseRenderData);
     static Gamemode getGamemodeFromPlayer(PlayerObject*);
-    static int getIconID(Gamemode);
+    static int getIconId(IconType, IconData);
     static IconType getIconType(BaseRenderData);
     static IconType getIconType(Gamemode);
-    /*static int getIconId(IconType iconType, IconData iconData);*/
 };

@@ -22,45 +22,9 @@ Gamemode Utility::getGamemodeFromPlayer(PlayerObject* player) {
 #endif
 }
 
-int Utility::getIconID(Gamemode gamemode) {
-    GameManager* gm = GameManager::sharedState();
-    switch(gamemode) {
-        default:
-        case NONE:
-        case CUBE: {
-            return gm->getPlayerFrame();
-            break;
-        }
-        case SHIP: {
-            return gm->getPlayerShip();
-            break;
-        }
-        case BALL: {
-            return gm->getPlayerBall();
-            break;
-        }
-        case UFO: {
-            return gm->getPlayerBird();
-            break;
-        }
-        case WAVE: {
-            return gm->getPlayerDart();
-            break;
-        }
-        case ROBOT: {
-            return gm->getPlayerRobot();
-            break;
-        }
-        case SPIDER: {
-            return gm->getPlayerSpider();
-            break;
-        }
-    }
-}
-
 IconType Utility::getIconType(BaseRenderData renderData)
 {
-    return Utility::getIconType(renderData.iconData.gamemode);
+    return Utility::getIconType(renderData.gamemode);
 }
 
 IconType Utility::getIconType(Gamemode gamemode)
@@ -86,7 +50,7 @@ IconType Utility::getIconType(Gamemode gamemode)
     }
 }
 
-/*
+
 int Utility::getIconId(IconType iconType, IconData iconData)
 {
     switch (iconType)
@@ -108,4 +72,3 @@ int Utility::getIconId(IconType iconType, IconData iconData)
         return iconData.spiderId;
     }
 }
-*/

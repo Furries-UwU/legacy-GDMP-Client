@@ -2,52 +2,70 @@
 
 USE_GEODE_NAMESPACE();
 
-// void connect(char *ipAddress, int port) {
-//     Global *global = Global::get();
+void sendIconData() {
+    auto gm = GameManager::sharedState();
 
-//     ENetAddress address;
-//     enet_address_set_host(&address, ipAddress);
-//     address.port = port;
+    IconData iconData = {
+            gm->getPlayerFrame(),
+            gm->getPlayerShip(),
+            gm->getPlayerBall(),
+            gm->getPlayerBird(),
+            gm->getPlayerDart(),
+            gm->getPlayerRobot(),
+            gm->getPlayerSpider()
+    };
 
-//     global->peer = enet_host_connect(global->host, &address, 1, 0);
-//     if (global->peer == nullptr) {
-//         fmt::print(stderr,
-//                    "No available peers for initiating an ENet connection.\n");
-//         exit(EXIT_FAILURE);
-//     }
-// }
+    Packet(ICON_DATA, sizeof(iconData), reinterpret_cast<uint8_t *>(&iconData))
+            .send(Global::get()->peer);
+}
+
+void sendColorData() {
+    auto gm = GameManager::sharedState();
+
+    auto primaryColor = gm->colorForIdx(gm->m_playerColor);
+    auto secondaryColor = gm->colorForIdx(gm->m_playerColor2);
+
+    ColorData colorData = {
+            {primaryColor.r, primaryColor.g, primaryColor.b},
+            {secondaryColor.r, secondaryColor.g, secondaryColor.b},
+            gm->m_playerGlow
+    };
+
+    Packet(ICON_DATA, sizeof(colorData), reinterpret_cast<uint8_t *>(&colorData))
+            .send(Global::get()->peer);
+}
+
+void updateIcon(SimplePlayer *simplePlayer, IconType iconType, IconData iconData) {
+#if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
+    simplePlayer->updatePlayerFrame(Utility::getIconId(iconType, iconData), iconType);
+#endif
+}
+
+void updateColor(SimplePlayer *simplePlayer, ColorData colorData) {
+#if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
+    simplePlayer->setColor(
+            ccc3(colorData.primaryColor.r,
+                 colorData.primaryColor.g,
+                 colorData.primaryColor.b));
+    simplePlayer->setSecondColor(
+            ccc3(colorData.secondaryColor.r,
+                 colorData.secondaryColor.g,
+                 colorData.secondaryColor.b));
+    simplePlayer->setGlowOutline(colorData.glow);
+#endif
+}
 
 #if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
+
 void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData) {
     simplePlayer->setPosition({renderData.position.x, renderData.position.y});
-    simplePlayer->setRotation(renderData.position.rotation);
-    simplePlayer->setScale(renderData.iconData.scale);
-    simplePlayer->updatePlayerFrame(renderData.iconData.iconId, Utility::getIconType(renderData));
-    #if defined(WIN32)
-    simplePlayer->setColor(
-        ccc3(renderData.iconData.primaryColor.red,
-            renderData.iconData.primaryColor.green,
-            renderData.iconData.primaryColor.blue));
-    simplePlayer->setSecondColor(
-        ccc3(renderData.iconData.secondaryColor.red,
-            renderData.iconData.secondaryColor.green,
-            renderData.iconData.secondaryColor.blue));
-    #endif
+    simplePlayer->setRotation(renderData.rotation);
 }
+
 #else
 void updateRender(PlayerObject *playerObject, BaseRenderData renderData) {
     playerObject->setPosition({renderData.position.x, renderData.position.y});
     playerObject->updateRotation(renderData.position.rotation);
-    playerObject->updateScale(renderData.iconData.scale);
-    playerObject->setColor(
-        ccc3(renderData.iconData.primaryColor.red,
-            renderData.iconData.primaryColor.green,
-            renderData.iconData.primaryColor.blue));
-    playerObject->setSecondColor(
-        ccc3(renderData.iconData.secondaryColor.red,
-            renderData.iconData.secondaryColor.green,
-            renderData.iconData.secondaryColor.blue));
-    playerObject->updateGlowColor();
 }
 #endif
 
@@ -58,18 +76,38 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
         return;
     }
 
+    Global *global = Global::get();
     auto packet = Packet(eNetPacket);
 
-    fmt::print("Host -> Me\nPacket Length: {}\nPacket Type: {}\nPacket's Data Length: {}\nHex:", eNetPacket->dataLength, packet.type, packet.length);
+    fmt::print("Host -> Me\nPacket Length: {}\nPacket Type: {}\nPacket's Data Length: {}\nHex:", eNetPacket->dataLength,
+               packet.type, packet.length);
     for (int x = 0; x < eNetPacket->dataLength; x++) {
         fmt::print(" {:#04x}", packet[x]);
     }
     fmt::print("\n\n");
 
     switch (packet.type) {
+        case (ICON_DATA): {
+            auto incomingIconData = *reinterpret_cast<IncomingIconData *>(packet.data);
+            global->playerDataMap[incomingIconData.playerId].iconData = incomingIconData.iconData;
+            break;
+        }
+        case (COLOR_DATA): {
+            auto incomingColorData = *reinterpret_cast<IncomingColorData *>(packet.data);
+            global->playerDataMap[incomingColorData.playerId].colorData = incomingColorData.colorData;
+
+            auto playerHolder = global->playerHolderList[incomingColorData.playerId];
+
+            if (playerHolder.playerOne)
+                updateColor(playerHolder.playerOne, incomingColorData.colorData);
+            if (playerHolder.playerTwo)
+                updateColor(playerHolder.playerTwo, incomingColorData.colorData);
+
+            break;
+        }
         case (RENDER_DATA): {
             fmt::print("RENDER_DATA\n");
-            
+
             auto incomingRenderData = *reinterpret_cast<IncomingRenderData *>(packet.data);
             fmt::print("Player {}: P1[{} {}]\t P2[{} {}]\n", incomingRenderData.playerId,
                        incomingRenderData.renderData.playerOne.position.x,
@@ -77,10 +115,8 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                        incomingRenderData.renderData.playerTwo.position.x,
                        incomingRenderData.renderData.playerTwo.position.y);
 
-            Global *global = Global::get();
-
             auto check = global->playerHolderList.find(incomingRenderData.playerId);
-            if(check == global->playerHolderList.end()) {
+            if (check == global->playerHolderList.end()) {
                 fmt::print("no exist yes\n");
                 break;
             }
@@ -90,12 +126,17 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 auto playerHolder = global->playerHolderList[incomingRenderData.playerId];
 
                 fmt::print("update render 0 pid {}\n", incomingRenderData.playerId);
+
                 if (playerHolder.playerOne) {
+                    IconType iconType = Utility::getIconType(incomingRenderData.renderData.playerOne.gamemode);
+
                     updateRender(playerHolder.playerOne, incomingRenderData.renderData.playerOne);
                     playerHolder.playerOne->setVisible(incomingRenderData.renderData.isVisible);
                 }
 
                 if (playerHolder.playerTwo) {
+                    IconType iconType = Utility::getIconType(incomingRenderData.renderData.playerTwo.gamemode);
+
                     updateRender(playerHolder.playerTwo, incomingRenderData.renderData.playerTwo);
                     playerHolder.playerTwo->setVisible(incomingRenderData.renderData.isDual);
                 }
@@ -112,7 +153,7 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 Global *global = Global::get();
 
 #if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
-                GameManager* gm = GameManager::sharedState();
+                GameManager *gm = GameManager::sharedState();
 
                 auto playLayer = global->playLayer;
 
@@ -142,11 +183,8 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 player2->addAllParticles();
 #endif
 
-                if(player1)
-                    global->playerHolderList[playerId].playerOne = player1;
-                
-                if(player2)
-                    global->playerHolderList[playerId].playerTwo = player2;
+                global->playerHolderList[playerId].playerOne = player1;
+                global->playerHolderList[playerId].playerTwo = player2;
             });
 
             break;
@@ -159,12 +197,12 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
             executeInGDThread([playerId]() {
                 Global *global = Global::get();
 
-                if(global->playerHolderList[playerId].playerOne) {
+                if (global->playerHolderList[playerId].playerOne) {
                     global->playerHolderList[playerId].playerOne->setVisible(false);
                     global->playerHolderList[playerId].playerOne->removeMeAndCleanup();
                 }
 
-                if(global->playerHolderList[playerId].playerTwo) {
+                if (global->playerHolderList[playerId].playerTwo) {
                     global->playerHolderList[playerId].playerTwo->setVisible(false);
                     global->playerHolderList[playerId].playerTwo->removeMeAndCleanup();
                 }
@@ -195,6 +233,8 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 case ENET_EVENT_TYPE_CONNECT: {
                     global->isConnected = true;
                     fmt::print("Connected to server at port {}\n", Global::get()->host->address.port);
+                    sendColorData();
+                    sendIconData();
                     break;
                 }
                 case ENET_EVENT_TYPE_DISCONNECT: {
@@ -218,7 +258,8 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
 
                     break;
                 }
-                case ENET_EVENT_TYPE_NONE: {} // idk what this is supposed to be
+                case ENET_EVENT_TYPE_NONE: {
+                }
             }
         }
     }
@@ -241,5 +282,6 @@ GEODE_API bool GEODE_CALL geode_load(Mod *mod) {
 }
 
 GEODE_API void GEODE_CALL geode_unload() {
+    enet_peer_disconnect(Global::get()->peer, 0);
     enet_host_destroy(Global::get()->host);
 }
