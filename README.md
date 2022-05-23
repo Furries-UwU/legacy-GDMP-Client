@@ -7,7 +7,7 @@ A Multiplayer mod for a game called "Geometry Dash"
 
 ```shell
 git clone https://github.com/Furries-UwU/GDMP-Client.git --recursive
-cmake . -A Win32
+cmake . -A Win32 # or x86, It need to be 32 bit
 cmake --build . --config Release
 ```
 
