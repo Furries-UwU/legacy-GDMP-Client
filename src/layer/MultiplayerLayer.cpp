@@ -4,6 +4,12 @@ USE_GEODE_NAMESPACE();
 
 // 23973 - default port
 
+void MultiplayerLayer::disconnectButtonCallback(CCObject *object) {
+    Global *global = Global::get();
+
+    if (global->peer || global->isConnected) enet_peer_disconnect(global->peer, 0);
+}
+
 void MultiplayerLayer::connectButtonCallback(CCObject *object) {
     Global *global = Global::get();
 
@@ -64,12 +70,20 @@ bool MultiplayerLayer::init() {
     connectionStatus->setScaleY(0.5);
     addChild(connectionStatus);
 
-    auto confirmButtonSprite = CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
-    confirmButtonSprite->setScaleX(0.5);
-    confirmButtonSprite->setScaleY(0.5);
+    auto disconnectButtonSprite = CCSprite::createWithSpriteFrameName("GJ_stopEditorBtn_001.png");
 
-    auto confirmButton = CCMenuItemSpriteExtra::create(
-            confirmButtonSprite,
+    auto connectButtonSprite = CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
+    connectButtonSprite->setScaleX(0.5);
+    connectButtonSprite->setScaleY(0.5);
+
+    auto disconnectButton = CCMenuItemSpriteExtra::create(
+            disconnectButtonSprite,
+            this,
+            menu_selector(MultiplayerLayer::disconnectButtonCallback)
+    );
+
+    auto connectButton = CCMenuItemSpriteExtra::create(
+            connectButtonSprite,
             this,
             menu_selector(MultiplayerLayer::connectButtonCallback)
     );
@@ -97,11 +111,18 @@ bool MultiplayerLayer::init() {
     addChild(menu);
 
     menu = CCMenu::create();
-    menu->addChild(confirmButton);
-    menu->setPosition({winSize.width / 2, winSize.height / 2 - 55});
+    menu->addChild(connectButton);
+    menu->setPosition({(winSize.width / 2) - 50, winSize.height / 2 - 55});
+    addChild(menu);
+
+    menu = CCMenu::create();
+    menu->addChild(disconnectButton);
+    menu->setPosition({(winSize.width / 2) + 50, winSize.height / 2 - 55});
     addChild(menu);
 
     setKeypadEnabled(true);
+
+    scheduleUpdate();
 
     return true;
 }

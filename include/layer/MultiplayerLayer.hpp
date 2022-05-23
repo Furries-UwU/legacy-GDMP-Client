@@ -13,6 +13,7 @@ protected:
 
     void backButtonCallback(CCObject*);
     void connectButtonCallback(CCObject*);
+    void disconnectButtonCallback(CCObject*);
 
     cocos2d::CCLabelBMFont* connectionStatus;
     CCTextInputNode* ipInput;
