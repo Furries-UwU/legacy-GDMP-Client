@@ -54,13 +54,10 @@ class $modify(PlayLayer) {
         if (!PlayLayer::init(level)) return false;
 
         Global *global = Global::get();
-        if (!global->isConnected) return true;
+        global->playLayer = this;
 
         Packet(JOIN_LEVEL, sizeof(int), reinterpret_cast<uint8_t *>(&level->m_levelID)).send(
                 global->peer);
-
-        global->playLayer = this;
-
         return true;
     }
 

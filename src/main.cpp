@@ -232,9 +232,9 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 }
                 case ENET_EVENT_TYPE_CONNECT: {
                     global->isConnected = true;
-                    fmt::print("Connected to server at port {}\n", Global::get()->host->address.port);
                     sendColorData();
                     sendIconData();
+                    fmt::print("Connected to server at port {}\n", Global::get()->host->address.port);
                     break;
                 }
                 case ENET_EVENT_TYPE_DISCONNECT: {
