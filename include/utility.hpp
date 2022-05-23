@@ -7,10 +7,10 @@
 class Utility
 {
 public:
-    static Gamemode getGamemode(BaseRenderData renderData);
-    static Gamemode getGamemodeFromPlayer(PlayerObject* player);
-    static int getIconID(Gamemode gamemode);
-    static IconType getIconType(BaseRenderData renderData);
-    static IconType getIconType(Gamemode gamemode);
+    static Gamemode getGamemode(BaseRenderData);
+    static Gamemode getGamemodeFromPlayer(PlayerObject*);
+    static int getIconID(Gamemode);
+    static IconType getIconType(BaseRenderData);
+    static IconType getIconType(Gamemode);
     /*static int getIconId(IconType iconType, IconData iconData);*/
 };

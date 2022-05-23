@@ -8,4 +8,4 @@
 #include "utility.hpp"
 #include "global.hpp"
 
-void executeInGDThread(std::function<void()> f);
+void executeInGDThread(std::function<void()>);
