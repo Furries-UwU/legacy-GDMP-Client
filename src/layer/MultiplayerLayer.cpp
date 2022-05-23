@@ -33,6 +33,8 @@ MultiplayerLayer *MultiplayerLayer::create() {
 }
 
 bool MultiplayerLayer::init() {
+    Global *global = Global::get();
+
     auto director = CCDirector::sharedDirector();
     auto winSize = director->getWinSize();
 
@@ -54,6 +56,13 @@ bool MultiplayerLayer::init() {
     portInput->setAllowedChars("0123456789");
     portInput->setString("23973");
     addChild(portInput);
+
+    connectionStatus = CCLabelBMFont::create(
+            fmt::format("Status: {}", global->isConnected ? "Connected" : "Not connected").c_str(), "bigFont.fnt");
+    connectionStatus->setPosition(ccp((director->getWinSize().width / 2), (director->getWinSize().height / 2) - 100));
+    connectionStatus->setScaleX(0.5);
+    connectionStatus->setScaleY(0.5);
+    addChild(connectionStatus);
 
     auto confirmButtonSprite = CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
     confirmButtonSprite->setScaleX(0.5);
@@ -115,4 +124,10 @@ void MultiplayerLayer::switchToCustomLayerButton(CCObject *object) {
     scene->addChild(layer);
 
     CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
+}
+
+void MultiplayerLayer::update(float dt) {
+    Global *global = Global::get();
+
+    connectionStatus->setString(fmt::format("Status: {}", global->isConnected ? "Connected" : "Not connected").c_str());
 }
