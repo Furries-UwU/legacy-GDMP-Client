@@ -2,9 +2,6 @@
 #include "include.hpp"
 
 #include <unordered_map>
-#include <functional>
-#include <thread>
-#include <vector>
 #include <mutex>
 
 #if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
