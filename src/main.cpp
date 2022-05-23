@@ -37,8 +37,17 @@ void updateRender(SimplePlayer *simplePlayer, BaseRenderData renderData) {
 #else
 void updateRender(PlayerObject *playerObject, BaseRenderData renderData) {
     playerObject->setPosition({renderData.position.x, renderData.position.y});
-    playerObject->setRotation(renderData.position.rotation);
-    playerObject->setScale(renderData.iconData.scale);
+    playerObject->updateRotation(renderData.position.rotation);
+    playerObject->updateScale(renderData.iconData.scale);
+    playerObject->setColor(
+        ccc3(renderData.iconData.primaryColor.red,
+            renderData.iconData.primaryColor.green,
+            renderData.iconData.primaryColor.blue));
+    playerObject->setSecondColor(
+        ccc3(renderData.iconData.secondaryColor.red,
+            renderData.iconData.secondaryColor.green,
+            renderData.iconData.secondaryColor.blue));
+    playerObject->updateGlowColor();
 }
 #endif
 
@@ -100,8 +109,10 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
             fmt::print("Join: {}\n", playerId);
 
             executeInGDThread([playerId]() {
-                GameManager* gm = GameManager::sharedState();
                 Global *global = Global::get();
+
+#if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
+                GameManager* gm = GameManager::sharedState();
 
                 auto playLayer = global->playLayer;
 
@@ -110,30 +121,25 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                     return;
                 }
 
-                if (global->playerHolderList[playerId].playerOne != nullptr) {
-                    global->playerHolderList.erase(playerId);
-                } // todo: check if this if statement works
-
                 const auto objectLayer = playLayer->getObjectLayer();
 
-#if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
                 auto *player1 = SimplePlayer::create(1);
-                player1->updatePlayerFrame(1, IconType::Cube);
+                player1->updatePlayerFrame(0, IconType::Cube);
                 player1->setVisible(true);
 
 
                 auto *player2 = SimplePlayer::create(1);
-                player2->updatePlayerFrame(1, IconType::Cube);
+                player2->updatePlayerFrame(0, IconType::Cube);
                 player2->setVisible(false);
 
                 objectLayer->addChild(player1);
                 objectLayer->addChild(player2);
 #else
-                auto *player1 = PlayerObject::create(gm->m_playerFrameRand1 - gm->m_playerFrameRand2, gm->m_playerShipRand1 - gm->m_playerShipRand2, objectLayer);
-                player1->setVisible(true);
+                auto *player1 = PlayerObject::create(0, 0, nullptr);
+                player1->addAllParticles();
 
-                auto *player2 = PlayerObject::create(gm->m_playerFrameRand1 - gm->m_playerFrameRand2, gm->m_playerShipRand1 - gm->m_playerShipRand2, objectLayer);
-                player2->setVisible(false);
+                auto *player2 = PlayerObject::create(0, 0, nullptr);
+                player2->addAllParticles();
 #endif
 
                 if(player1)
