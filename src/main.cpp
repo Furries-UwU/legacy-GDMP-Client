@@ -242,7 +242,7 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                     break;
                 }
                 case ENET_EVENT_TYPE_DISCONNECT: {
-                    for (auto &player: global->playerHolderList) {
+                    for (auto player: global->playerHolderList) {
                         auto playerOne = player.second.playerOne;
                         auto playerTwo = player.second.playerTwo;
 

@@ -56,7 +56,8 @@ class $modify(PlayLayer) {
         Global *global = Global::get();
         global->playLayer = this;
 
-        Packet(JOIN_LEVEL, sizeof(int), reinterpret_cast<uint8_t *>(&level->m_levelID)).send(
+        if (global->isConnected)
+            Packet(JOIN_LEVEL, sizeof(int), reinterpret_cast<uint8_t *>(&level->m_levelID)).send(
                 global->peer);
         return true;
     }
@@ -68,15 +69,17 @@ class $modify(PlayLayer) {
 
         global->playLayer = nullptr;
 
-        for (auto &player: global->playerHolderList) {
+        for (auto player: global->playerHolderList) {
             auto playerOne = player.second.playerOne;
             auto playerTwo = player.second.playerTwo;
 
-            if (playerOne)
+            if (playerOne) {
                 playerOne->removeMeAndCleanup();
+            }
 
-            if (playerTwo)
+            if (playerTwo) {
                 playerTwo->removeMeAndCleanup();
+            }
 
             global->playerHolderList.erase(player.first);
         }
