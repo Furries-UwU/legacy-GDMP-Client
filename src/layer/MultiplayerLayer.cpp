@@ -19,6 +19,8 @@ void MultiplayerLayer::connectButtonCallback(CCObject* object) {
                    "No available peers for initiating an ENet connection.\n");
         return;
     }
+
+    global->isConnected = true;
 }
 
 MultiplayerLayer* MultiplayerLayer::create() {

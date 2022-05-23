@@ -213,6 +213,7 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                     }
 
                     global->playerDataMap.clear();
+                    global->isConnected = false;
 
                     break;
                 }

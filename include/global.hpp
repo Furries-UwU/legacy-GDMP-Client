@@ -33,5 +33,7 @@ public:
 
     PlayLayer *playLayer = nullptr;
 
+    bool isConnected = false;
+
     static Global *get();
 };

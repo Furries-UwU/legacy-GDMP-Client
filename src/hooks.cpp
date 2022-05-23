@@ -52,11 +52,15 @@ class $modify(PlayLayer) {
 
     bool init(GJGameLevel *level) {
         if (!PlayLayer::init(level)) return false;
+        
+        Global* global = Global::get();
+        if (!global->isConnected) return true;
+
         Packet(JOIN_LEVEL, sizeof(int), reinterpret_cast<uint8_t *>(&level->m_levelID)).send(
-                Global::get()->peer); // manually specifying length is bad -rooot
+                global->peer); // manually specifying length is bad -rooot
                 // Just use `sizeof(int)` -hayper
 
-        Global::get()->playLayer = this;
+        global->playLayer = this;
 
         return true;
     }
@@ -83,17 +87,18 @@ class $modify(PlayLayer) {
 
         global->playerDataMap.clear();
 
-        Packet(LEAVE_LEVEL).send(global->peer);
+        if (global->isConnected)
+            Packet(LEAVE_LEVEL).send(global->peer);
     }
 
     void update(float p0) {
         PlayLayer::update(p0);
 
-        if (this->m_isPaused || this->m_player1 == nullptr)
-            return;
-
-        Global *global = Global::get();
         GameManager* gm = GameManager::sharedState();
+        Global* global = Global::get();
+
+        if (!global->isConnected || this->m_isPaused || this->m_player1 == nullptr)
+            return;
 
         PlayerObject *player1 = this->m_player1;
         PlayerObject *player2 = this->m_player2;
