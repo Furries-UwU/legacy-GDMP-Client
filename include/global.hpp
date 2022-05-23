@@ -2,7 +2,6 @@
 #include "include.hpp"
 
 #include <unordered_map>
-#include <mutex>
 
 #if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
 struct PlayerHolder
@@ -26,8 +25,8 @@ struct PlayerData
 class Global
 {
 public:
-    ENetHost *host;
-    ENetPeer *peer;
+    ENetHost *host = nullptr;
+    ENetPeer *peer = nullptr;
 
     std::unordered_map<int, PlayerHolder> playerHolderList;
     std::unordered_map<int, PlayerData> playerDataMap;
