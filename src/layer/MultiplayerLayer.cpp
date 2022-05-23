@@ -7,20 +7,18 @@ USE_GEODE_NAMESPACE();
 void MultiplayerLayer::connectButtonCallback(CCObject* object) {
     Global *global = Global::get();
 
-    if (global->peer != nullptr) enet_peer_disconnect_now(global->peer, {});
+    if (global->peer) enet_peer_disconnect_now(global->peer, {});
 
     ENetAddress address;
     enet_address_set_host(&address, std::string(ipInput->getString()).c_str());
     address.port = atoi(portInput->getString());
 
     global->peer = enet_host_connect(global->host, &address, 1, 0);
-    if (global->peer == nullptr) {
+    if (!global->peer) {
         fmt::print(stderr,
                    "No available peers for initiating an ENet connection.\n");
         return;
     }
-
-    global->isConnected = true;
 }
 
 MultiplayerLayer* MultiplayerLayer::create() {

@@ -185,18 +185,19 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
     while (true) {
         ENetEvent event;
         while (enet_host_service(Global::get()->host, &event, 0) > 0) {
+            Global *global = Global::get();
+
             switch (event.type) {
                 case ENET_EVENT_TYPE_RECEIVE: {
                     onRecievedMessage(event.packet);
                     break;
                 }
                 case ENET_EVENT_TYPE_CONNECT: {
+                    global->isConnected = true;
                     fmt::print("Connected to server at port {}\n", Global::get()->host->address.port);
                     break;
                 }
                 case ENET_EVENT_TYPE_DISCONNECT: {
-                    Global *global = Global::get();
-
                     for (auto &player: global->playerHolderList) {
                         auto playerOne = player.second.playerOne;
                         auto playerTwo = player.second.playerTwo;
