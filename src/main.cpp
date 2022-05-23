@@ -130,6 +130,8 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 if (playerHolder.playerOne) {
                     IconType iconType = Utility::getIconType(incomingRenderData.renderData.playerOne.gamemode);
 
+                    updateIcon(playerHolder.playerOne, iconType, global->playerDataMap[incomingRenderData.playerId].iconData);
+                    updateColor(playerHolder.playerOne, global->playerDataMap[incomingRenderData.playerId].colorData);
                     updateRender(playerHolder.playerOne, incomingRenderData.renderData.playerOne);
                     playerHolder.playerOne->setVisible(incomingRenderData.renderData.isVisible);
                 }
@@ -137,6 +139,8 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
                 if (playerHolder.playerTwo) {
                     IconType iconType = Utility::getIconType(incomingRenderData.renderData.playerTwo.gamemode);
 
+                    updateIcon(playerHolder.playerTwo, iconType, global->playerDataMap[incomingRenderData.playerId].iconData);
+                    updateColor(playerHolder.playerTwo, global->playerDataMap[incomingRenderData.playerId].colorData);
                     updateRender(playerHolder.playerTwo, incomingRenderData.renderData.playerTwo);
                     playerHolder.playerTwo->setVisible(incomingRenderData.renderData.isDual);
                 }
