@@ -42,7 +42,7 @@ void updateIcon(SimplePlayer *simplePlayer, IconType iconType, IconData iconData
 }
 
 void updateColor(SimplePlayer *simplePlayer, ColorData colorData) {
-#if defined(WIN32) || !defined(MAC_EXPERIMENTAL)
+#if defined(WIN32)
     simplePlayer->setColor(
             ccc3(colorData.primaryColor.r,
                  colorData.primaryColor.g,
