@@ -7,7 +7,7 @@ USE_GEODE_NAMESPACE();
 void MultiplayerLayer::connectButtonCallback(CCObject *object) {
     Global *global = Global::get();
 
-    if (global->peer) enet_peer_disconnect(global->peer, 0);
+    if (global->peer || global->isConnected) enet_peer_disconnect(global->peer, 0);
 
     ENetAddress address;
     enet_address_set_host(&address, std::string(ipInput->getString()).c_str());
