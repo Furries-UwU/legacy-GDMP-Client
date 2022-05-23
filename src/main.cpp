@@ -22,8 +22,8 @@ void sendIconData() {
 void sendColorData() {
     auto gm = GameManager::sharedState();
 
-    auto primaryColor = gm->colorForIdx(gm->m_playerColor);
-    auto secondaryColor = gm->colorForIdx(gm->m_playerColor2);
+    auto primaryColor = gm->colorForIdx(gm->getPlayerColor());
+    auto secondaryColor = gm->colorForIdx(gm->getPlayerColor2());
 
     ColorData colorData = {
             {primaryColor.r, primaryColor.g, primaryColor.b},
