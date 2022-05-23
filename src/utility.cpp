@@ -28,7 +28,7 @@ int Utility::getIconID(Gamemode gamemode) {
         default:
         case NONE:
         case CUBE: {
-            return gm->getPlayerShip(); // todo: check if this is even the correct thing
+            return gm->getPlayerFrame();
             break;
         }
         case SHIP: {
