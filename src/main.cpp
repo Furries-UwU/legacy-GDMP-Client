@@ -31,7 +31,7 @@ void sendColorData() {
             gm->m_playerGlow
     };
 
-    Packet(ICON_DATA, sizeof(colorData), reinterpret_cast<uint8_t *>(&colorData))
+    Packet(COLOR_DATA, sizeof(colorData), reinterpret_cast<uint8_t *>(&colorData))
             .send(Global::get()->peer);
 }
 
