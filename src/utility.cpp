@@ -22,11 +22,6 @@ Gamemode Utility::getGamemodeFromPlayer(PlayerObject* player) {
 #endif
 }
 
-IconType Utility::getIconType(BaseRenderData renderData)
-{
-    return Utility::getIconType(renderData.gamemode);
-}
-
 IconType Utility::getIconType(Gamemode gamemode)
 {
     switch (gamemode)

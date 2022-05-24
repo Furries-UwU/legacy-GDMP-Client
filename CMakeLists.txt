@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(GDMP-Client VERSION 1.0.0)
 
+set(CMAKE_OSX_ARCHITECTURES x86_64)
+
 # add_definitions(-DMAC_EXPERIMENTAL)
 
 find_path(GEODE_SDK_PATH
