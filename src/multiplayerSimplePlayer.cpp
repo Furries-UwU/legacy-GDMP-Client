@@ -1,8 +1,18 @@
 #include "multiplayerSimplePlayer.hpp"
 
-MultiplayerSimplePlayer* MultiplayerSimplePlayer::create(int iconId) {
-    auto simplePlayer = SimplePlayer::create(iconId);
-    return dynamic_cast<MultiplayerSimplePlayer*>(simplePlayer);
+MultiplayerSimplePlayer* MultiplayerSimplePlayer::create(int iconID) {
+    auto pRet = new MultiplayerSimplePlayer();
+    if (pRet && pRet->init(iconID))
+    {
+        pRet->autorelease();
+        return pRet;
+    }
+    else
+    {
+        delete pRet;
+        pRet = nullptr;
+        return nullptr;
+    }
 }
 
 void MultiplayerSimplePlayer::update(float dt) {
