@@ -84,16 +84,14 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
 
                 const auto objectLayer = playLayer->getObjectLayer();
 
-                auto playerOne = static_cast<MultiplayerSimplePlayer*>(SimplePlayer::create(0));
-                playerOne->*playerOne->playerId = playerId;
-                playerOne->*playerOne->isPlayerOne = true;
-                playerOne->*playerOne->isMultiplayer = true;
+                auto playerOne = MultiplayerSimplePlayer::create(0);
+                playerOne->playerId = playerId;
+                playerOne->isPlayerOne = true;
 
 
-                auto playerTwo = static_cast<MultiplayerSimplePlayer*>(SimplePlayer::create(0));
-                playerTwo->*playerTwo->playerId = playerId;
-                playerTwo->*playerTwo->isPlayerOne = false;
-                playerTwo->*playerTwo->isMultiplayer = true;
+                auto playerTwo = MultiplayerSimplePlayer::create(0);
+                playerTwo->playerId = playerId;
+                playerTwo->isPlayerOne = false;
 
                 objectLayer->addChild(playerOne);
                 objectLayer->addChild(playerTwo);
