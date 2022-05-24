@@ -20,31 +20,24 @@ void executeInGDThread(std::function<void()> f) {
 }
 
 class $modify(MultiplayerSimplePlayer, SimplePlayer) {
-GEODE_FIELD(int, m_playerId, playerId, 0);
-GEODE_FIELD(bool, m_isMultiplayer, isMultiplayer, false);
-GEODE_FIELD(bool, m_isPlayerOne, isPlayerOne, true);
-
-#if defined(WIN32)
-    GEODE_FIELD(CCLabelBMFont*, m_usernameLabel, usernameLabel, nullptr);
-
-    bool init(int iconID) {
-        if (!SimplePlayer::init(iconID)) return false;
-        usernameLabel() = CCLabelBMFont::create("Unknown", "bigFont.fnt");
-        return true;
-    };
-#endif
+//GEODE_FIELD(int, m_playerId, playerId, 0);
+//GEODE_FIELD(bool, m_isMultiplayer, isMultiplayer, false);
+//GEODE_FIELD(bool, m_isPlayerOne, isPlayerOne, true);
+    field<int> playerId = 0;
+    field<bool> isMultiplayer = false;
+    field<bool> isPlayerOne = true;
 
     void update(float dt) {
         SimplePlayer::update(dt);
 
-        fmt::print("{}", this->*m_isMultiplayer);
+        fmt::print("{}", this->*isMultiplayer);
 
-        if (!(this->*m_isMultiplayer))
+        if (!(this->*isMultiplayer))
             return;
 
         Global *global = Global::get();
 
-        auto playerData = global->playerDataMap.find(this->*m_playerId);
+        auto playerData = global->playerDataMap.find(this->*playerId);
 
         if (playerData == global->playerDataMap.end() || !global->isConnected) {
             this->removeMeAndCleanup();
@@ -53,7 +46,7 @@ GEODE_FIELD(bool, m_isPlayerOne, isPlayerOne, true);
 
         RenderData renderData = playerData->second.renderData;
         BaseRenderData baseRenderData =
-                this->*m_isPlayerOne ? playerData->second.renderData.playerOne
+                this->*isPlayerOne ? playerData->second.renderData.playerOne
                                      : playerData->second.renderData.playerTwo;
         IconData iconData = playerData->second.iconData;
 
@@ -75,7 +68,7 @@ GEODE_FIELD(bool, m_isPlayerOne, isPlayerOne, true);
 
         IconType iconType = Utility::getIconType(baseRenderData.gamemode);
         this->updatePlayerFrame(Utility::getIconId(iconType, iconData), iconType);
-        this->setVisible((this->*m_isPlayerOne && renderData.isVisible) || (renderData.isDual && renderData.isVisible));
+        this->setVisible((this->*isPlayerOne && renderData.isVisible) || (renderData.isDual && renderData.isVisible));
 
 //        (this->*m_usernameLabel)->setString(playerData->second.username.c_str());
     }
