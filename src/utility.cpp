@@ -1,6 +1,6 @@
 #include "utility.hpp"
 
-Gamemode Utility::getGamemodeFromPlayer(PlayerObject* player) {
+Gamemode Utility::getGamemodeFromPlayer(PlayerObject *player) {
 #if WIN32
     if(player->m_isShip) {
         return Gamemode::SHIP;
@@ -22,47 +22,43 @@ Gamemode Utility::getGamemodeFromPlayer(PlayerObject* player) {
 #endif
 }
 
-IconType Utility::getIconType(Gamemode gamemode)
-{
-    switch (gamemode)
-    {
-    default:
-    case CUBE:
-        return IconType::Cube;
-    case SHIP:
-        return IconType::Ship;
-    case BALL:
-        return IconType::Ball;
-    case UFO:
-        return IconType::Ufo;
-    case WAVE:
-        return IconType::Wave;
-    case ROBOT:
-        return IconType::Robot;
-    case SPIDER:
-        return IconType::Spider;
+IconType Utility::getIconType(Gamemode gamemode) {
+    switch (gamemode) {
+        default:
+        case CUBE:
+            return IconType::Cube;
+        case SHIP:
+            return IconType::Ship;
+        case BALL:
+            return IconType::Ball;
+        case UFO:
+            return IconType::Ufo;
+        case WAVE:
+            return IconType::Wave;
+        case ROBOT:
+            return IconType::Robot;
+        case SPIDER:
+            return IconType::Spider;
     }
 }
 
 
-int Utility::getIconId(IconType iconType, IconData iconData)
-{
-    switch (iconType)
-    {
-    default:
-    case IconType::Cube:
-        return iconData.cubeid();
-    case IconType::Ship:
-        return iconData.shipid();
-    case IconType::Ball:
-        return iconData.ballid();
-    case IconType::Ufo:
-        return iconData.ufoid();
-    case IconType::Wave:
-        return iconData.waveid();
-    case IconType::Robot:
-        return  iconData.robotid();
-    case IconType::Spider:
-        return iconData.spiderid();
+int Utility::getIconId(IconType iconType, IconData iconData) {
+    switch (iconType) {
+        default:
+        case IconType::Cube:
+            return iconData.cubeid();
+        case IconType::Ship:
+            return iconData.shipid();
+        case IconType::Ball:
+            return iconData.ballid();
+        case IconType::Ufo:
+            return iconData.ufoid();
+        case IconType::Wave:
+            return iconData.waveid();
+        case IconType::Robot:
+            return iconData.robotid();
+        case IconType::Spider:
+            return iconData.spiderid();
     }
 }

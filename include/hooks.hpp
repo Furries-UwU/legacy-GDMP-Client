@@ -73,11 +73,7 @@ class $modify(PlayLayer) {
             packet.set_type(JOIN_LEVEL);
             packet.set_data(joinLevel.SerializeAsString());
 
-            std::vector<uint8_t> packetData;
-            packet.SerializeToArray(packetData.data(), packet.length());
-
-            auto enetPacket = enet_packet_create(packetData.data(), packetData.size(), ENET_PACKET_FLAG_RELIABLE);
-            enet_peer_send(global->peer, 0, enetPacket);
+            PacketUtility::sendPacket(packet, global->peer);
         }
         return true;
     }
@@ -93,11 +89,7 @@ class $modify(PlayLayer) {
             Packet packet;
             packet.set_type(LEAVE_LEVEL);
 
-            std::vector<uint8_t> packetData;
-            packet.SerializeToArray(packetData.data(), packet.length());
-
-            auto enetPacket = enet_packet_create(packetData.data(), packetData.size(), ENET_PACKET_FLAG_RELIABLE);
-            enet_peer_send(global->peer, 0, enetPacket);
+            PacketUtility::sendPacket(packet, global->peer);
         }
     }
 
@@ -134,17 +126,13 @@ class $modify(PlayLayer) {
         playerTwoBaseRenderData.set_isvisible(player2->isVisible());
 
         RenderData renderData;
-        renderData.set_allocated_playerone(&playerOneBaseRenderData);
+        renderData.set_ßallocated_playerone(&playerOneBaseRenderData);
         renderData.set_allocated_playertwo(&playerTwoBaseRenderData);
 
         Packet packet;
         packet.set_type(RENDER_DATA);
         packet.set_data(renderData.SerializeAsString());
 
-        std::vector<uint8_t> packetData;
-        renderData.SerializeToArray(packetData.data(), packet.length());
-
-        auto enetPacket = enet_packet_create(packetData.data(), packetData.size(), ENET_PACKET_FLAG_RELIABLE);
-        enet_peer_send(global->peer, 0, enetPacket);
+        PacketUtility::sendPacket(packet, global->peer);
     }
 };

@@ -19,11 +19,7 @@ void sendIconData() {
     packet.set_type(ICON_DATA);
     packet.set_data(iconData.SerializeAsString());
 
-    std::vector<uint8_t> packetData;
-    packet.SerializeToArray(packetData.data(), packet.length());
-
-    auto enetPacket = enet_packet_create(packetData.data(), packetData.size(), ENET_PACKET_FLAG_RELIABLE);
-    enet_peer_send(global->peer, 0, enetPacket);
+    PacketUtility::sendPacket(packet, global->peer);
 }
 
 void sendColorData() {
@@ -51,11 +47,7 @@ void sendColorData() {
     packet.set_type(COLOR_DATA);
     packet.set_data(colorData.SerializeAsString());
 
-    std::vector<uint8_t> packetData;
-    packet.SerializeToArray(packetData.data(), packet.length());
-
-    auto enetPacket = enet_packet_create(packetData.data(), packetData.size(), ENET_PACKET_FLAG_RELIABLE);
-    enet_peer_send(Global::get()->peer, 0, enetPacket);
+    PacketUtility::sendPacket(packet, Global::get()->peer);
 }
 
 void onRecievedMessage(ENetPacket *enetPacket) {
