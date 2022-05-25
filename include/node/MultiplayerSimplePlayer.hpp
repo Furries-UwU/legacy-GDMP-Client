@@ -11,6 +11,7 @@ public:
     int playerId = 0;
     bool isPlayerOne = false;
 
-    static MultiplayerSimplePlayer* create(int);
+    static MultiplayerSimplePlayer *create(int);
+
     void update(float delta) override;
 };

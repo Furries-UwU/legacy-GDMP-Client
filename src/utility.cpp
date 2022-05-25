@@ -27,7 +27,6 @@ IconType Utility::getIconType(Gamemode gamemode)
     switch (gamemode)
     {
     default:
-    case NONE:
     case CUBE:
         return IconType::Cube;
     case SHIP:
@@ -52,18 +51,18 @@ int Utility::getIconId(IconType iconType, IconData iconData)
     {
     default:
     case IconType::Cube:
-        return iconData.cubeId;
+        return iconData.cubeid();
     case IconType::Ship:
-        return iconData.shipId;
+        return iconData.shipid();
     case IconType::Ball:
-        return iconData.ballId;
+        return iconData.ballid();
     case IconType::Ufo:
-        return iconData.ufoId;
+        return iconData.ufoid();
     case IconType::Wave:
-        return iconData.waveId;
+        return iconData.waveid();
     case IconType::Robot:
-        return  iconData.robotId;
+        return  iconData.robotid();
     case IconType::Spider:
-        return iconData.spiderId;
+        return iconData.spiderid();
     }
 }

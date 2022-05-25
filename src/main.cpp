@@ -3,74 +3,102 @@
 USE_GEODE_NAMESPACE();
 
 void sendIconData() {
+    auto global = Global::get();
     auto gm = GameManager::sharedState();
 
-    IconData iconData = {
-            gm->getPlayerFrame(),
-            gm->getPlayerShip(),
-            gm->getPlayerBall(),
-            gm->getPlayerBird(),
-            gm->getPlayerDart(),
-            gm->getPlayerRobot(),
-            gm->getPlayerSpider()
-    };
+    IconData iconData;
+    iconData.set_cubeid(gm->getPlayerFrame());
+    iconData.set_shipid(gm->getPlayerShip());
+    iconData.set_ballid(gm->getPlayerBall());
+    iconData.set_ufoid(gm->getPlayerBird());
+    iconData.set_ballid(gm->getPlayerBall());
+    iconData.set_robotid(gm->getPlayerRobot());
+    iconData.set_spiderid(gm->getPlayerSpider());
 
-    Packet(ICON_DATA, sizeof(iconData), reinterpret_cast<uint8_t *>(&iconData))
-            .send(Global::get()->peer);
+    Packet packet;
+    packet.set_type(ICON_DATA);
+    packet.set_data(iconData.SerializeAsString());
+
+    std::vector<uint8_t> packetData;
+    packet.SerializeToArray(packetData.data(), packet.length());
+
+    auto enetPacket = enet_packet_create(packetData.data(), packetData.size(), ENET_PACKET_FLAG_RELIABLE);
+    enet_peer_send(global->peer, 0, enetPacket);
 }
 
 void sendColorData() {
     auto gm = GameManager::sharedState();
 
-    auto primaryColor = gm->colorForIdx(gm->getPlayerColor());
-    auto secondaryColor = gm->colorForIdx(gm->getPlayerColor2());
+    auto primaryColorCocos = gm->colorForIdx(gm->getPlayerColor());
+    auto secondaryColorCocos = gm->colorForIdx(gm->getPlayerColor2());
 
-    ColorData colorData = {
-            {primaryColor.r, primaryColor.g, primaryColor.b},
-            {secondaryColor.r, secondaryColor.g, secondaryColor.b},
-            gm->m_playerGlow
-    };
+    Color primaryColor;
+    primaryColor.set_r(primaryColorCocos.r);
+    primaryColor.set_g(primaryColorCocos.g);
+    primaryColor.set_b(primaryColorCocos.b);
 
-    Packet(COLOR_DATA, sizeof(colorData), reinterpret_cast<uint8_t *>(&colorData))
-            .send(Global::get()->peer);
+    Color secondaryColor;
+    secondaryColor.set_r(secondaryColorCocos.r);
+    secondaryColor.set_g(secondaryColorCocos.g);
+    secondaryColor.set_b(secondaryColorCocos.b);
+
+    ColorData colorData;
+    colorData.set_allocated_primarycolor(&primaryColor);
+    colorData.set_allocated_secondarycolor(&secondaryColor);
+    colorData.set_glow(gm->getPlayerGlow());
+
+    Packet packet;
+    packet.set_type(COLOR_DATA);
+    packet.set_data(colorData.SerializeAsString());
+
+    std::vector<uint8_t> packetData;
+    packet.SerializeToArray(packetData.data(), packet.length());
+
+    auto enetPacket = enet_packet_create(packetData.data(), packetData.size(), ENET_PACKET_FLAG_RELIABLE);
+    enet_peer_send(Global::get()->peer, 0, enetPacket);
 }
 
-void onRecievedMessage(ENetPacket *eNetPacket) {
-    if (eNetPacket->dataLength < 5) {
+void onRecievedMessage(ENetPacket *enetPacket) {
+    if (enetPacket->dataLength < 5) {
         fmt::print("Got invalid packet here");
-        enet_packet_destroy(eNetPacket);
+        enet_packet_destroy(enetPacket);
         return;
     }
 
     Global *global = Global::get();
-    auto packet = Packet(eNetPacket);
 
-    fmt::print("Host -> Me\nPacket Length: {}\nPacket Type: {}\nPacket's Data Length: {}\nHex:", eNetPacket->dataLength,
-               packet.type, packet.length);
-    for (int x = 0; x < eNetPacket->dataLength; x++) {
-        fmt::print(" {:#04x}", packet[x]);
-    }
-    fmt::print("\n\n");
+    Packet packet;
+    packet.ParseFromArray(enetPacket->data, enetPacket->dataLength);
 
-    switch (packet.type) {
+    switch (packet.type()) {
         case (ICON_DATA): {
-            auto incomingIconData = *reinterpret_cast<IncomingIconData *>(packet.data);
-            global->playerDataMap[incomingIconData.playerId].iconData = incomingIconData.iconData;
+            IncomingIconData incomingIconData;
+            incomingIconData.ParseFromString(packet.data());
+
+            global->playerDataMap[incomingIconData.playerid()].iconData = incomingIconData.icondata();
             break;
         }
         case (COLOR_DATA): {
-            auto incomingColorData = *reinterpret_cast<IncomingColorData *>(packet.data);
-            global->playerDataMap[incomingColorData.playerId].colorData = incomingColorData.colorData;
+            IncomingColorData incomingColorData;
+            incomingColorData.ParseFromString(packet.data());
+
+            global->playerDataMap[incomingColorData.playerid()].colorData = incomingColorData.colordata();
             break;
         }
         case (RENDER_DATA): {
-            auto incomingRenderData = *reinterpret_cast<IncomingRenderData *>(packet.data);
-            global->playerDataMap[incomingRenderData.playerId].renderData = incomingRenderData.renderData;
+            IncomingRenderData incomingRenderData;
+            incomingRenderData.ParseFromString(packet.data());
+
+            global->playerDataMap[incomingRenderData.playerid()].renderData = incomingRenderData.renderdata();
             break;
         }
 
         case (JOIN_LEVEL): {
-            int playerId = *reinterpret_cast<int *>(packet.data);
+            IncomingJoinLevel incomingJoinLevel;
+            incomingJoinLevel.ParseFromString(packet.data());
+
+            int playerId = incomingJoinLevel.playerid();
+
             fmt::print("Join: {}\n", playerId);
 
             executeInGDThread([playerId]() {
@@ -101,14 +129,19 @@ void onRecievedMessage(ENetPacket *eNetPacket) {
         }
 
         case (LEAVE_LEVEL): {
-            int playerId = *reinterpret_cast<int *>(packet.data);
+            IncomingLeaveLevel incomingLeaveLevel;
+            incomingLeaveLevel.ParseFromString(packet.data());
+
+            int playerId = incomingLeaveLevel.playerid();
+
             fmt::print("Leave: {}\n", playerId);
+
             global->playerDataMap.erase(playerId);
             break;
         }
     }
 
-    enet_packet_destroy(eNetPacket);
+    enet_packet_destroy(enetPacket);
 }
 
 // PLEASE RUN THIS IN ANOTHER THREAD

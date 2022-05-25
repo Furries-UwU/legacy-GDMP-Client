@@ -5,31 +5,11 @@
 #include <unordered_map>
 
 struct PlayerData {
-    std::string username = "Unknown";
-    IconData iconData = {
-            0, 0, 0, 0, 0, 0, 0
-    };
-    ColorData colorData = {
-            255, 255, 255
-    };
-    RenderData renderData = {
-            {
-                    {
-                            0, 0
-                    },
-                    0,
-                    Gamemode::CUBE
-            },
-            {
-                    {
-                            0, 0
-                    },
-                    0,
-                    Gamemode::CUBE
-            },
-            false,
-            false
-    };
+    int playerId;
+    IconData iconData;
+    ColorData colorData;
+    RenderData renderData;
+    std::string username;
 };
 
 class Global {

@@ -1,13 +1,12 @@
 #pragma once
-#include "struct.hpp"
-#include "enum.hpp"
 
-#include <Geode.hpp>
+#include "include.hpp"
 
-class Utility
-{
+class Utility {
 public:
-    static Gamemode getGamemodeFromPlayer(PlayerObject*);
+    static Gamemode getGamemodeFromPlayer(PlayerObject *);
+
     static int getIconId(IconType, IconData);
+
     static IconType getIconType(Gamemode);
 };

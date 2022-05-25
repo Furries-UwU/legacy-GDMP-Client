@@ -65,8 +65,20 @@ class $modify(PlayLayer) {
         Global *global = Global::get();
         global->playLayer = this;
 
-        if (global->isConnected)
-            Packet(JOIN_LEVEL, sizeof(int), reinterpret_cast<uint8_t *>(&level->m_levelID)).send(global->peer);
+        if (global->isConnected) {
+            JoinLevel joinLevel;
+            joinLevel.set_levelid(level->m_levelID);
+
+            Packet packet;
+            packet.set_type(JOIN_LEVEL);
+            packet.set_data(joinLevel.SerializeAsString());
+
+            std::vector<uint8_t> packetData;
+            packet.SerializeToArray(packetData.data(), packet.length());
+
+            auto enetPacket = enet_packet_create(packetData.data(), packetData.size(), ENET_PACKET_FLAG_RELIABLE);
+            enet_peer_send(global->peer, 0, enetPacket);
+        }
         return true;
     }
 
@@ -77,14 +89,21 @@ class $modify(PlayLayer) {
         global->playLayer = nullptr;
         global->playerDataMap.clear();
 
-        if (global->isConnected)
-            Packet(LEAVE_LEVEL).send(global->peer);
+        if (global->isConnected) {
+            Packet packet;
+            packet.set_type(LEAVE_LEVEL);
+
+            std::vector<uint8_t> packetData;
+            packet.SerializeToArray(packetData.data(), packet.length());
+
+            auto enetPacket = enet_packet_create(packetData.data(), packetData.size(), ENET_PACKET_FLAG_RELIABLE);
+            enet_peer_send(global->peer, 0, enetPacket);
+        }
     }
 
     void update(float p0) {
         PlayLayer::update(p0);
 
-        GameManager *gm = GameManager::sharedState();
         Global *global = Global::get();
 
         if (!global->isConnected || this->m_isPaused || this->m_player1 == nullptr)
@@ -93,22 +112,39 @@ class $modify(PlayLayer) {
         PlayerObject *player1 = this->m_player1;
         PlayerObject *player2 = this->m_player2;
 
-        RenderData renderData{
-                {
-                        {player1->getPositionX(),
-                         player1->getPositionY()},
-                        player1->getRotation(),
-                        Utility::getGamemodeFromPlayer(player1),
-                },
-                {
-                        {player2->getPositionX(),
-                         player2->getPositionY()},
-                        player2->getRotation(),
-                        Utility::getGamemodeFromPlayer(player2),
-                },
-                this->m_isDualMode,
-                player1->isVisible() && player2->isVisible()};
+        Position playerOnePosition;
+        playerOnePosition.set_x(player1->getPositionX());
+        playerOnePosition.set_y(player1->getPositionY());
 
-        Packet(RENDER_DATA, sizeof(renderData), reinterpret_cast<uint8_t *>(&renderData)).send(global->peer);
+
+        BaseRenderData playerOneBaseRenderData;
+        playerOneBaseRenderData.set_allocated_position(&playerOnePosition);
+        playerOneBaseRenderData.set_rotation(player1->getRotation());
+        playerOneBaseRenderData.set_scale(player1->getScale());
+        playerOneBaseRenderData.set_isvisible(player1->isVisible());
+
+        Position playerTwoPosition;
+        playerTwoPosition.set_x(player2->getPositionX());
+        playerTwoPosition.set_y(player2->getPositionY());
+
+        BaseRenderData playerTwoBaseRenderData;
+        playerTwoBaseRenderData.set_allocated_position(&playerTwoPosition);
+        playerTwoBaseRenderData.set_rotation(player2->getRotation());
+        playerTwoBaseRenderData.set_scale(player2->getScale());
+        playerTwoBaseRenderData.set_isvisible(player2->isVisible());
+
+        RenderData renderData;
+        renderData.set_allocated_playerone(&playerOneBaseRenderData);
+        renderData.set_allocated_playertwo(&playerTwoBaseRenderData);
+
+        Packet packet;
+        packet.set_type(RENDER_DATA);
+        packet.set_data(renderData.SerializeAsString());
+
+        std::vector<uint8_t> packetData;
+        renderData.SerializeToArray(packetData.data(), packet.length());
+
+        auto enetPacket = enet_packet_create(packetData.data(), packetData.size(), ENET_PACKET_FLAG_RELIABLE);
+        enet_peer_send(global->peer, 0, enetPacket);
     }
 };

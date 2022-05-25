@@ -1,7 +1,6 @@
 #include "global.hpp"
 
-Global *Global::get()
-{
+Global *Global::get() {
     static auto global = new Global;
     return global;
 }

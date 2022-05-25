@@ -1,24 +1,30 @@
 #pragma once
+
 #include <charconv>
 
 #include "include.hpp"
 #include "global.hpp"
 
-class MultiplayerLayer: public cocos2d::CCLayer {
+class MultiplayerLayer : public cocos2d::CCLayer {
 protected:
     virtual bool init();
+
     virtual void update(float);
+
     virtual void keyBackClicked();
 
 
-    void backButtonCallback(CCObject*);
-    void connectButtonCallback(CCObject*);
-    void disconnectButtonCallback(CCObject*);
+    void backButtonCallback(CCObject *);
 
-    cocos2d::CCLabelBMFont* connectionStatus;
-    CCTextInputNode* ipInput;
-    CCTextInputNode* portInput;
+    void connectButtonCallback(CCObject *);
+
+    void disconnectButtonCallback(CCObject *);
+
+    cocos2d::CCLabelBMFont *connectionStatus;
+    CCTextInputNode *ipInput;
+    CCTextInputNode *portInput;
 public:
-    static MultiplayerLayer* create();
-    void switchToCustomLayerButton(CCObject*);
+    static MultiplayerLayer *create();
+
+    void switchToCustomLayerButton(CCObject *);
 };
