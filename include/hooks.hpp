@@ -126,7 +126,7 @@ class $modify(PlayLayer) {
         playerTwoBaseRenderData.set_isvisible(player2->isVisible());
 
         RenderData renderData;
-        renderData.set_ßallocated_playerone(&playerOneBaseRenderData);
+        renderData.set_allocated_playerone(&playerOneBaseRenderData);
         renderData.set_allocated_playertwo(&playerTwoBaseRenderData);
 
         Packet packet;
