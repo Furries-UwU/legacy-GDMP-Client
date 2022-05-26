@@ -15,8 +15,6 @@ MultiplayerSimplePlayer *MultiplayerSimplePlayer::create(int iconID) {
 void MultiplayerSimplePlayer::update(float dt) {
     SimplePlayer::update(dt);
 
-    fmt::print("This is a test");
-
     Global *global = Global::get();
 
     auto playerData = global->playerDataMap.find(this->playerId);

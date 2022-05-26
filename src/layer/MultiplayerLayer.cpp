@@ -17,7 +17,8 @@ void MultiplayerLayer::connectButtonCallback(CCObject *object) {
 
     ENetAddress address;
     enet_address_set_host(&address, std::string(ipInput->getString()).c_str());
-    address.port = atoi(portInput->getString());
+
+    address.port = std::stoi(portInput->getString());
 
     global->peer = enet_host_connect(global->host, &address, 1, 0);
     if (!global->peer) {
