@@ -7,8 +7,8 @@
 USE_GEODE_NAMESPACE();
 
 class MultiplayerPlayerObject : public PlayerObject {
-private:
-    CCLabelBMFont *usernameLabel;
+//private:
+//    CCLabelBMFont *usernameLabel;
 public:
     int playerId = 0;
     bool isPlayerOne = false;

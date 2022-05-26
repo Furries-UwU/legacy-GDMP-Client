@@ -3,9 +3,9 @@
 bool MultiplayerPlayerObject::init(int p0, int p1, CCLayer* p2) {
     if (!PlayerObject::init(p0, p1, p2)) return false;
 
-    this->usernameLabel = CCLabelBMFont::create("Unknown", "bigFont.fnt");
-    this->usernameLabel->setScale(0.25);
-    this->usernameLabel->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
+//    this->usernameLabel = CCLabelBMFont::create("Unknown", "bigFont.fnt");
+//    this->usernameLabel->setScale(0.25);
+//    this->usernameLabel->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
     return true;
 }
 
@@ -25,8 +25,6 @@ void MultiplayerPlayerObject::update(float dt) {
     PlayerObject::update(dt);
 
     Global *global = Global::get();
-
-    return;
 
     auto playerData = global->playerDataMap.find(this->playerId);
 
@@ -64,6 +62,6 @@ void MultiplayerPlayerObject::update(float dt) {
 
     this->setVisible(baseRenderData.isvisible());
 
-    this->usernameLabel->setString(playerData->second.username.c_str());
-    this->usernameLabel->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
+//    this->usernameLabel->setString(playerData->second.username.c_str());
+//    this->usernameLabel->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
 }

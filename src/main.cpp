@@ -63,12 +63,12 @@ void onRecievedMessage(ENetPacket *enetPacket) {
 
                 const auto objectLayer = playLayer->getObjectLayer();
 
-                auto playerOne = MultiplayerSimplePlayer::create(0);
+                auto playerOne = MultiplayerPlayerObject::create(0, 0, playLayer);
                 playerOne->playerId = playerId;
                 playerOne->isPlayerOne = true;
 
 
-                auto playerTwo = MultiplayerSimplePlayer::create(0);
+                auto playerTwo = MultiplayerPlayerObject::create(0, 0, playLayer);
                 playerTwo->playerId = playerId;
                 playerTwo->isPlayerOne = false;
 
