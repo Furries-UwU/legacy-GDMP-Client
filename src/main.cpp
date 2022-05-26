@@ -66,12 +66,10 @@ void onRecievedMessage(ENetPacket *enetPacket) {
                 auto playerOne = MultiplayerPlayerObject::create(0, 0, playLayer);
                 playerOne->playerId = playerId;
                 playerOne->isPlayerOne = true;
-                playerOne->addAllParticles();
 
                 auto playerTwo = MultiplayerPlayerObject::create(0, 0, playLayer);
                 playerTwo->playerId = playerId;
                 playerTwo->isPlayerOne = false;
-                playerTwo->addAllParticles();
 
                 objectLayer->addChild(playerOne);
                 objectLayer->addChild(playerTwo);
