@@ -66,12 +66,6 @@ class $modify(MenuLayer) {
 
         this->addChild(menu);
 
-        //////////
-
-        auto multiplayerPlayerObject = MultiplayerPlayerObject::create(0, 0, this);
-        multiplayerPlayerObject->setPosition(ccp(size.width / 2, size.height / 2));
-        this->addChild(multiplayerPlayerObject);
-
         return true;
     }
 };
