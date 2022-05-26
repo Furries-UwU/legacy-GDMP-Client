@@ -5,7 +5,7 @@ bool MultiplayerPlayerObject::init(int p0, int p1, CCLayer* p2) {
 
     this->usernameLabel = CCLabelBMFont::create("Unknown", "bigFont.fnt");
     this->usernameLabel->setScale(0.25);
-    this->addChild(this->getParent());
+    this->usernameLabel->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
     return true;
 }
 
@@ -25,6 +25,8 @@ void MultiplayerPlayerObject::update(float dt) {
     PlayerObject::update(dt);
 
     Global *global = Global::get();
+
+    return;
 
     auto playerData = global->playerDataMap.find(this->playerId);
 

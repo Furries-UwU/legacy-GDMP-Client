@@ -4,6 +4,7 @@
 #include <vector>
 #include <mutex>
 
+#include "node/MultiplayerPlayerObject.hpp"
 #include "layer/MultiplayerLayer.hpp"
 #include "include.hpp"
 #include "utility.hpp"
@@ -31,23 +32,16 @@ void executeInGDThread(std::function<void()> f) {
 
 
 class $modify(PlayerObject) {
-    field<CCLabelBMFont*> usernameLabel;
+//    field<CCLabelBMFont*> usernameLabel;
 
     bool init(int p0, int p1, cocos2d::CCLayer* p2) {
         if (!PlayerObject::init(p0, p1, p2)) return false;
-
-        this->*usernameLabel = CCLabelBMFont::create("Unknown", "bigFont.fnt");
-        (this->*usernameLabel)->setScale(0.25);
-        (this->*usernameLabel)->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
-
-        this->getParent()->addChild(this->*usernameLabel);
 
         return true;
     }
 
     void update(float dt) {
         PlayerObject::update(dt);
-//        (this->*usernameLabel)->setPosition(this->getPositionX(), this->getPositionY()+5);
     }
 };
 
@@ -71,6 +65,12 @@ class $modify(MenuLayer) {
         menu->setPosition(size.width - 40, size.height - 40);
 
         this->addChild(menu);
+
+        //////////
+
+        auto multiplayerPlayerObject = MultiplayerPlayerObject::create(0, 0, this);
+        multiplayerPlayerObject->setPosition(ccp(size.width / 2, size.height / 2));
+        this->addChild(multiplayerPlayerObject);
 
         return true;
     }
