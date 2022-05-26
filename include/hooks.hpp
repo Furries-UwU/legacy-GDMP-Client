@@ -29,6 +29,28 @@ void executeInGDThread(std::function<void()> f) {
 //    }
 //};
 
+
+class $modify(PlayerObject) {
+    field<CCLabelBMFont*> usernameLabel;
+
+    bool init(int p0, int p1, cocos2d::CCLayer* p2) {
+        if (!PlayerObject::init(p0, p1, p2)) return false;
+
+        this->*usernameLabel = CCLabelBMFont::create("Unknown", "bigFont.fnt");
+        (this->*usernameLabel)->setScale(0.25);
+        (this->*usernameLabel)->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
+
+        this->getParent()->addChild(this->*usernameLabel);
+
+        return true;
+    }
+
+    void update(float dt) {
+        PlayerObject::update(dt);
+//        (this->*usernameLabel)->setPosition(this->getPositionX(), this->getPositionY()+5);
+    }
+};
+
 class $modify(MenuLayer) {
     bool init() {
         if (!MenuLayer::init()) return false;

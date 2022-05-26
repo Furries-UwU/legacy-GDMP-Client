@@ -6,15 +6,16 @@
 
 USE_GEODE_NAMESPACE();
 
-class MultiplayerSimplePlayer : public SimplePlayer {
+class MultiplayerPlayerObject : public PlayerObject {
 private:
-    CCLabelBMFont* usernameLabel;
+    CCLabelBMFont *usernameLabel;
 public:
     int playerId = 0;
     bool isPlayerOne = false;
 
-    static MultiplayerSimplePlayer *create(int iconID);
+    static MultiplayerPlayerObject *create(int, int, CCLayer*);
 
-    bool init(int iconID);
+    bool init(int p0, int p1, CCLayer* p2);
+
     void update(float delta) override;
 };

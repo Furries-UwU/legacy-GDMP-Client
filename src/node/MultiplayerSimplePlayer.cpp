@@ -5,7 +5,7 @@ bool MultiplayerSimplePlayer::init(int iconID) {
 
     this->usernameLabel = CCLabelBMFont::create("Unknown", "bigFont.fnt");
     this->usernameLabel->setScale(0.25);
-    this->addChild(this->usernameLabel);
+    this->addChild(this->getParent());
     return true;
 }
 
@@ -47,4 +47,5 @@ void MultiplayerSimplePlayer::update(float dt) {
     this->setVisible(baseRenderData.isvisible());
 
     this->usernameLabel->setString(playerData->second.username.c_str());
+    this->usernameLabel->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
 }
