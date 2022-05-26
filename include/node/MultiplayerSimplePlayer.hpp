@@ -15,6 +15,6 @@ public:
 
     static MultiplayerSimplePlayer *create(int);
 
-    bool init(int iconID) override;
+    bool init(int iconID);
     void update(float delta) override;
 };
