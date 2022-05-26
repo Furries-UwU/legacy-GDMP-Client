@@ -61,6 +61,7 @@ void MultiplayerPlayerObject::update(float dt) {
     this->setGlowOpacity(colorData.glow() ? 255 : 0);
 
     this->setVisible(baseRenderData.isvisible());
+    this->setScale(baseRenderData.scale());
 
 //    this->usernameLabel->setString(playerData->second.username.c_str());
 //    this->usernameLabel->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
