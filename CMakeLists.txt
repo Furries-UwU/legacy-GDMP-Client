@@ -7,7 +7,9 @@ project(GDMP-Client VERSION 1.0.0)
 
 set(CMAKE_OSX_ARCHITECTURES x86_64)
 
-# add_definitions(-DMAC_EXPERIMENTAL)
+if (WIN32)
+    set(VCPKG_TARGET_TRIPLET x86-windows-static)
+endif()
 
 find_path(GEODE_SDK_PATH
         NAMES Geode.cmake
