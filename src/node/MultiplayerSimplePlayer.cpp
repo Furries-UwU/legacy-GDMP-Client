@@ -5,6 +5,7 @@ bool MultiplayerSimplePlayer::init(int iconID) {
 
     this->usernameLabel = CCLabelBMFont::create("Unknown", "bigFont.fnt");
     this->usernameLabel->setScale(0.25);
+    this->addChild(this->usernameLabel);
     return true;
 }
 
