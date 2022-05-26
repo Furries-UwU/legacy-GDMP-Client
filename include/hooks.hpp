@@ -114,6 +114,7 @@ class $modify(PlayLayer) {
         playerOneBaseRenderData.set_rotation(player1->getRotation());
         playerOneBaseRenderData.set_scale(player1->getScale());
         playerOneBaseRenderData.set_isvisible(player1->isVisible());
+        playerOneBaseRenderData.set_gamemode(Utility::getGamemodeFromPlayer(player1));
 
         Position playerTwoPosition;
         playerTwoPosition.set_x(player2->getPositionX());
@@ -124,6 +125,7 @@ class $modify(PlayLayer) {
         playerTwoBaseRenderData.set_rotation(player2->getRotation());
         playerTwoBaseRenderData.set_scale(player2->getScale());
         playerTwoBaseRenderData.set_isvisible(player2->isVisible());
+        playerTwoBaseRenderData.set_gamemode(Utility::getGamemodeFromPlayer(player2));
 
         RenderData renderData;
         *renderData.mutable_playerone() = playerOneBaseRenderData;
