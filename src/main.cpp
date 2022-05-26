@@ -11,6 +11,7 @@ void sendIconData() {
     iconData.set_shipid(gm->getPlayerShip());
     iconData.set_ballid(gm->getPlayerBall());
     iconData.set_ufoid(gm->getPlayerBird());
+    iconData.set_waveid(gm->getPlayerDart());
     iconData.set_ballid(gm->getPlayerBall());
     iconData.set_robotid(gm->getPlayerRobot());
     iconData.set_spiderid(gm->getPlayerSpider());
@@ -23,6 +24,7 @@ void sendIconData() {
 }
 
 void sendColorData() {
+    return;
     auto gm = GameManager::sharedState();
 
     auto primaryColorCocos = gm->colorForIdx(gm->getPlayerColor());
