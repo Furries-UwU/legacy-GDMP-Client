@@ -3,9 +3,9 @@
 bool MultiplayerSimplePlayer::init(int iconID) {
     if (!SimplePlayer::init(iconID)) return false;
 
-    this->usernameLabel = CCLabelBMFont::create("Unknown", "bigFont.fnt");
-    this->usernameLabel->setScale(0.25);
-    this->addChild(this->getParent());
+//    this->usernameLabel = CCLabelBMFont::create("Unknown", "bigFont.fnt");
+//    this->usernameLabel->setScale(0.25);
+//    this->addChild(this->getParent());
     return true;
 }
 
@@ -46,6 +46,6 @@ void MultiplayerSimplePlayer::update(float dt) {
     this->updatePlayerFrame(Utility::getIconId(iconType, iconData), iconType);
     this->setVisible(baseRenderData.isvisible());
 
-    this->usernameLabel->setString(playerData->second.username.c_str());
-    this->usernameLabel->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
+//    this->usernameLabel->setString(playerData->second.username.c_str());
+//    this->usernameLabel->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
 }
