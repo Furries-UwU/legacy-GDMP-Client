@@ -8,6 +8,7 @@
 #include "include.hpp"
 #include "utility.hpp"
 #include "global.hpp"
+#include "main.hpp"
 
 USE_GEODE_NAMESPACE();
 
@@ -18,6 +19,15 @@ void executeInGDThread(std::function<void()> f) {
     std::lock_guard<std::mutex> lock(threadMutex);
     functionQueue.push_back(std::move(f));
 }
+
+//class $modify(GJGarageLayer) {
+//    void onBack(cocos2d::CCObject *pSender) {
+//        GJGarageLayer::onBack(pSender);
+//        Utility::sendColorData();
+//        Utility::sendIconData();
+//        Utility::sendUsername();
+//    }
+//};
 
 class $modify(MenuLayer) {
     bool init() {

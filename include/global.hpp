@@ -6,10 +6,10 @@
 
 struct PlayerData {
     int playerId;
+    std::string username;
     IconData iconData;
     ColorData colorData;
     RenderData renderData;
-    std::string username;
 };
 
 class Global {

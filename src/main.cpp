@@ -2,66 +2,6 @@
 
 USE_GEODE_NAMESPACE();
 
-void sendUsername() {
-    auto global = Global::get();
-    auto gm = GameManager::sharedState();
-
-    Packet packet;
-    packet.set_type(USERNAME);
-    packet.set_data(std::string(gm->m_playerName));
-
-    PacketUtility::sendPacket(packet, global->peer);
-}
-
-void sendIconData() {
-    auto global = Global::get();
-    auto gm = GameManager::sharedState();
-
-    IconData iconData;
-    iconData.set_cubeid(gm->getPlayerFrame());
-    iconData.set_shipid(gm->getPlayerShip());
-    iconData.set_ballid(gm->getPlayerBall());
-    iconData.set_ufoid(gm->getPlayerBird());
-    iconData.set_waveid(gm->getPlayerDart());
-    iconData.set_ballid(gm->getPlayerBall());
-    iconData.set_robotid(gm->getPlayerRobot());
-    iconData.set_spiderid(gm->getPlayerSpider());
-
-    Packet packet;
-    packet.set_type(ICON_DATA);
-    packet.set_data(iconData.SerializeAsString());
-
-    PacketUtility::sendPacket(packet, global->peer);
-}
-
-void sendColorData() {
-    auto gm = GameManager::sharedState();
-
-    auto primaryColorCocos = gm->colorForIdx(gm->getPlayerColor());
-    auto secondaryColorCocos = gm->colorForIdx(gm->getPlayerColor2());
-
-    Color primaryColor;
-    primaryColor.set_r(primaryColorCocos.r);
-    primaryColor.set_g(primaryColorCocos.g);
-    primaryColor.set_b(primaryColorCocos.b);
-
-    Color secondaryColor;
-    secondaryColor.set_r(secondaryColorCocos.r);
-    secondaryColor.set_g(secondaryColorCocos.g);
-    secondaryColor.set_b(secondaryColorCocos.b);
-
-    ColorData colorData;
-    *colorData.mutable_primarycolor() = primaryColor;
-    *colorData.mutable_secondarycolor() = secondaryColor;
-    colorData.set_glow(gm->getPlayerGlow());
-
-    Packet packet;
-    packet.set_type(COLOR_DATA);
-    packet.set_data(colorData.SerializeAsString());
-
-    PacketUtility::sendPacket(packet, Global::get()->peer);
-}
-
 void onRecievedMessage(ENetPacket *enetPacket) {
     if (enetPacket->dataLength < 5) {
         fmt::print("Got invalid packet here");
@@ -169,9 +109,9 @@ void onRecievedMessage(ENetPacket *enetPacket) {
                 }
                 case ENET_EVENT_TYPE_CONNECT: {
                     global->isConnected = true;
-                    sendColorData();
-                    sendIconData();
-                    sendUsername();
+                    Utility::sendColorData();
+                    Utility::sendIconData();
+                    Utility::sendUsername();
                     fmt::print("Connected to server at port {}\n", Global::get()->host->address.port);
                     break;
                 }
