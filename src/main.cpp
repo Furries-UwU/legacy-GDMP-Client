@@ -8,7 +8,7 @@ void sendUsername() {
 
     Packet packet;
     packet.set_type(USERNAME);
-    packet.set_data(gm->m_playerName);
+    packet.set_data(std::string(gm->m_playerName));
 
     PacketUtility::sendPacket(packet, global->peer);
 }
