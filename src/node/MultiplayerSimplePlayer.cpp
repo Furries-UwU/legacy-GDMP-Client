@@ -1,5 +1,13 @@
 #include "node/MultiplayerSimplePlayer.hpp"
 
+bool MultiplayerSimplePlayer::init(int iconID) {
+    if (!SimplePlayer::init(iconID)) return false;
+
+    this->usernameLabel = CCLabelBMFont::create("Unknown", "bigFont.fnt");
+    this->usernameLabel->setScale(0.25);
+    return true;
+}
+
 MultiplayerSimplePlayer *MultiplayerSimplePlayer::create(int iconID) {
     auto pRet = new MultiplayerSimplePlayer();
     if (pRet && pRet->init(iconID)) {
@@ -37,5 +45,5 @@ void MultiplayerSimplePlayer::update(float dt) {
     this->updatePlayerFrame(Utility::getIconId(iconType, iconData), iconType);
     this->setVisible(baseRenderData.isvisible());
 
-//        (this->*m_usernameLabel)->setString(playerData->second.username.c_str());
+    this->usernameLabel->setString(playerData->second.username.c_str());
 }
