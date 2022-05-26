@@ -2,6 +2,17 @@
 
 USE_GEODE_NAMESPACE();
 
+void sendUsername() {
+    auto global = Global::get();
+    auto gm = GameManager::sharedState();
+
+    Packet packet;
+    packet.set_type(USERNAME);
+    packet.set_data(gm->m_playerName);
+
+    PacketUtility::sendPacket(packet, global->peer);
+}
+
 void sendIconData() {
     auto global = Global::get();
     auto gm = GameManager::sharedState();
@@ -64,6 +75,13 @@ void onRecievedMessage(ENetPacket *enetPacket) {
     packet.ParseFromArray(enetPacket->data, enetPacket->dataLength);
 
     switch (packet.type()) {
+        case (USERNAME): {
+            IncomingUsername incomingUsername;
+            incomingUsername.ParseFromString(packet.data());
+
+            global->playerDataMap[incomingUsername.playerid()].username = incomingUsername.username();
+            break;
+        }
         case (ICON_DATA): {
             IncomingIconData incomingIconData;
             incomingIconData.ParseFromString(packet.data());
@@ -153,6 +171,7 @@ void onRecievedMessage(ENetPacket *enetPacket) {
                     global->isConnected = true;
                     sendColorData();
                     sendIconData();
+                    sendUsername();
                     fmt::print("Connected to server at port {}\n", Global::get()->host->address.port);
                     break;
                 }
