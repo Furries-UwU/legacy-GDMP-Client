@@ -1,3 +1,4 @@
+#ifndef WIN32
 #include "node/MultiplayerPlayerObject.hpp"
 
 bool MultiplayerPlayerObject::init(int p0, int p1, CCLayer* p2) {
@@ -66,3 +67,4 @@ void MultiplayerPlayerObject::update(float dt) {
 //    this->usernameLabel->setString(playerData->second.username.c_str());
 //    this->usernameLabel->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
 }
+#endif

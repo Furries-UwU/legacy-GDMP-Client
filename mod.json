@@ -5,5 +5,11 @@
   "name": "GDMP-Client",
   "developer": "xhayper",
   "description": "Muiltiplayer mod for Geometry Dash",
-  "binary": "GDMP-Client"
+  "binary": "GDMP-Client",
+  "dependencies": [
+    {
+      "id": "com.geode.api",
+      "required": true
+    }
+  ]
 }

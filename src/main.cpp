@@ -63,6 +63,7 @@ void onRecievedMessage(ENetPacket *enetPacket) {
 
                 const auto objectLayer = playLayer->getObjectLayer();
 
+#ifndef WIN32
                 auto playerOne = MultiplayerPlayerObject::create(0, 0, playLayer);
                 playerOne->playerId = playerId;
                 playerOne->isPlayerOne = true;
@@ -70,7 +71,15 @@ void onRecievedMessage(ENetPacket *enetPacket) {
                 auto playerTwo = MultiplayerPlayerObject::create(0, 0, playLayer);
                 playerTwo->playerId = playerId;
                 playerTwo->isPlayerOne = false;
+#else
+                auto playerOne = MultiplayerSimplePlayer::create(0);
+                playerOne->playerId = playerId;
+                playerOne->isPlayerOne = true;
 
+                auto playerTwo = MultiplayerSimplePlayer::create(0);
+                playerTwo->playerId = playerId;
+                playerTwo->isPlayerOne = false;
+#endif
                 objectLayer->addChild(playerOne);
                 objectLayer->addChild(playerTwo);
             });

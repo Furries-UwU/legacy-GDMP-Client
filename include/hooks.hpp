@@ -31,6 +31,7 @@ void executeInGDThread(std::function<void()> f) {
 //};
 
 
+#ifndef WIN32
 class $modify(PlayerObject) {
 //    field<CCLabelBMFont*> usernameLabel;
 
@@ -44,6 +45,7 @@ class $modify(PlayerObject) {
         PlayerObject::update(dt);
     }
 };
+#endif
 
 class $modify(MenuLayer) {
     bool init() {
