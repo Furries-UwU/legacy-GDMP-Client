@@ -110,7 +110,7 @@ class $modify(PlayLayer) {
 
 
         BaseRenderData playerOneBaseRenderData;
-        playerOneBaseRenderData.set_allocated_position(&playerOnePosition);
+        *playerOneBaseRenderData.mutable_position() = playerOnePosition;
         playerOneBaseRenderData.set_rotation(player1->getRotation());
         playerOneBaseRenderData.set_scale(player1->getScale());
         playerOneBaseRenderData.set_isvisible(player1->isVisible());
@@ -120,14 +120,14 @@ class $modify(PlayLayer) {
         playerTwoPosition.set_y(player2->getPositionY());
 
         BaseRenderData playerTwoBaseRenderData;
-        playerTwoBaseRenderData.set_allocated_position(&playerTwoPosition);
+        *playerTwoBaseRenderData.mutable_position() = playerTwoPosition;
         playerTwoBaseRenderData.set_rotation(player2->getRotation());
         playerTwoBaseRenderData.set_scale(player2->getScale());
         playerTwoBaseRenderData.set_isvisible(player2->isVisible());
 
         RenderData renderData;
-        renderData.set_allocated_playerone(&playerOneBaseRenderData);
-        renderData.set_allocated_playertwo(&playerTwoBaseRenderData);
+        renderData.mutable_playerone() = playerOneBaseRenderData;
+        renderData.mutable_playertwo() = playerTwoBaseRenderData;
 
         Packet packet;
         packet.set_type(RENDER_DATA);

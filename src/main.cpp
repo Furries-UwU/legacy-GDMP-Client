@@ -24,7 +24,6 @@ void sendIconData() {
 }
 
 void sendColorData() {
-    return;
     auto gm = GameManager::sharedState();
 
     auto primaryColorCocos = gm->colorForIdx(gm->getPlayerColor());
@@ -41,8 +40,8 @@ void sendColorData() {
     secondaryColor.set_b(secondaryColorCocos.b);
 
     ColorData colorData;
-    colorData.set_allocated_primarycolor(&primaryColor);
-    colorData.set_allocated_secondarycolor(&secondaryColor);
+    *colorData.mutable_primarycolor() = primaryColor;
+    *colorData.mutable_secondarycolor() = secondaryColor;
     colorData.set_glow(gm->getPlayerGlow());
 
     Packet packet;
@@ -170,6 +169,8 @@ void onRecievedMessage(ENetPacket *enetPacket) {
 }
 
 GEODE_API bool GEODE_CALL geode_load(Mod *mod) {
+    GOOGLE_PROTOBUF_VERIFY_VERSION;
+
     if (enet_initialize() != 0) {
         fmt::print(stderr, "An error occurred while initializing ENet.\n");
         return false;
