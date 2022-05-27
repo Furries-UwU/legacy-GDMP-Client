@@ -156,8 +156,8 @@ class $modify(PlayLayer) {
         playerTwoBaseRenderData.set_gamemode(Utility::getGamemodeFromPlayer(player2));
 
         RenderData renderData;
-        *renderData.mutable_playerone() = playerOneBaseRenderData;
-        *renderData.mutable_playertwo() = playerTwoBaseRenderData;
+        renderData.mutable_playerone()->CopyFrom(playerOneBaseRenderData);
+        renderData.mutable_playertwo()->CopyFrom(playerTwoBaseRenderData);
 
         Packet packet;
         packet.set_type(RENDER_DATA);
