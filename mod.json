@@ -6,10 +6,5 @@
   "developer": "xhayper",
   "description": "Multiplayer mod",
   "binary": "GDMP-Client",
-  "dependencies": [
-    {
-      "id": "com.geode.api",
-      "required": true
-    }
-  ]
+  "dependencies": null
 }
