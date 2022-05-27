@@ -16,39 +16,48 @@ void onRecievedMessage(ENetPacket *enetPacket) {
 
     switch (packet.type()) {
         case (USERNAME): {
-            IncomingUsername incomingUsername;
-            incomingUsername.ParseFromString(packet.data());
+            IncomingPacket incomingUsernamePacket;
+            incomingUsernamePacket.ParseFromString(packet.data());
 
-            global->playerDataMap[incomingUsername.playerid()].username = incomingUsername.username();
+            global->playerDataMap[incomingUsernamePacket.playerid()].username = incomingUsernamePacket.data();
             break;
         }
         case (ICON_DATA): {
-            IncomingIconData incomingIconData;
-            incomingIconData.ParseFromString(packet.data());
+            IncomingPacket incomingIconDataPacket;
+            incomingIconDataPacket.ParseFromString(packet.data());
+            
+            IconData iconData;
+            iconData.ParseFromString(packet.data());
 
-            global->playerDataMap[incomingIconData.playerid()].iconData = incomingIconData.icondata();
+            global->playerDataMap[incomingIconDataPacket.playerid()].iconData = iconData;
             break;
         }
         case (COLOR_DATA): {
-            IncomingColorData incomingColorData;
-            incomingColorData.ParseFromString(packet.data());
+            IncomingPacket incomingColorDataPacket;
+            incomingColorDataPacket.ParseFromString(packet.data());
 
-            global->playerDataMap[incomingColorData.playerid()].colorData = incomingColorData.colordata();
+            ColorData colorData;
+            colorData.ParseFromString(incomingColorDataPacket.data());
+
+            global->playerDataMap[incomingColorDataPacket.playerid()].colorData = colorData;
             break;
         }
         case (RENDER_DATA): {
-            IncomingRenderData incomingRenderData;
-            incomingRenderData.ParseFromString(packet.data());
+            IncomingPacket incomingRenderDataPacket;
+            incomingRenderDataPacket.ParseFromString(packet.data());
 
-            global->playerDataMap[incomingRenderData.playerid()].renderData = incomingRenderData.renderdata();
+            RenderData renderData;
+            renderData.ParseFromString(incomingRenderDataPacket.data());
+
+            global->playerDataMap[incomingRenderDataPacket.playerid()].renderData = renderData;
             break;
         }
 
         case (JOIN_LEVEL): {
-            IncomingJoinLevel incomingJoinLevel;
-            incomingJoinLevel.ParseFromString(packet.data());
+            IncomingPacket incomingJoinLevelPacket;
+            incomingJoinLevelPacket.ParseFromString(packet.data());
 
-            int playerId = incomingJoinLevel.playerid();
+            int playerId = incomingJoinLevelPacket.playerid();
 
             fmt::print("Join: {}\n", playerId);
 
@@ -88,10 +97,10 @@ void onRecievedMessage(ENetPacket *enetPacket) {
         }
 
         case (LEAVE_LEVEL): {
-            IncomingLeaveLevel incomingLeaveLevel;
-            incomingLeaveLevel.ParseFromString(packet.data());
+            IncomingPacket incomingLeaveLevelPacket;
+            incomingLeaveLevelPacket.ParseFromString(packet.data());
 
-            int playerId = incomingLeaveLevel.playerid();
+            int playerId = incomingLeaveLevelPacket.playerid();
 
             fmt::print("Leave: {}\n", playerId);
 
