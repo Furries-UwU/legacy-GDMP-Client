@@ -3,7 +3,7 @@
 USE_GEODE_NAMESPACE();
 
 void onRecievedMessage(ENetPacket *enetPacket) {
-    if (enetPacket->dataLength < 5) {
+    if (enetPacket->dataLength < 1) {
         fmt::print("Got invalid packet here");
         enet_packet_destroy(enetPacket);
         return;
@@ -33,7 +33,7 @@ void onRecievedMessage(ENetPacket *enetPacket) {
         }
 
         case (JOIN_LEVEL): {
-            int playerId = incomingPacket.playerid();
+            int playerId = incomingPacket.icondata().cubeid();
 
             fmt::print("Join: {}\n", playerId);
 
@@ -99,9 +99,13 @@ void onRecievedMessage(ENetPacket *enetPacket) {
                 }
                 case ENET_EVENT_TYPE_CONNECT: {
                     global->isConnected = true;
-                    Utility::sendColorData();
-                    Utility::sendIconData();
-                    Utility::sendUsername();
+                    auto t0 = std::thread([]() {
+                        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                        Utility::sendColorData();
+                        Utility::sendIconData();
+                        Utility::sendUsername();
+                    });
+                    t0.detach();
                     fmt::print("Connected to server at port {}\n", Global::get()->host->address.port);
                     break;
                 }

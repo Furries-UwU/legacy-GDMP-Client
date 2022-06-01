@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <thread>
+#include <chrono>
 
 #include "node/MultiplayerSimplePlayer.hpp"
 #include "include.hpp"

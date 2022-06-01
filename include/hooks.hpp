@@ -90,15 +90,30 @@ class $modify(PlayLayer) {
     bool init(GJGameLevel *level) {
         if (!PlayLayer::init(level)) return false;
 
+        fmt::print("init level\n");
         Global *global = Global::get();
         global->playLayer = this;
 
         if (global->isConnected) {
+            fmt::print("level id {}\n", level->m_levelID);
+
+            IconData iconData;
+            iconData.set_cubeid(level->m_levelID);
+            iconData.set_shipid(level->m_levelID);
+            iconData.set_ballid(level->m_levelID);
+            iconData.set_ufoid(level->m_levelID);
+            iconData.set_waveid(level->m_levelID);
+            iconData.set_ballid(level->m_levelID);
+            iconData.set_robotid(level->m_levelID);
+            iconData.set_spiderid(level->m_levelID);
+
             Packet packet;
             packet.set_type(JOIN_LEVEL);
-            packet.set_levelid(level->m_levelID);
+            packet.mutable_icondata()->CopyFrom(iconData);
 
             PacketUtility::sendPacket(global->peer, packet);
+        } else {
+            fmt::print("not connected!\n");
         }
         return true;
     }
@@ -114,6 +129,7 @@ class $modify(PlayLayer) {
             Packet packet;
             packet.set_type(LEAVE_LEVEL);
 
+            fmt::print("send packet! a(leave)\n");
             PacketUtility::sendPacket(global->peer, packet);
         }
     }

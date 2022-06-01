@@ -64,14 +64,17 @@ int Utility::getIconId(IconType iconType, IconData iconData) {
 }
 
 void Utility::sendUsername() {
+    /*
     auto global = Global::get();
     auto gm = GameManager::sharedState();
 
     Packet packet;
-    packet.set_type(USERNAME);
     packet.set_bytedata(std::string(gm->m_playerName));
 
+    packet.set_type(USERNAME);
+
     PacketUtility::sendPacket(global->peer, packet);
+    */
 }
 
 void Utility::sendIconData() {
