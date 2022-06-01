@@ -94,14 +94,11 @@ class $modify(PlayLayer) {
         global->playLayer = this;
 
         if (global->isConnected) {
-            JoinLevel joinLevel;
-            joinLevel.set_levelid(level->m_levelID);
-
             Packet packet;
             packet.set_type(JOIN_LEVEL);
-            packet.set_data(joinLevel.SerializeAsString());
+            packet.set_bytedata(reinterpret_cast<char*>(level->m_levelID));
 
-            PacketUtility::sendPacket(packet, global->peer);
+            PacketUtility::sendPacket(global->peer, packet);
         }
         return true;
     }
@@ -117,7 +114,7 @@ class $modify(PlayLayer) {
             Packet packet;
             packet.set_type(LEAVE_LEVEL);
 
-            PacketUtility::sendPacket(packet, global->peer);
+            PacketUtility::sendPacket(global->peer, packet);
         }
     }
 
@@ -161,8 +158,8 @@ class $modify(PlayLayer) {
 
         Packet packet;
         packet.set_type(RENDER_DATA);
-        packet.set_data(renderData.SerializeAsString());
+        packet.mutable_renderdata()->CopyFrom(renderData);
 
-        PacketUtility::sendPacket(packet, global->peer);
+        PacketUtility::sendPacket(global->peer, packet);
     }
 };

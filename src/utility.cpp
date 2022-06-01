@@ -69,9 +69,9 @@ void Utility::sendUsername() {
 
     Packet packet;
     packet.set_type(USERNAME);
-    packet.set_data(std::string(gm->m_playerName));
+    packet.set_bytedata(std::string(gm->m_playerName));
 
-    PacketUtility::sendPacket(packet, global->peer);
+    PacketUtility::sendPacket(global->peer, packet);
 }
 
 void Utility::sendIconData() {
@@ -90,9 +90,9 @@ void Utility::sendIconData() {
 
     Packet packet;
     packet.set_type(ICON_DATA);
-    packet.set_data(iconData.SerializeAsString());
+    packet.mutable_icondata()->CopyFrom(iconData);
 
-    PacketUtility::sendPacket(packet, global->peer);
+    PacketUtility::sendPacket(global->peer, packet);
 }
 
 void Utility::sendColorData() {
@@ -112,13 +112,13 @@ void Utility::sendColorData() {
     secondaryColor.set_b(secondaryColorCocos.b);
 
     ColorData colorData;
-    *colorData.mutable_primarycolor() = primaryColor;
-    *colorData.mutable_secondarycolor() = secondaryColor;
+    colorData.mutable_primarycolor()->CopyFrom(primaryColor);
+    colorData.mutable_secondarycolor()->CopyFrom(secondaryColor);
     colorData.set_glow(gm->getPlayerGlow());
 
     Packet packet;
     packet.set_type(COLOR_DATA);
-    packet.set_data(colorData.SerializeAsString());
+    packet.mutable_colordata()->CopyFrom(colorData);
 
-    PacketUtility::sendPacket(packet, Global::get()->peer);
+    PacketUtility::sendPacket(Global::get()->peer, packet);
 }
