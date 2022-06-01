@@ -96,7 +96,7 @@ class $modify(PlayLayer) {
         if (global->isConnected) {
             Packet packet;
             packet.set_type(JOIN_LEVEL);
-            packet.set_bytedata(reinterpret_cast<char*>(level->m_levelID));
+            packet.set_levelid(level->m_levelID);
 
             PacketUtility::sendPacket(global->peer, packet);
         }
