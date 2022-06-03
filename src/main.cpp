@@ -100,7 +100,6 @@ void onReceivedMessage(ENetPacket *enetPacket) {
                         std::this_thread::sleep_for(std::chrono::milliseconds(50));
                         Utility::sendColorData();
                         Utility::sendIconData();
-                        Utility::sendUsername();
                     });
                     t0.detach();
                     fmt::print("Connected to server at port {}\n", Global::get()->host->address.port);

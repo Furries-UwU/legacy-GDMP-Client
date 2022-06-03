@@ -86,7 +86,6 @@ class $modify(CCScheduler) {
 };
 
 class $modify(PlayLayer) {
-
     bool init(GJGameLevel *level) {
         if (!PlayLayer::init(level)) return false;
 
@@ -97,7 +96,7 @@ class $modify(PlayLayer) {
         if (global->isConnected) {
             fmt::print("level id {}\n", level->m_levelID);
 
-            Packet packet{JOIN_LEVEL, sizeof(uint32_t), reinterpret_cast<uint8_t *>((uint32_t) level->m_levelID)};
+            Packet packet{JOIN_LEVEL, sizeof(int32_t), reinterpret_cast<uint8_t *>((int32_t) level->m_levelID)};
             packet.send(global->peer);
         } else {
             fmt::print("not connected!\n");
@@ -123,6 +122,8 @@ class $modify(PlayLayer) {
 
     void update(float p0) {
         PlayLayer::update(p0);
+
+        fmt::print("update playlayer\n");
 
         Global *global = Global::get();
 
