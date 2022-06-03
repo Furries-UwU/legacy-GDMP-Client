@@ -57,7 +57,6 @@ void onReceivedMessage(ENetPacket *enetPacket) {
             break;
         }
 
-        /*
         case (ICON_DATA): {
             IncomingIconData incomingData = *reinterpret_cast<IncomingIconData *>(incomingPacket.data);
             global->playerDataMap[incomingData.playerId].iconData = incomingData.iconData;
@@ -68,7 +67,7 @@ void onReceivedMessage(ENetPacket *enetPacket) {
             global->playerDataMap[incomingData.playerId].colorData = incomingData.colorData;
             break;
         }
-         */
+
         case (RENDER_DATA): {
             IncomingRenderData incomingData = *reinterpret_cast<IncomingRenderData *>(incomingPacket.data);
             global->playerDataMap[incomingData.playerId].renderData = incomingData.renderData;

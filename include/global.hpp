@@ -7,8 +7,8 @@
 struct PlayerData {
     int playerId{};
     std::string username{};
-    //IconData iconData{};
-    //ColorData colorData{};
+    IconData iconData{};
+    ColorData colorData{};
     RenderData renderData{};
 };
 

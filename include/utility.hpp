@@ -7,7 +7,7 @@ class Utility {
 public:
     static Gamemode getGamemodeFromPlayer(PlayerObject *);
 
-    static int getIconId(IconType, RenderData);
+    static int getIconId(IconType, IconData);
 
     static IconType getIconType(Gamemode);
 

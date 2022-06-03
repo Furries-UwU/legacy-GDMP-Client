@@ -38,13 +38,14 @@ void MultiplayerSimplePlayer::update(float dt) {
     this->setPosition({baseRenderData.x, baseRenderData.y});
 
     IconType iconType = Utility::getIconType(baseRenderData.gamemode);
-    this->updatePlayerFrame(Utility::getIconId(iconType, playerData->second.renderData), iconType);
+    this->updatePlayerFrame(Utility::getIconId(iconType, playerData->second.iconData), iconType);
 
-    auto primaryColor = playerData->second.renderData.primaryColor;
-    auto secondaryColor = playerData->second.renderData.secondaryColor;
-
+    /*
+    auto primaryColor = playerData->second.colorData.primaryColor;
+    auto secondaryColor = playerData->second.colorData.secondaryColor;
     this->setColor(ccc3(primaryColor.r, primaryColor.g, primaryColor.b));
     this->setSecondColor(ccc3(secondaryColor.r, secondaryColor.g, secondaryColor.b));
+     */
 
     this->setVisible(baseRenderData.visible);
 }
