@@ -5,11 +5,11 @@
 #include <unordered_map>
 
 struct PlayerData {
-    int playerId;
-    std::string username;
-    IconData iconData;
-    ColorData colorData;
-    RenderData renderData;
+    int playerId{};
+    std::string username{};
+    //IconData iconData{};
+    //ColorData colorData{};
+    RenderData renderData{};
 };
 
 class Global {

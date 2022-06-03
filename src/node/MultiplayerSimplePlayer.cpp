@@ -9,14 +9,13 @@ bool MultiplayerSimplePlayer::init(int iconID) {
     return true;
 }
 
-MultiplayerSimplePlayer *MultiplayerSimplePlayer::create(int iconID) {
-    auto pRet = new MultiplayerSimplePlayer();
+MultiplayerSimplePlayer* MultiplayerSimplePlayer::create(int iconID) {
+    auto* pRet = new MultiplayerSimplePlayer();
     if (pRet && pRet->init(iconID)) {
-        pRet->autorelease();
+        //pRet->autorelease();
         return pRet;
     } else {
         delete pRet;
-        pRet = nullptr;
         return nullptr;
     }
 }
@@ -33,18 +32,19 @@ void MultiplayerSimplePlayer::update(float dt) {
         return;
     }
 
-    BaseRenderData baseRenderData =
-            this->isPlayerOne ? playerData->second.renderData.playerOne
-                              : playerData->second.renderData.playerTwo;
-    IconData iconData = playerData->second.iconData;
+    BaseRenderData baseRenderData = this->isPlayerOne ? playerData->second.renderData.playerOne : playerData->second.renderData.playerTwo;
 
     this->setRotation(baseRenderData.rotation);
     this->setPosition({baseRenderData.x, baseRenderData.y});
 
     IconType iconType = Utility::getIconType(baseRenderData.gamemode);
-    this->updatePlayerFrame(Utility::getIconId(iconType, iconData), iconType);
-    this->setVisible(baseRenderData.visible);
+    this->updatePlayerFrame(Utility::getIconId(iconType, playerData->second.renderData), iconType);
 
-//    this->usernameLabel->setString(playerData->second.username.c_str());
-//    this->usernameLabel->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));
+    auto primaryColor = playerData->second.renderData.primaryColor;
+    auto secondaryColor = playerData->second.renderData.secondaryColor;
+
+    this->setColor(ccc3(primaryColor.r, primaryColor.g, primaryColor.b));
+    this->setSecondColor(ccc3(secondaryColor.r, secondaryColor.g, secondaryColor.b));
+
+    this->setVisible(baseRenderData.visible);
 }

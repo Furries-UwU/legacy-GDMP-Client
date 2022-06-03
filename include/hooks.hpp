@@ -96,8 +96,12 @@ class $modify(PlayLayer) {
         if (global->isConnected) {
             fmt::print("level id {}\n", level->m_levelID);
 
-            Packet packet{JOIN_LEVEL, sizeof(int32_t), reinterpret_cast<uint8_t *>((int32_t) level->m_levelID)};
+            int32_t levelId = level->m_levelID;
+            Packet packet{JOIN_LEVEL, sizeof(levelId), reinterpret_cast<uint8_t *>(&levelId)};
             packet.send(global->peer);
+            //Utility::sendColorData();
+            //Utility::sendIconData();
+            fmt::print("sent join packet\n");
         } else {
             fmt::print("not connected!\n");
         }
@@ -123,8 +127,6 @@ class $modify(PlayLayer) {
     void update(float p0) {
         PlayLayer::update(p0);
 
-        fmt::print("update playlayer\n");
-
         Global *global = Global::get();
 
         if (!global->isConnected || this->m_isPaused || this->m_player1 == nullptr)
@@ -147,7 +149,19 @@ class $modify(PlayLayer) {
                                 player2->isVisible(),
                                 Utility::getGamemodeFromPlayer(player2)};
 
-        RenderData renderData{p1Render, p2Render};
+        RenderData renderData{p1Render,
+                              p2Render,
+                              Color{0,0,0},
+                              Color{255,255,255},
+                              true,
+                              1,
+                              1,
+                              1,
+                              1,
+                              1,
+                              1,
+                              1
+        };
 
         Packet packet {RENDER_DATA, sizeof(renderData), reinterpret_cast<uint8_t *>(&renderData)};
         packet.send(global->peer);

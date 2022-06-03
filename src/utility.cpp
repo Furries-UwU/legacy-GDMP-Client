@@ -42,26 +42,27 @@ IconType Utility::getIconType(Gamemode gamemode) {
     }
 }
 
-int Utility::getIconId(IconType iconType, IconData iconData) {
+int Utility::getIconId(IconType iconType, RenderData renderData) {
     switch (iconType) {
         default:
         case IconType::Cube:
-            return iconData.cubeId;
+            return renderData.cubeId;
         case IconType::Ship:
-            return iconData.shipId;
+            return renderData.shipId;
         case IconType::Ball:
-            return iconData.ballId;
+            return renderData.ballId;
         case IconType::Ufo:
-            return iconData.ufoId;
+            return renderData.ufoId;
         case IconType::Wave:
-            return iconData.waveId;
+            return renderData.waveId;
         case IconType::Robot:
-            return iconData.robotId;
+            return renderData.robotId;
         case IconType::Spider:
-            return iconData.spiderId;
+            return renderData.spiderId;
     }
 }
 
+/*
 void Utility::sendIconData() {
     auto global = Global::get();
     auto gm = GameManager::sharedState();
@@ -78,7 +79,9 @@ void Utility::sendIconData() {
     Packet packet{ICON_DATA, sizeof(iconData), reinterpret_cast<uint8_t *>(&iconData)};
     packet.send(global->peer);
 }
+*/
 
+/*
 void Utility::sendColorData() {
     auto gm = GameManager::sharedState();
 
@@ -103,3 +106,4 @@ void Utility::sendColorData() {
     Packet packet{COLOR_DATA, sizeof(colorData), reinterpret_cast<uint8_t *>(&colorData)};
     packet.send(Global::get()->peer);
 }
+*/
