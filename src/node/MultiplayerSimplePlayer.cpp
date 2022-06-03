@@ -33,18 +33,17 @@ void MultiplayerSimplePlayer::update(float dt) {
         return;
     }
 
-    RenderData renderData = playerData->second.renderData;
     BaseRenderData baseRenderData =
-            this->isPlayerOne ? playerData->second.renderData.playerone()
-                              : playerData->second.renderData.playertwo();
+            this->isPlayerOne ? playerData->second.renderData.playerOne
+                              : playerData->second.renderData.playerTwo;
     IconData iconData = playerData->second.iconData;
 
-    this->setRotation(baseRenderData.rotation());
-    this->setPosition({baseRenderData.position().x(), baseRenderData.position().y()});
+    this->setRotation(baseRenderData.rotation);
+    this->setPosition({baseRenderData.x, baseRenderData.y});
 
-    IconType iconType = Utility::getIconType(baseRenderData.gamemode());
+    IconType iconType = Utility::getIconType(baseRenderData.gamemode);
     this->updatePlayerFrame(Utility::getIconId(iconType, iconData), iconType);
-    this->setVisible(baseRenderData.isvisible());
+    this->setVisible(baseRenderData.visible);
 
 //    this->usernameLabel->setString(playerData->second.username.c_str());
 //    this->usernameLabel->setPosition(ccp(this->getPositionX(), this->getPositionY()+5));

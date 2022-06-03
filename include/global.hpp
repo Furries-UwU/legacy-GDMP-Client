@@ -17,7 +17,8 @@ public:
     ENetHost *host = nullptr;
     ENetPeer *peer = nullptr;
 
-    std::unordered_map<int, PlayerData> playerDataMap;
+    // playerId, PlayerData: list of all players connected
+    std::unordered_map<uint16_t, PlayerData> playerDataMap;
 
     PlayLayer *playLayer = nullptr;
 

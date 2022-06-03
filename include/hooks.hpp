@@ -97,21 +97,8 @@ class $modify(PlayLayer) {
         if (global->isConnected) {
             fmt::print("level id {}\n", level->m_levelID);
 
-            IconData iconData;
-            iconData.set_cubeid(level->m_levelID);
-            iconData.set_shipid(level->m_levelID);
-            iconData.set_ballid(level->m_levelID);
-            iconData.set_ufoid(level->m_levelID);
-            iconData.set_waveid(level->m_levelID);
-            iconData.set_ballid(level->m_levelID);
-            iconData.set_robotid(level->m_levelID);
-            iconData.set_spiderid(level->m_levelID);
-
-            Packet packet;
-            packet.set_type(JOIN_LEVEL);
-            packet.mutable_icondata()->CopyFrom(iconData);
-
-            PacketUtility::sendPacket(global->peer, packet);
+            Packet packet{JOIN_LEVEL, sizeof(uint32_t), reinterpret_cast<uint8_t *>((uint32_t) level->m_levelID)};
+            packet.send(global->peer);
         } else {
             fmt::print("not connected!\n");
         }
@@ -127,10 +114,10 @@ class $modify(PlayLayer) {
 
         if (global->isConnected) {
             Packet packet;
-            packet.set_type(LEAVE_LEVEL);
-
+            packet.type = LEAVE_LEVEL;
+            packet.length = 0;
             fmt::print("send packet! a(leave)\n");
-            PacketUtility::sendPacket(global->peer, packet);
+            packet.send(global->peer);
         }
     }
 
@@ -145,37 +132,23 @@ class $modify(PlayLayer) {
         PlayerObject *player1 = this->m_player1;
         PlayerObject *player2 = this->m_player2;
 
-        Position playerOnePosition;
-        playerOnePosition.set_x(player1->getPositionX());
-        playerOnePosition.set_y(player1->getPositionY());
+        BaseRenderData p1Render{player1->getPositionX(),
+                                player1->getPositionY(),
+                                player1->getRotation(),
+                                player1->getScale(),
+                                player1->isVisible(),
+                                Utility::getGamemodeFromPlayer(player1)};
 
+        BaseRenderData p2Render{player2->getPositionX(),
+                                player2->getPositionY(),
+                                player2->getRotation(),
+                                player2->getScale(),
+                                player2->isVisible(),
+                                Utility::getGamemodeFromPlayer(player2)};
 
-        BaseRenderData playerOneBaseRenderData;
-        *playerOneBaseRenderData.mutable_position() = playerOnePosition;
-        playerOneBaseRenderData.set_rotation(player1->getRotation());
-        playerOneBaseRenderData.set_scale(player1->getScale());
-        playerOneBaseRenderData.set_isvisible(player1->isVisible());
-        playerOneBaseRenderData.set_gamemode(Utility::getGamemodeFromPlayer(player1));
+        RenderData renderData{p1Render, p2Render};
 
-        Position playerTwoPosition;
-        playerTwoPosition.set_x(player2->getPositionX());
-        playerTwoPosition.set_y(player2->getPositionY());
-
-        BaseRenderData playerTwoBaseRenderData;
-        *playerTwoBaseRenderData.mutable_position() = playerTwoPosition;
-        playerTwoBaseRenderData.set_rotation(player2->getRotation());
-        playerTwoBaseRenderData.set_scale(player2->getScale());
-        playerTwoBaseRenderData.set_isvisible(player2->isVisible());
-        playerTwoBaseRenderData.set_gamemode(Utility::getGamemodeFromPlayer(player2));
-
-        RenderData renderData;
-        renderData.mutable_playerone()->CopyFrom(playerOneBaseRenderData);
-        renderData.mutable_playertwo()->CopyFrom(playerTwoBaseRenderData);
-
-        Packet packet;
-        packet.set_type(RENDER_DATA);
-        packet.mutable_renderdata()->CopyFrom(renderData);
-
-        PacketUtility::sendPacket(global->peer, packet);
+        Packet packet {RENDER_DATA, sizeof(renderData), reinterpret_cast<uint8_t *>(&renderData)};
+        packet.send(global->peer);
     }
 };

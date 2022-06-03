@@ -42,60 +42,41 @@ IconType Utility::getIconType(Gamemode gamemode) {
     }
 }
 
-
 int Utility::getIconId(IconType iconType, IconData iconData) {
     switch (iconType) {
         default:
         case IconType::Cube:
-            return iconData.cubeid();
+            return iconData.cubeId;
         case IconType::Ship:
-            return iconData.shipid();
+            return iconData.shipId;
         case IconType::Ball:
-            return iconData.ballid();
+            return iconData.ballId;
         case IconType::Ufo:
-            return iconData.ufoid();
+            return iconData.ufoId;
         case IconType::Wave:
-            return iconData.waveid();
+            return iconData.waveId;
         case IconType::Robot:
-            return iconData.robotid();
+            return iconData.robotId;
         case IconType::Spider:
-            return iconData.spiderid();
+            return iconData.spiderId;
     }
-}
-
-void Utility::sendUsername() {
-    /*
-    auto global = Global::get();
-    auto gm = GameManager::sharedState();
-
-    Packet packet;
-    packet.set_bytedata(std::string(gm->m_playerName));
-
-    packet.set_type(USERNAME);
-
-    PacketUtility::sendPacket(global->peer, packet);
-    */
 }
 
 void Utility::sendIconData() {
     auto global = Global::get();
     auto gm = GameManager::sharedState();
 
-    IconData iconData;
-    iconData.set_cubeid(gm->getPlayerFrame());
-    iconData.set_shipid(gm->getPlayerShip());
-    iconData.set_ballid(gm->getPlayerBall());
-    iconData.set_ufoid(gm->getPlayerBird());
-    iconData.set_waveid(gm->getPlayerDart());
-    iconData.set_ballid(gm->getPlayerBall());
-    iconData.set_robotid(gm->getPlayerRobot());
-    iconData.set_spiderid(gm->getPlayerSpider());
+    IconData iconData{};
+    iconData.cubeId   = gm->getPlayerFrame();
+    iconData.shipId   = gm->getPlayerShip();
+    iconData.ballId   = gm->getPlayerBall();
+    iconData.ufoId    = gm->getPlayerBird();
+    iconData.waveId   = gm->getPlayerDart();
+    iconData.robotId  = gm->getPlayerRobot();
+    iconData.spiderId = gm->getPlayerSpider();
 
-    Packet packet;
-    packet.set_type(ICON_DATA);
-    packet.mutable_icondata()->CopyFrom(iconData);
-
-    PacketUtility::sendPacket(global->peer, packet);
+    Packet packet{ICON_DATA, sizeof(iconData), reinterpret_cast<uint8_t *>(&iconData)};
+    packet.send(global->peer);
 }
 
 void Utility::sendColorData() {
@@ -104,24 +85,21 @@ void Utility::sendColorData() {
     auto primaryColorCocos = gm->colorForIdx(gm->getPlayerColor());
     auto secondaryColorCocos = gm->colorForIdx(gm->getPlayerColor2());
 
-    Color primaryColor;
-    primaryColor.set_r(primaryColorCocos.r);
-    primaryColor.set_g(primaryColorCocos.g);
-    primaryColor.set_b(primaryColorCocos.b);
+    Color primaryColor{};
+    primaryColor.r = primaryColorCocos.r;
+    primaryColor.g = primaryColorCocos.g;
+    primaryColor.b = primaryColorCocos.b;
 
-    Color secondaryColor;
-    secondaryColor.set_r(secondaryColorCocos.r);
-    secondaryColor.set_g(secondaryColorCocos.g);
-    secondaryColor.set_b(secondaryColorCocos.b);
+    Color secondaryColor{};
+    secondaryColor.r = secondaryColorCocos.r;
+    secondaryColor.g = secondaryColorCocos.g;
+    secondaryColor.b = secondaryColorCocos.b;
 
-    ColorData colorData;
-    colorData.mutable_primarycolor()->CopyFrom(primaryColor);
-    colorData.mutable_secondarycolor()->CopyFrom(secondaryColor);
-    colorData.set_glow(gm->getPlayerGlow());
+    ColorData colorData{};
+    colorData.primaryColor = primaryColor;
+    colorData.secondaryColor = secondaryColor;
+    colorData.glow = gm->getPlayerGlow();
 
-    Packet packet;
-    packet.set_type(COLOR_DATA);
-    packet.mutable_colordata()->CopyFrom(colorData);
-
-    PacketUtility::sendPacket(Global::get()->peer, packet);
+    Packet packet{COLOR_DATA, sizeof(colorData), reinterpret_cast<uint8_t *>(&colorData)};
+    packet.send(Global::get()->peer);
 }

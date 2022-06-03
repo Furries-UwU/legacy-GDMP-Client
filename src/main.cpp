@@ -2,7 +2,7 @@
 
 USE_GEODE_NAMESPACE();
 
-void onRecievedMessage(ENetPacket *enetPacket) {
+void onReceivedMessage(ENetPacket *enetPacket) {
     if (enetPacket->dataLength < 1) {
         fmt::print("Got invalid packet here");
         enet_packet_destroy(enetPacket);
@@ -11,30 +11,11 @@ void onRecievedMessage(ENetPacket *enetPacket) {
 
     Global *global = Global::get();
 
-    IncomingPacket incomingPacket;
-    incomingPacket.ParseFromArray(enetPacket->data, enetPacket->dataLength);
+    Packet incomingPacket{enetPacket};
 
-    switch (incomingPacket.type()) {
-        case (USERNAME): {
-            global->playerDataMap[incomingPacket.playerid()].username = incomingPacket.bytedata();
-            break;
-        }
-        case (ICON_DATA): {
-            global->playerDataMap[incomingPacket.playerid()].iconData = incomingPacket.icondata();
-            break;
-        }
-        case (COLOR_DATA): {
-            global->playerDataMap[incomingPacket.playerid()].colorData = incomingPacket.colordata();
-            break;
-        }
-        case (RENDER_DATA): {
-            global->playerDataMap[incomingPacket.playerid()].renderData = incomingPacket.renderdata();
-            break;
-        }
-
+    switch (incomingPacket.type) {
         case (JOIN_LEVEL): {
-            int playerId = incomingPacket.icondata().cubeid();
-
+            uint16_t playerId = *reinterpret_cast<uint16_t *>(incomingPacket.data);
             fmt::print("Join: {}\n", playerId);
 
             executeInGDThread([playerId]() {
@@ -72,8 +53,24 @@ void onRecievedMessage(ENetPacket *enetPacket) {
             break;
         }
 
+        case (ICON_DATA): {
+            IncomingIconData incomingData = *reinterpret_cast<IncomingIconData *>(incomingPacket.data);
+            global->playerDataMap[incomingData.playerId].iconData = incomingData.iconData;
+            break;
+        }
+        case (COLOR_DATA): {
+            IncomingColorData incomingData = *reinterpret_cast<IncomingColorData *>(incomingPacket.data);
+            global->playerDataMap[incomingData.playerId].colorData = incomingData.colorData;
+            break;
+        }
+        case (RENDER_DATA): {
+            IncomingRenderData incomingData = *reinterpret_cast<IncomingRenderData *>(incomingPacket.data);
+            global->playerDataMap[incomingData.playerId].renderData = incomingData.renderData;
+            break;
+        }
+
         case (LEAVE_LEVEL): {
-            int playerId = incomingPacket.playerid();
+            uint16_t playerId = *reinterpret_cast<uint16_t *>(incomingPacket.data);
 
             fmt::print("Leave: {}\n", playerId);
 
@@ -94,7 +91,7 @@ void onRecievedMessage(ENetPacket *enetPacket) {
 
             switch (event.type) {
                 case ENET_EVENT_TYPE_RECEIVE: {
-                    onRecievedMessage(event.packet);
+                    onReceivedMessage(event.packet);
                     break;
                 }
                 case ENET_EVENT_TYPE_CONNECT: {
@@ -122,8 +119,6 @@ void onRecievedMessage(ENetPacket *enetPacket) {
 }
 
 GEODE_API bool GEODE_CALL geode_load(Mod *mod) {
-    GOOGLE_PROTOBUF_VERIFY_VERSION;
-
     if (enet_initialize() != 0) {
         fmt::print(stderr, "An error occurred while initializing ENet.\n");
         return false;
