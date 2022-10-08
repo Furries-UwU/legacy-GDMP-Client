@@ -1,0 +1,94 @@
+syntax = "proto2";
+
+enum PacketType {
+  USERNAME = 0;
+  RENDER_DATA = 1;
+  COLOR_DATA = 2;
+  ICON_DATA = 3;
+  JOIN_LEVEL = 4;
+  LEAVE_LEVE = 5;
+};
+
+enum Gamemode {
+  CUBE = 0;
+  SHIP = 1;
+  BALL = 2;
+  UFO = 3;
+  WAVE = 4;
+  ROBOT = 5;
+  SPIDER = 6;
+}
+
+message Position {
+  required float x = 1;
+  required float y = 2;
+}
+
+message Color {
+  required int32 r = 1;
+  required int32 g = 2;
+  required int32 b = 3;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+message Header {
+  required PacketType type = 1;
+  required int32 length = 2;
+  optional bytes data = 3;
+}
+
+message Username {
+  required string username = 1;
+}
+
+message BaseRenderData {
+  required Position position = 1;
+  required float rotation = 2;
+  required float scale = 3;
+  required Gamemode gamemode = 4;
+  required bool isVisible = 5;
+}
+
+message RenderData {
+  required BaseRenderData playerOne = 1;
+  optional BaseRenderData playerTwo = 2;
+}
+
+message ColorData {
+  required Color primaryColor = 1;
+  required Color secondaryColor = 2;
+  required bool glow = 3;
+}
+
+message IconData {
+  required int32 cubeId = 1;
+  required int32 shipId = 2;
+  required int32 ballId = 3;
+  required int32 ufoId = 4;
+  required int32 waveId = 5;
+  required int32 robotId = 6;
+  required int32 spiderId = 7;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+message IncomingRenderData {
+  required int32 playerId = 1;
+  required RenderData renderData = 2;
+}
+
+message IncomingColorData {
+  required int32 playerId = 1;
+  required ColorData colorData = 2;
+}
+
+message IncomingIconData {
+  required int32 playerId = 1;
+  required IconData iconData = 2;
+}
+
+message IncomingUsername {
+  required int32 playerId = 1;
+  required Username username = 2;
+}

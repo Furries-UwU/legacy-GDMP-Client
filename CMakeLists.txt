@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.12)
-set(CMAKE_CXX_STANDARD 17)
+cmake_minimum_required(VERSION 3.23)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -7,24 +7,42 @@ project(GDMP-Client VERSION 1.0.0)
 
 set(CMAKE_OSX_ARCHITECTURES x86_64)
 
-find_path(GEODE_SDK_PATH
-        NAMES Geode.cmake
-        PATHS $ENV{GEODE_SUITE}/sdk /Users/Shared/Geode/suite/sdk /usr/local/geode/sdk
-        DOC "Geode SDK path."
-        REQUIRED
-        )
-include(${GEODE_SDK_PATH}/Geode.cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
-add_subdirectory(external/GDMP-Shared)
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+    message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+    file(DOWNLOAD "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake"
+            "${CMAKE_BINARY_DIR}/conan.cmake"
+            TLS_VERIFY ON)
+endif()
 
+include(${CMAKE_BINARY_DIR}/conan.cmake)
+
+conan_cmake_autodetect(settings)
+
+conan_cmake_run(CONANFILE conanfile.txt
+        BASIC_SETUP CMAKE_TARGETS
+        BUILD missing)
+
+file(GLOB_RECURSE PROTO_SOURCE_FILES CONFIGURE_DEPENDS src/*.proto)
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp src/*.c)
 
-add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
-target_include_directories(${PROJECT_NAME} PUBLIC include)
+find_package(Protobuf REQUIRED)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SOURCE_FILES})
 
-set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
-target_link_libraries(${PROJECT_NAME} GDMP-Shared)
+add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${PROTO_SRCS})
+target_include_directories(${PROJECT_NAME} PUBLIC include ${Protobuf_INCLUDE_DIRS} ${PROTO_HDRS})
+target_link_libraries(${PROJECT_NAME} $${Protobuf_LIBRARIES} CONAN_PKG::zmqpp CONAN_PKG::fmt)
 
-setup_geode_mod()
+if (NOT DEFINED ENV{GEODE_SDK})
+    message(FATAL_ERROR "Unable to find Geode SDK! Please define GEODE_SDK environment variable to point to Geode")
+else()
+    message(STATUS "Found Geode: $ENV{GEODE_SDK}")
+endif()
 
+set(GEODE_LINK_SOURCE On)
+add_subdirectory($ENV{GEODE_SDK} $ENV{GEODE_SDK}/build)
+
+target_link_libraries(${PROJECT_NAME} geode-sdk)
 create_geode_file(${PROJECT_NAME})

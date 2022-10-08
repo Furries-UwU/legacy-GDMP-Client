@@ -1,0 +1,12 @@
+[requires]
+protobuf/3.21.4
+zmqpp/4.2.0
+fmt/9.1.0
+
+[options]
+protobuf:shared=False
+zmqpp:shared=False
+fmt:shared=False
+
+[generators]
+cmake

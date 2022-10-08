@@ -1,10 +1,8 @@
 {
-  "geode": "v0.1.0",
+  "geode": "3",
   "version": "v1.0.0",
-  "id": "io.github.xhayper.gdmp-client",
+  "id": "io.github.Furries-UwU.GDMP-Client",
   "name": "GDMP-Client",
-  "developer": "xhayper",
-  "description": "Multiplayer mod",
-  "binary": "GDMP-Client",
-  "dependencies": null
+  "developer": "Furries-UwU",
+  "description": "Multiplayer mod"
 }
